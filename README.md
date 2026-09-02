@@ -23,6 +23,12 @@ CCDE/
 │   ├── deep-research-report.md                    # Reporte de investigación y marco teórico
 │   └── CCDE logotipo.*                            # Recursos gráficos (SVG / PNG)
 │
+├── Support Vector Machines/
+│   ├── presentacion-svm.tex                       # Archivo maestro Beamer
+│   ├── sections/                                  # Secciones modulares para edición
+│   ├── codigo_demo_svm.py                         # Demo reproducible + figuras
+│   └── README.md                                  # Guía de compilación y fuentes
+│
 ├── .gitignore
 └── README.md
 ```
@@ -71,6 +77,26 @@ CCDE/
 
 ---
 
+### 3. Support Vector Machines (SVM)
+* **Ubicación:** `Support Vector Machines/`
+* **Temas abordados:**
+  * Geometría del hiperplano y principio de margen máximo.
+  * Hard margin y soft margin con variables de holgura.
+  * Formulación primal y dual; papel de los support vectors.
+  * Hiperparámetro `C` y trade-off sesgo-varianza.
+  * Kernel trick, cambio de dimensionalidad y matriz de Gram.
+  * Kernels lineal, polinómico, RBF/Gaussiano y sigmoide.
+  * Hiperparámetros `gamma`, `degree`, `coef0` y `class_weight`.
+  * Escalamiento con `StandardScaler`, `Pipeline` y ajuste mediante `GridSearchCV`.
+  * **Demostración práctica:** `codigo_demo_svm.py`, que compara SVM lineal vs. RBF y genera las figuras de la presentación.
+
+#### 📚 Referencias Bibliográficas Base:
+* **Géron, A. (2022).** *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow* (3.ª ed.). O'Reilly Media. (Capítulo 5: *Support Vector Machines*).
+* **James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013).** *An Introduction to Statistical Learning with Applications in R*. Springer. (Capítulo 9: *Support Vector Machines*).
+* **Hastie, T., Tibshirani, R., & Friedman, J. (2009).** *The Elements of Statistical Learning* (2.ª ed.). Springer. (Capítulo 12: *Support Vector Machines and Flexible Discriminants*).
+
+---
+
 ## 💻 Requisitos y Entorno
 
 ### Ejecución de código Python
@@ -78,6 +104,7 @@ Para correr los scripts de demostración:
 ```bash
 pip install numpy pandas scikit-learn matplotlib
 python "Arboles de Decisión/codigo_demo_arboles_ensambles.py"
+python "Support Vector Machines/codigo_demo_svm.py"
 ```
 
 ### Compilación de Diapositivas LaTeX (Beamer)
@@ -87,6 +114,9 @@ Compilar usando:
 ```bash
 pdflatex presentacion-arboles-decision.tex
 pdflatex presentacion-ciencia-datos-econometria.tex
+cd "Support Vector Machines"
+pdflatex presentacion-svm.tex
+pdflatex presentacion-svm.tex
 ```
 
 ---
