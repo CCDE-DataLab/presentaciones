@@ -1,0 +1,84 @@
+\section{Cierre y fuentes}
+
+\begin{frame}{Ideas que deben quedar}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.60\textwidth}
+\begin{enumerate}
+  \item Una SVM lineal busca el hiperplano con máximo margen.
+  \item Hard margin exige separación perfecta; soft margin introduce holguras y regularización.
+  \item En scikit-learn, $C$ alto penaliza más los errores; $C$ bajo regulariza más.
+  \item La formulación dual depende de productos internos, lo que habilita kernels.
+  \item El kernel trick equivale a trabajar en un espacio de características ampliado sin construirlo explícitamente.
+  \item En RBF, $\gamma$ gobierna la localidad; $C$ y $\gamma$ deben validarse conjuntamente, siempre dentro de un pipeline con escalamiento y validación cruzada.
+\end{enumerate}
+\end{column}
+\begin{column}{0.36\textwidth}
+\begin{keybox}
+\centering
+\large
+\textbf{Margen}\\[0.14cm]
+$+$\\[0.14cm]
+\textbf{Regularización}\\[0.14cm]
+$+$\\[0.14cm]
+\textbf{Kernel}\\[0.18cm]
+$\Downarrow$\\[0.18cm]
+\textbf{Fronteras flexibles con optimización convexa}
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Bibliografía base del Drive}
+\footnotesize
+\begin{ccdebox}
+\textbf{Géron, A.} (2022). \emph{Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow}, 3.ª ed., O'Reilly.\\
+\textbf{Capítulo 5:} clasificación SVM lineal, soft margin, kernels, RBF, complejidad y formulación matemática.
+\end{ccdebox}
+\vspace{0.07cm}
+\begin{ccdebox}
+\textbf{James, G.; Witten, D.; Hastie, T.; Tibshirani, R.} (2013). \emph{An Introduction to Statistical Learning with Applications in R}. Springer.\\
+\textbf{Capítulo 9:} maximal margin classifier, support vector classifier, kernels, RBF, multiclase y laboratorio.
+\end{ccdebox}
+\vspace{0.07cm}
+\begin{ccdebox}
+\textbf{Hastie, T.; Tibshirani, R.; Friedman, J.} (2009). \emph{The Elements of Statistical Learning}, 2.ª ed., Springer.\\
+\textbf{Capítulo 12:} formulación avanzada de SVM, penalización, reproducing kernels y perspectiva estadística.
+\end{ccdebox}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Material reproducible y compilación}
+\small
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{ccdebox}
+\textbf{Código asociado}\\[0.10cm]
+\texttt{codigo\_demo\_svm.py}\\[0.10cm]
+Genera las métricas y las figuras PNG utilizadas por la presentación.
+\end{ccdebox}
+\vspace{0.14cm}
+\begin{keybox}
+\texttt{pip install numpy matplotlib scikit-learn}\\[0.08cm]
+\texttt{python codigo\_demo\_svm.py}
+\end{keybox}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{ccdebox}
+\textbf{Presentación Beamer}\\[0.10cm]
+\texttt{presentacion-svm.tex}
+\end{ccdebox}
+\vspace{0.14cm}
+\begin{keybox}
+\texttt{pdflatex presentacion-svm.tex}\\[0.08cm]
+\texttt{pdflatex presentacion-svm.tex}
+\end{keybox}
+\vspace{0.14cm}
+\begin{ccdebox}
+\footnotesize
+El logo se reutiliza desde la carpeta \texttt{Arboles de Decisión}; si no está disponible, el documento compila con un fallback textual.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\end{frame}
