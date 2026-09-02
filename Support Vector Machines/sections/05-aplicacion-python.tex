@@ -1,0 +1,187 @@
+\section{Aplicación en Python}
+
+\begin{frame}{Ejemplo visual: lineal vs. RBF sobre una frontera curva}
+\small
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.66\textwidth}
+\IfFileExists{fig_svm_kernel_moons.png}{%
+  \centering\includegraphics[width=\linewidth]{fig_svm_kernel_moons.png}
+}{%
+  \begin{ccdebox}\centering\small Ejecuta \texttt{python codigo\_demo\_svm.py} para generar esta comparación.\end{ccdebox}}
+\end{column}
+\begin{column}{0.30\textwidth}
+\begin{contrastbox}{ccdeblue}{Kernel lineal}
+\scriptsize
+Solo puede construir un hiperplano en el espacio original. Con \texttt{make\_moons} queda sesgado.
+\end{contrastbox}
+\vspace{0.11cm}
+\begin{contrastbox}{ccdeaccent}{Kernel RBF}
+\scriptsize
+Construye una separación curvada mediante similitudes locales en el espacio implícito.
+\end{contrastbox}
+\vspace{0.11cm}
+\begin{keybox}[fontupper=\scriptsize]
+La flexibilidad adicional debe validarse fuera de muestra.
+\end{keybox}
+\end{column}
+\end{columns}
+\source{Figura generada por \texttt{codigo\_demo\_svm.py}, semilla 42.}
+\end{frame}
+
+% ================================================================
+\begin{frame}[fragile]{Python 1/3: pipeline y separación train/test}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.64\textwidth}
+\begin{lstlisting}[style=ccdepython]
+from sklearn.datasets import make_moons
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+
+X, y = make_moons(
+    n_samples=600, noise=0.25, random_state=42
+)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.30,
+    stratify=y, random_state=42
+)
+
+model = make_pipeline(
+    StandardScaler(),
+    SVC(kernel="rbf", C=10, gamma="scale")
+)
+model.fit(X_train, y_train)
+\end{lstlisting}
+\end{column}
+\begin{column}{0.32\textwidth}
+\begin{keybox}
+\textbf{Puntos clave}
+\begin{itemize}
+  \item Escalamiento dentro del pipeline.
+  \item \texttt{stratify} conserva proporciones.
+  \item Semilla fija para reproducibilidad.
+  \item RBF para una frontera no lineal.
+\end{itemize}
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}[fragile]{Python 2/3: validación cruzada de $C$, $\gamma$ y kernel}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.67\textwidth}
+\begin{lstlisting}[style=ccdepython]
+from sklearn.model_selection import GridSearchCV
+
+pipe = make_pipeline(StandardScaler(), SVC())
+param_grid = [
+    {
+        "svc__kernel": ["linear"],
+        "svc__C": [0.1, 1, 10, 100],
+    },
+    {
+        "svc__kernel": ["rbf"],
+        "svc__C": [0.1, 1, 10, 100],
+        "svc__gamma": ["scale", 0.1, 1, 10],
+    },
+]
+
+search = GridSearchCV(
+    pipe, param_grid, scoring="roc_auc",
+    cv=5, n_jobs=-1, refit=True
+)
+search.fit(X_train, y_train)
+\end{lstlisting}
+\end{column}
+\begin{column}{0.29\textwidth}
+\begin{keybox}
+\textbf{Por qué así}
+\begin{itemize}
+  \item La grilla vive solo en training.
+  \item Escalamiento se re-estima en cada fold.
+  \item Se compara lineal vs. RBF.
+  \item ROC-AUC guía la selección.
+\end{itemize}
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}[fragile]{Python 3/3: evaluación fuera de muestra}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.65\textwidth}
+\begin{lstlisting}[style=ccdepython]
+from sklearn.metrics import (
+    accuracy_score, confusion_matrix, roc_auc_score
+)
+
+best = search.best_estimator_
+pred = best.predict(X_test)
+score = best.decision_function(X_test)
+
+print(search.best_params_)
+print("accuracy =", accuracy_score(y_test, pred))
+print("roc_auc =", roc_auc_score(y_test, score))
+print(confusion_matrix(y_test, pred))
+print(
+    "support vectors =",
+    best.named_steps["svc"].n_support_
+)
+\end{lstlisting}
+\end{column}
+\begin{column}{0.31\textwidth}
+\begin{contrastbox}{ccdeaccent}{Resultado reproducible}
+\scriptsize
+Mejor grilla: RBF, $C=10$, $\gamma=\texttt{scale}$.\\[0.10cm]
+ROC-AUC CV: \textbf{0.9724}.\\
+Accuracy test: \textbf{0.9167}.\\
+ROC-AUC test: \textbf{0.9817}.\\
+Support vectors: $42+39=81$.
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{Ejecución local de \texttt{codigo\_demo\_svm.py}; scikit-learn, semilla 42.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Lineal vs. RBF: resultado del mismo experimento}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.58\textwidth}
+\vspace{1.55cm}
+\renewcommand{\arraystretch}{1.45}
+\small
+\begin{tabular}{lccc}
+\toprule
+\rowcolor{ccdenavy}
+\textcolor{white}{\textbf{Modelo}} &
+\textcolor{white}{\textbf{Accuracy}} &
+\textcolor{white}{\textbf{ROC-AUC}} &
+\textcolor{white}{\textbf{SV}}\\
+\midrule
+SVM lineal & 0.8556 & 0.9383 & 141\\
+\rowcolor{ccdeice!50}
+SVM RBF & \textbf{0.9333} & \textbf{0.9775} & 75\\
+\bottomrule
+\end{tabular}
+\end{column}
+\begin{column}{0.38\textwidth}
+\begin{keybox}
+\textbf{Lectura}
+\begin{itemize}
+  \item La estructura de \texttt{make\_moons} es no lineal.
+  \item El RBF reduce el sesgo respecto al hiperplano lineal.
+  \item Menos support vectors no implica siempre mejor modelo, pero aquí la frontera RBF es además más parsimoniosa en puntos activos.
+\end{itemize}
+\end{keybox}
+\end{column}
+\end{columns}
+\source{Ejecución de \texttt{codigo\_demo\_svm.py}, semilla 42.}
+\end{frame}
+
+% ================================================================
