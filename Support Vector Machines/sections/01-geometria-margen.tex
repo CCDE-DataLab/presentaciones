@@ -1,0 +1,185 @@
+\section{Geometría y margen máximo}
+
+\begin{frame}{¿Qué es una Support Vector Machine?}
+\small
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.46\textwidth}
+\begin{itemize}
+  \item Es un método supervisado para \textbf{clasificación}, regresión y detección de novedades.
+  \item En clasificación busca una frontera que separe clases con el \textbf{mayor margen posible}.
+  \item La frontera queda determinada por unas pocas observaciones críticas: los \textbf{support vectors}.
+  \item Con kernels puede construir fronteras no lineales manteniendo un problema de optimización convexo.
+\end{itemize}
+\end{column}
+\begin{column}{0.50\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.90]
+  \draw[->,ccdemid] (-0.5,0) -- (5.6,0) node[right]{\scriptsize $x_1$};
+  \draw[->,ccdemid] (0,-0.5) -- (0,4.8) node[above]{\scriptsize $x_2$};
+  \foreach \x/\y in {0.8/0.7,1.1/1.7,1.5/1.0,1.8/2.1,2.0/1.4,1.2/2.6}{
+    \fill[ccdeaccent] (\x,\y) circle (2.7pt);
+  }
+  \foreach \x/\y in {3.5/2.2,3.8/3.1,4.2/2.5,4.5/3.7,4.8/2.9,3.9/4.0}{
+    \fill[purplex] (\x,\y) circle (2.7pt);
+  }
+  \draw[ccdenavy,very thick] (0.6,4.2) -- (4.8,0.4);
+  \draw[ccdelight,thick,dashed] (0.25,3.55) -- (4.2,-0.02);
+  \draw[ccdelight,thick,dashed] (1.25,4.85) -- (5.45,1.05);
+  \node[rotate=-42,text=ccdenavy,font=\scriptsize\bfseries] at (3.45,1.95){hiperplano};
+  \node[rotate=-42,text=ccdeaccent,font=\scriptsize] at (2.5,3.15){margen};
+  \draw[warn,very thick] (2.05,1.42) circle (5pt);
+  \draw[warn,very thick] (3.52,2.22) circle (5pt);
+  \node[text=warn,font=\scriptsize,align=center] at (4.55,0.65){support\\vectors};
+  \draw[->,warn] (4.18,0.95)--(3.67,2.02);
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\source{Géron (2022), cap. 5; James et al. (2013), cap. 9.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Hiperplano, función de decisión y distancia}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.52\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Hiperplano en $\mathbb{R}^p$}
+\[
+\mathbf{w}^{\top}\mathbf{x}+b=0
+\]
+\textbf{Regla de clasificación}
+\[
+\hat y=\operatorname{sign}(\mathbf{w}^{\top}\mathbf{x}+b)
+\]
+\textbf{Distancia firmada al hiperplano}
+\[
+\frac{\mathbf{w}^{\top}\mathbf{x}+b}{\|\mathbf{w}\|}
+\]
+\end{ccdebox}
+\end{column}
+\begin{column}{0.44\textwidth}
+\begin{contrastbox}{ccdeaccent}{Lectura geométrica}
+\footnotesize
+\begin{itemize}
+  \item $\mathbf{w}$ es normal al hiperplano.
+  \item $b$ desplaza la frontera.
+  \item Escalar $(\mathbf{w},b)$ por la misma constante no cambia la frontera.
+  \item Por eso fijamos una escala conveniente para expresar el margen.
+\end{itemize}
+\end{contrastbox}
+\vspace{0.16cm}
+\begin{keybox}
+La SVM usa esta libertad de escala para imponer que los puntos más cercanos satisfagan $y_i(\mathbf{w}^\top\mathbf{x}_i+b)=1$.
+\end{keybox}
+\end{column}
+\end{columns}
+\source{James et al. (2013), secs. 9.1.1--9.1.4; Hastie et al. (2009), cap. 12.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{¿Por qué maximizar el margen?}
+\small
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.50\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.82]
+  \draw[->,ccdemid] (-0.3,0)--(5.7,0);
+  \draw[->,ccdemid] (0,-0.3)--(0,4.7);
+  \foreach \x/\y in {0.8/0.8,1.0/1.9,1.4/1.2,1.6/2.4,2.1/1.8}{\fill[ccdeaccent] (\x,\y) circle(2.5pt);}
+  \foreach \x/\y in {3.7/2.1,4.0/3.2,4.4/2.6,4.7/3.7,5.0/3.0}{\fill[purplex] (\x,\y) circle(2.5pt);}
+  \draw[warn,thick] (1.1,4.25)--(5.2,0.35);
+  \draw[okgreen,very thick] (0.45,4.35)--(4.75,0.28);
+  \draw[ccdelight,thick,dashed] (0.05,3.58)--(4.18,-0.28);
+  \draw[ccdelight,thick,dashed] (1.15,4.95)--(5.25,1.08);
+  \node[text=warn,font=\scriptsize] at (4.45,4.15){separa, pero margen pequeño};
+  \node[text=okgreen,font=\scriptsize\bfseries] at (3.90,0.40){margen máximo};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.46\textwidth}
+\begin{itemize}
+  \item Si varias fronteras clasifican igual al conjunto de entrenamiento, necesitamos un criterio para elegir una.
+  \item La SVM elige el hiperplano que deja la \textbf{calle más ancha} entre las clases.
+  \item Con la normalización canónica, la distancia desde la frontera a cada borde del margen es $1/\|\mathbf w\|$.
+\end{itemize}
+\vspace{0.08cm}
+\begin{keybox}[fontupper=\footnotesize]
+\centering
+\textbf{Ancho total:} $\displaystyle \frac{2}{\|\mathbf w\|}$ \qquad
+$\Longrightarrow$ \qquad minimizar $\|\mathbf w\|^2$.
+\end{keybox}
+\end{column}
+\end{columns}
+\source{James et al. (2013), sec. 9.1.3; Géron (2022), ``Large Margin Classification''.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Hard margin: problema de optimización}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.55\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{SVM lineal de margen duro}
+\[
+\min_{\mathbf w,b}\quad \frac{1}{2}\|\mathbf w\|^2
+\]
+\[
+\text{s.a.}\quad y_i(\mathbf w^{\top}\mathbf x_i+b)\ge 1,
+\qquad i=1,\dots,n
+\]
+\end{ccdebox}
+\vspace{0.15cm}
+\begin{keybox}
+Todos los puntos deben quedar del lado correcto y fuera de la franja del margen. No se permite ninguna violación.
+\end{keybox}
+\end{column}
+\begin{column}{0.41\textwidth}
+\begin{contrastbox}{ccdeblue}{¿Qué consigue?}
+\footnotesize
+\begin{itemize}
+  \item Separación perfecta, si existe.
+  \item Solución de un problema cuadrático convexo.
+  \item Óptimo global, no un mínimo local arbitrario.
+\end{itemize}
+\end{contrastbox}
+\vspace{0.16cm}
+\begin{contrastbox}{warn}{Condición fuerte}
+\footnotesize
+Debe existir un hiperplano que separe completamente las clases.
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{Hastie et al. (2009), cap. 12; Géron (2022), apéndice matemático de SVM.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Por qué el hard margin suele ser demasiado rígido}
+\small
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.53\textwidth}
+\IfFileExists{fig_svm_hard_soft.png}{%
+  \centering\includegraphics[width=\linewidth]{fig_svm_hard_soft.png}
+}{%
+  \begin{ccdebox}\centering\small Ejecuta \texttt{python codigo\_demo\_svm.py} para generar la figura comparativa.\end{ccdebox}}
+\end{column}
+\begin{column}{0.43\textwidth}
+\begin{contrastbox}{warn}{Problema 1: separabilidad}
+\small
+Si las clases se solapan, el conjunto de restricciones del hard margin puede ser imposible.
+\end{contrastbox}
+\vspace{0.16cm}
+\begin{contrastbox}{warn}{Problema 2: outliers}
+\small
+Una sola observación extrema puede mover drásticamente la frontera para conservar separación perfecta.
+\end{contrastbox}
+\vspace{0.16cm}
+\begin{keybox}
+Necesitamos permitir errores controlados: eso conduce al \textbf{soft margin}.
+\end{keybox}
+\end{column}
+\end{columns}
+\source{Géron (2022), ``Soft Margin Classification''. Figura generada por \texttt{codigo\_demo\_svm.py}.}
+\end{frame}
+
+% ================================================================
