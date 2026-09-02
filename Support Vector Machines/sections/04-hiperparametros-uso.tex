@@ -1,0 +1,165 @@
+\section{Hiperparámetros y uso práctico}
+
+\begin{frame}{Hiperparámetros principales en \texttt{sklearn.svm.SVC}}
+\scriptsize
+\renewcommand{\arraystretch}{1.40}
+\setlength{\tabcolsep}{4.6pt}
+\begin{center}
+\begin{tabular}{p{2.05cm}p{4.0cm}p{6.15cm}}
+\toprule
+\rowcolor{ccdenavy}
+\textcolor{white}{\textbf{Parámetro}} &
+\textcolor{white}{\textbf{Actúa sobre}} &
+\textcolor{white}{\textbf{Qué ocurre al modificarlo}}\\
+\midrule
+\texttt{C} & Regularización / penalización & Mayor $C$: menos tolerancia a violaciones; menor $C$: margen más ancho y más regularización.\\
+\rowcolor{ccdeice!50}
+\texttt{kernel} & Geometría de la frontera & \texttt{linear}, \texttt{rbf}, \texttt{poly}, \texttt{sigmoid} o función propia.\\
+\texttt{gamma} & Escala del RBF/poly/sigmoid & Alto: influencia local y mayor flexibilidad. Bajo: frontera más suave. \texttt{scale} usa una regla basada en varianza.\\
+\rowcolor{ccdeice!50}
+\texttt{degree} & Kernel polinómico & Grado $d$; solo importa con \texttt{poly}.\\
+\texttt{coef0} & Poly / sigmoid & Término independiente $r$; altera peso relativo de términos de orden alto y bajo.\\
+\rowcolor{ccdeice!50}
+\texttt{class\_weight} & Costos por clase & Útil con desbalance: permite penalizar más errores de una clase.\\
+\bottomrule
+\end{tabular}
+\end{center}
+\source{Géron (2022), cap. 5; API conceptual de SVC usada en el código asociado.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Escalar variables no es opcional en SVM}
+\small
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.46\textwidth}
+\begin{contrastbox}{warn}{Sin escalamiento}
+\small
+Si una variable está en miles y otra entre 0 y 1, las distancias y productos internos quedan dominados por la primera.
+\end{contrastbox}
+\vspace{0.14cm}
+\begin{contrastbox}{ccdeaccent}{Con \texttt{StandardScaler}}
+\small
+Las variables se centran y escalan antes de estimar la SVM. Para evitar fuga de información, el escalamiento debe vivir dentro de un \texttt{Pipeline}.
+\end{contrastbox}
+\end{column}
+\begin{column}{0.50\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.88]
+\node[draw,rounded corners,fill=white,minimum width=3.2cm,minimum height=0.75cm] (raw) at (0,2.8) {datos crudos};
+\node[draw,rounded corners,fill=ccdeice,minimum width=3.2cm,minimum height=0.75cm] (scale) at (0,1.45) {\texttt{StandardScaler}};
+\node[draw,rounded corners,fill=ccdelight!22,minimum width=3.2cm,minimum height=0.75cm] (svc) at (0,0.1) {\texttt{SVC}};
+\node[draw,rounded corners,fill=white,minimum width=3.2cm,minimum height=0.75cm] (pred) at (0,-1.25) {predicción};
+\foreach \a/\b in {raw/scale,scale/svc,svc/pred}{\draw[->,thick,ccdeaccent](\a)--(\b);}
+\node[text=ccdemid,font=\scriptsize,align=center] at (4.15,1.45){fit del scaler\\solo con training};
+\draw[->,ccdemid] (3.3,1.45)--(1.7,1.45);
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\source{Géron (2022), Figura 5-2 y ejemplo de pipeline con \texttt{StandardScaler}.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Cómo ajustar $C$ y $\gamma$ sin engañarnos}
+\small
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\begin{contrastbox}{ccdeblue}{Flujo recomendado}
+\small
+\begin{enumerate}
+  \item Separar train y test.
+  \item Pipeline: escalamiento + SVC.
+  \item Validación cruzada dentro de train.
+  \item Explorar escala logarítmica para $C$ y $\gamma$.
+  \item Elegir por una métrica coherente con el problema.
+  \item Evaluar una sola vez en test.
+\end{enumerate}
+\end{contrastbox}
+\end{column}
+\begin{column}{0.47\textwidth}
+\begin{keybox}
+\textbf{Ejemplo de grilla}
+\[
+C\in\{0.1,1,10,100\}
+\]
+\[
+\gamma\in\{0.1,1,10,\texttt{scale}\}
+\]
+\end{keybox}
+\vspace{0.14cm}
+\begin{ccdebox}
+\small
+En clasificación desbalanceada, accuracy puede ser pobre criterio. Considerar ROC-AUC, PR-AUC, recall, precision y costos de error.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\source{Géron (2022), selección de modelos y cap. 5; James et al. (2013), sec. 9.6.2.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Ventajas y desventajas}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.47\textwidth}
+\begin{contrastbox}{ccdeaccent}{Ventajas}
+\footnotesize
+\begin{itemize}
+  \item Excelente capacidad predictiva en datos pequeños/medianos.
+  \item Muy útil en alta dimensión, incluso con $p\gg n$.
+  \item Kernels capturan fronteras no lineales complejas.
+  \item Problema convexo: solución global.
+  \item Solo support vectors fijan la frontera.
+  \item Regularización explícita mediante $C$.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\begin{column}{0.47\textwidth}
+\begin{contrastbox}{warn}{Desventajas}
+\footnotesize
+\begin{itemize}
+  \item No escala bien a conjuntos muy grandes, especialmente SVC kernelizado.
+  \item Sensible al escalamiento de variables.
+  \item $C$ y $\gamma$ pueden exigir búsqueda cuidadosa.
+  \item Menos interpretable que modelos lineales o árboles simples.
+  \item Predicciones probabilísticas no son nativas.
+  \item Elegir un kernel inadecuado puede aumentar mucho sesgo o varianza.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{Géron (2022), introducción del cap. 5; James et al. (2013), cap. 9.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{¿Cuándo elegir una SVM?}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.31\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Alta dimensión}\\[0.12cm]
+Texto, genómica, muchas variables respecto al número de observaciones. Un kernel lineal puede ser suficiente.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.31\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Frontera no lineal}\\[0.12cm]
+Cuando un modelo lineal falla y el tamaño muestral permite trabajar con RBF o polinómico.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.31\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Precisión > explicación}\\[0.12cm]
+Cuando importa más una frontera robusta que una interpretación directa de coeficientes.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\vspace{0.22cm}
+\begin{keybox}
+\textbf{No es primera opción} para millones de observaciones con kernel RBF. En ese caso conviene comparar con modelos lineales escalables, árboles/boosting o aproximaciones al kernel.
+\end{keybox}
+\source{Géron (2022), cap. 5; James et al. (2013), aplicación de expresión génica en sec. 9.6.5.}
+\end{frame}
+
+% ================================================================
