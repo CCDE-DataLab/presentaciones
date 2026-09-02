@@ -1,0 +1,224 @@
+\section{Dualidad y kernels}
+
+\begin{frame}{La formulación dual revela dónde entra el kernel}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.58\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Problema dual del soft-margin SVM}
+\[
+\max_{\boldsymbol\alpha}
+\quad
+\sum_{i=1}^{n}\alpha_i
+-\frac12\sum_{i=1}^{n}\sum_{j=1}^{n}
+\alpha_i\alpha_j y_i y_j
+\underbrace{\mathbf x_i^\top\mathbf x_j}_{\text{producto interno}}
+\]
+\[
+\text{s.a.}\quad
+0\le \alpha_i\le C,
+\qquad
+\sum_{i=1}^{n}\alpha_i y_i=0
+\]
+\end{ccdebox}
+\vspace{0.12cm}
+\begin{keybox}[fontupper=\footnotesize]
+La optimización ya no necesita las coordenadas por separado: solo aparecen productos internos entre pares de observaciones.
+\end{keybox}
+\end{column}
+\begin{column}{0.38\textwidth}
+\begin{contrastbox}{ccdeaccent}{Consecuencia}
+\footnotesize
+Si reemplazamos
+\[
+\mathbf x_i^\top\mathbf x_j
+\quad\text{por}\quad
+K(\mathbf x_i,\mathbf x_j),
+\]
+obtenemos un clasificador lineal en otro espacio de características sin tener que construirlo explícitamente.
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{Hastie et al. (2009), cap. 12; Géron (2022), ``The Dual Problem'' y ``Kernelized SVMs''.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Cambio de dimensionalidad: una frontera no lineal puede volverse lineal}
+\small
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.38\textwidth}
+\centering
+\textbf{Espacio original: 1D}\\[0.15cm]
+\begin{tikzpicture}[x=0.82cm,y=0.82cm]
+  \draw[->,ccdemid] (-3.5,0)--(3.7,0) node[right]{\scriptsize $x$};
+  \foreach \x in {-3,-2.4,2.4,3}{\fill[purplex] (\x,0) circle(3pt);}
+  \foreach \x in {-0.9,-0.4,0,0.5,1.0}{\fill[ccdeaccent] (\x,0) circle(3pt);}
+  \node[text=purplex,font=\scriptsize] at (0,1.0){clase $+1$ en ambos extremos};
+  \node[text=ccdeaccent,font=\scriptsize] at (0,-0.9){clase $-1$ en el centro};
+\end{tikzpicture}
+\vspace{0.20cm}
+\begin{contrastbox}{warn}{No separable con un umbral}
+\scriptsize
+Una sola frontera lineal en 1D es un punto; no puede dejar $+1$ en ambos extremos y $-1$ en el centro.
+\end{contrastbox}
+\end{column}
+\begin{column}{0.12\textwidth}
+\centering
+\Huge\textcolor{ccdeaccent}{$\Longrightarrow$}\\[-0.05cm]
+\scriptsize $\phi(x)=(x,x^2)$
+\end{column}
+\begin{column}{0.46\textwidth}
+\centering
+\textbf{Espacio transformado: 2D}\\[0.10cm]
+\begin{tikzpicture}[x=0.70cm,y=0.60cm]
+  \draw[->,ccdemid] (-3.6,0)--(3.7,0) node[right]{\scriptsize $x$};
+  \draw[->,ccdemid] (0,-0.3)--(0,5.0) node[above]{\scriptsize $x^2$};
+  \draw[ccdemid!60,thin,domain=-3.1:3.1,samples=80] plot (\x,{0.48*\x*\x});
+  \foreach \x in {-3,-2.4,2.4,3}{\fill[purplex] (\x,{0.48*\x*\x}) circle(3pt);}
+  \foreach \x in {-0.9,-0.4,0,0.5,1.0}{\fill[ccdeaccent] (\x,{0.48*\x*\x}) circle(3pt);}
+  \draw[okgreen,very thick] (-3.3,2.35)--(3.3,2.35);
+  \node[text=okgreen,font=\scriptsize\bfseries] at (2.0,2.70){hiperplano lineal};
+\end{tikzpicture}
+\vspace{0.08cm}
+\begin{keybox}[fontupper=\scriptsize]
+Una frontera lineal en el espacio ampliado se proyecta como una frontera \textbf{no lineal} en el espacio original.
+\end{keybox}
+\end{column}
+\end{columns}
+\source{Intuición de expansión de bases: James et al. (2013), sec. 9.3; Hastie et al. (2009), secs. 12.3 y 12.4.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{El kernel trick: calcular similitudes sin construir $\phi(x)$}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.52\textwidth}
+\begin{ccdebox}
+\centering
+Supongamos una transformación potencialmente enorme:
+\[
+\phi:\mathbb R^p\to\mathcal H
+\]
+Un kernel válido satisface
+\[
+\boxed{K(\mathbf x,\mathbf z)=\langle \phi(\mathbf x),\phi(\mathbf z)\rangle_{\mathcal H}}
+\]
+La SVM solo necesita esos productos internos.
+\end{ccdebox}
+\vspace{0.14cm}
+\begin{keybox}
+No calculamos todas las nuevas variables. Construimos la matriz de Gram $K_{ij}=K(\mathbf x_i,\mathbf x_j)$ y optimizamos con ella.
+\end{keybox}
+\end{column}
+\begin{column}{0.44\textwidth}
+\begin{contrastbox}{ccdeaccent}{Por qué es potente}
+\footnotesize
+\begin{itemize}
+  \item Un kernel polinómico equivale a usar interacciones y potencias.
+  \item El RBF corresponde a un espacio de características implícito de dimensión infinita.
+  \item El costo depende de evaluar $K$, no de materializar ese espacio.
+\end{itemize}
+\end{contrastbox}
+\vspace{0.14cm}
+\begin{contrastbox}{ccdeblue}{Condición matemática}
+\footnotesize
+Para kernels estándar, la matriz de Gram debe ser simétrica y semidefinida positiva; así puede interpretarse como un producto interno en algún espacio de Hilbert.
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{James et al. (2013), sec. 9.3; Hastie et al. (2009), secs. 12.3.3 y 12.3.7.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Kernels más usados}
+\scriptsize
+\renewcommand{\arraystretch}{1.45}
+\setlength{\tabcolsep}{5.0pt}
+\begin{center}
+\begin{tabular}{p{2.2cm}p{5.0cm}p{5.0cm}}
+\toprule
+\rowcolor{ccdenavy}
+\textcolor{white}{\textbf{Kernel}} &
+\textcolor{white}{\textbf{Fórmula}} &
+\textcolor{white}{\textbf{Intuición / hiperparámetros}}\\
+\midrule
+Lineal & $K(x,z)=x^\top z$ & Sin expansión no lineal; suele funcionar bien cuando $p$ es grande.\\
+\rowcolor{ccdeice!50}
+Polinómico & $K(x,z)=(\gamma x^\top z+r)^d$ & $d$ controla grado; $\gamma$ escala la similitud; $r=\texttt{coef0}$ cambia peso entre términos de distinto orden.\\
+RBF / Gaussiano & $K(x,z)=\exp(-\gamma\|x-z\|^2)$ & Similitud local. $\gamma$ alto: influencia muy local; $\gamma$ bajo: frontera más suave.\\
+\rowcolor{ccdeice!50}
+Sigmoide & $K(x,z)=\tanh(\gamma x^\top z+r)$ & Menos común; se parece formalmente a una neurona sigmoide.\\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.16cm}
+\begin{keybox}
+En práctica, la comparación más importante suele ser \textbf{lineal vs. RBF}; los hiperparámetros deben elegirse con validación cruzada, no por ajuste visual al training set.
+\end{keybox}
+\source{James et al. (2013), Eqs. 9.22--9.24; Géron (2022), ``Polynomial Kernel'' y ``Gaussian RBF Kernel''.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{RBF en profundidad: $\gamma$ define el radio de influencia}
+\small
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.66\textwidth}
+\IfFileExists{fig_svm_gamma.png}{%
+  \centering\includegraphics[width=\linewidth]{fig_svm_gamma.png}
+}{%
+  \begin{ccdebox}\centering\small Ejecuta \texttt{python codigo\_demo\_svm.py} para generar la figura de $\gamma$.\end{ccdebox}}
+\end{column}
+\begin{column}{0.30\textwidth}
+\begin{contrastbox}{ccdeblue}{$\gamma$ bajo}
+\scriptsize
+La similitud cae lentamente con la distancia. Cada punto influye sobre una región grande: frontera suave, mayor sesgo.
+\end{contrastbox}
+\vspace{0.10cm}
+\begin{contrastbox}{warn}{$\gamma$ alto}
+\scriptsize
+La similitud cae muy rápido. Cada punto influye localmente: frontera ondulada, mayor varianza.
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{Géron (2022), Figura 5-9; James et al. (2013), Eq. 9.24. Figura generada localmente.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{La función de decisión kernelizada}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.56\textwidth}
+\begin{ccdebox}
+\centering
+Después de resolver el dual:
+\[
+f(\mathbf x)=
+\sum_{i\in SV}\alpha_i y_i K(\mathbf x_i,\mathbf x)+b
+\]
+\[
+\hat y=\operatorname{sign}(f(\mathbf x))
+\]
+\end{ccdebox}
+\vspace{0.12cm}
+\begin{keybox}
+Solo aparecen los support vectors: aquellos con $\alpha_i>0$. Para un RBF, los support vectors cercanos a $x$ reciben mayor similitud y pesan más en la decisión.
+\end{keybox}
+\end{column}
+\begin{column}{0.40\textwidth}
+\begin{contrastbox}{ccdeaccent}{Lectura operacional}
+\footnotesize
+Para predecir una nueva observación:
+\begin{enumerate}
+  \item medir su similitud con cada support vector;
+  \item ponderar por $\alpha_i y_i$;
+  \item sumar el intercepto $b$;
+  \item tomar el signo.
+\end{enumerate}
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{James et al. (2013), Eq. 9.23; Hastie et al. (2009), cap. 12.}
+\end{frame}
+
+% ================================================================
