@@ -1,0 +1,27 @@
+﻿# Libros pesados de referencia (conservados en local / Google Drive)
+*Statistical Learning*.pdf
+*Hands-On Machine Learning*.pdf
+
+# Archivos auxiliares de compilación Beamer / LaTeX
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+scratch.*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+
+# Sistema y Editores
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/

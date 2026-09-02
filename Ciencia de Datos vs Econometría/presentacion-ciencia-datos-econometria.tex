@@ -1,0 +1,743 @@
+\documentclass[aspectratio=169,11pt,table]{beamer}
+
+%------------------------------------------------
+% PAQUETES
+%------------------------------------------------
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,babel,shapes.geometric,shadows}
+\usepackage[most]{tcolorbox}
+
+%------------------------------------------------
+% COLORES CCDE
+%------------------------------------------------
+\definecolor{ccdenavy}{RGB}{10,30,64}
+\definecolor{ccdeblue}{RGB}{34,53,94}
+\definecolor{ccdemid}{RGB}{43,91,155}
+\definecolor{ccdeaccent}{RGB}{0,119,182}
+\definecolor{ccdesky}{RGB}{61,150,210}
+\definecolor{ccdelight}{RGB}{115,196,223}
+\definecolor{ccdeice}{RGB}{235,247,252}
+\definecolor{codebg}{RGB}{245,247,250}
+\definecolor{warn}{RGB}{202,93,54}
+\definecolor{okgreen}{RGB}{22,128,95}
+
+%------------------------------------------------
+% TEMA BEAMER CCDE
+%------------------------------------------------
+\usetheme{default}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{section in toc}[sections numbered]
+\setbeamertemplate{itemize item}{\color{ccdeaccent}\small$\blacktriangleright$}
+\setbeamertemplate{itemize subitem}{\color{ccdesky}\scriptsize$\bullet$}
+\setbeamertemplate{enumerate item}{\color{ccdeaccent}\insertenumlabel.}
+
+\setbeamercolor{normal text}{fg=ccdenavy,bg=ccdeice!18}
+\setbeamercolor{frametitle}{fg=white,bg=ccdenavy}
+\setbeamercolor{title}{fg=white,bg=ccdenavy}
+\setbeamercolor{subtitle}{fg=ccdeice}
+\setbeamercolor{structure}{fg=ccdeaccent}
+\setbeamercolor{block title}{fg=white,bg=ccdeblue}
+\setbeamercolor{block body}{fg=ccdenavy,bg=white}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.72cm,dp=0.24cm,leftskip=0.38cm,rightskip=0.38cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}
+}
+
+\newcommand{\ccdelogofile}{CCDE-logo-whatsapp-cropped.png}
+
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.70\paperwidth,ht=0.38cm,dp=0.12cm,leftskip=0.35cm]{author in head/foot}%
+      \scriptsize\textcolor{ccdemid}{CCDE -- Ciencia de Datos vs Econometría}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.20\paperwidth,ht=0.38cm,dp=0.12cm,center]{date in head/foot}%
+      \IfFileExists{\ccdelogofile}{\includegraphics[height=0.25cm]{\ccdelogofile}}{}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.10\paperwidth,ht=0.38cm,dp=0.12cm,rightskip=0.35cm]{page number in head/foot}%
+      \hfill\scriptsize\textcolor{ccdeblue}{\insertframenumber/\inserttotalframenumber}
+    \end{beamercolorbox}%
+  }%
+}
+
+%------------------------------------------------
+% COMPONENTES
+%------------------------------------------------
+\newcommand{\source}[1]{%
+  \par\vspace{0.12cm}
+  {\scriptsize\textcolor{ccdemid}{Fuente: #1}}%
+}
+
+\newcommand{\refentry}[3]{%
+  \par\noindent\textbf{#1} \textcolor{ccdemid}{(#2)}. #3\par
+  \vspace{0.5em}
+}
+
+\newcommand{\tagpill}[1]{%
+  \tikz[baseline=(x.base)]\node[fill=ccdeice,draw=ccdelight,rounded corners=2pt,inner xsep=4pt,inner ysep=2pt] (x) {\scriptsize\bfseries\textcolor{ccdeblue}{#1}};%
+}
+
+\newtcolorbox{ccdebox}[1][]{
+  enhanced,
+  colback=white,
+  colframe=ccdeblue,
+  arc=1.5mm,
+  boxrule=0.7pt,
+  left=2.2mm,
+  right=2.2mm,
+  top=1.5mm,
+  bottom=1.5mm,
+  #1
+}
+
+\newtcolorbox{keybox}[1][]{
+  enhanced,
+  colback=ccdelight!13,
+  colframe=ccdeaccent,
+  arc=1.5mm,
+  boxrule=0.8pt,
+  left=2.4mm,
+  right=2.4mm,
+  top=1.6mm,
+  bottom=1.6mm,
+  fontupper=\small,
+  #1
+}
+
+\newtcolorbox{contrastbox}[2]{
+  enhanced,
+  colback=#1!8,
+  colframe=#1!80!ccdenavy,
+  title=#2,
+  fonttitle=\bfseries,
+  coltitle=white,
+  boxed title style={colback=#1!80!ccdenavy,arc=1mm,boxrule=0pt},
+  attach boxed title to top left={yshift=-2mm,xshift=2mm},
+  arc=1.5mm,
+  boxrule=0.7pt,
+  left=2.2mm,
+  right=2.2mm,
+  top=2.8mm,
+  bottom=1.6mm
+}
+
+\title{Ciencia de Datos vs Econometría}
+\subtitle{Dos formas de aprender de los datos: predecir, explicar y decidir mejor}
+\author{Círculo de Ciencia de Datos y Econometría}
+\date{7 de julio de 2026}
+
+\begin{document}
+
+%------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[ccdeice!35] (current page.south west) rectangle (current page.north east);
+  \fill[ccdenavy] (current page.north west) rectangle ([yshift=-1.25cm]current page.north east);
+  \fill[ccdeblue] ([yshift=-1.25cm]current page.north west) rectangle ([yshift=-1.52cm]current page.north east);
+  \fill[ccdelight!45,opacity=0.85] ([xshift=13.6cm,yshift=-1.05cm]current page.north west) circle (1.25cm);
+  \fill[ccdeaccent!18,opacity=0.7] ([xshift=0.6cm,yshift=0.5cm]current page.south west) circle (2.4cm);
+  \draw[ccdelight,line width=1.4pt] ([xshift=0.75cm,yshift=-7.05cm]current page.north west) -- ([xshift=-0.75cm,yshift=-7.05cm]current page.north east);
+\end{tikzpicture}
+
+\vspace*{0.72cm}
+\begin{center}
+\begin{tcolorbox}[
+  enhanced,
+  width=0.88\textwidth,
+  colback=white,
+  colframe=ccdelight,
+  arc=2mm,
+  boxrule=0.9pt,
+  left=6mm,
+  right=6mm,
+  top=5mm,
+  bottom=5mm,
+  drop shadow={ccdenavy!22!white},
+  borderline west={4pt}{0pt}{ccdeaccent}
+]
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.22\textwidth}
+\centering
+\IfFileExists{\ccdelogofile}{\includegraphics[width=0.88\linewidth]{\ccdelogofile}}{}
+\end{column}
+\begin{column}{0.74\textwidth}
+{\Huge\bfseries\textcolor{ccdenavy}{Ciencia de Datos vs Econometría}\par}
+\vspace{0.22cm}
+{\large\textcolor{ccdeblue}{Dos formas de aprender de los datos: predecir, explicar y decidir mejor}\par}
+\vspace{0.45cm}
+{\normalsize\bfseries\textcolor{ccdeaccent}{Círculo de Ciencia de Datos y Econometría}}\\[0.25em]
+{\small 7 de julio de 2026}
+\end{column}
+\end{columns}
+\end{tcolorbox}
+\end{center}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Mapa de la presentación}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.58\textwidth}
+\tableofcontents
+\end{column}
+\begin{column}{0.37\textwidth}
+\begin{keybox}
+\small
+La ruta es deliberada: primero aclaramos la pregunta, luego comparamos estándares de evidencia, después bajamos a casos y cerramos con la convergencia moderna.
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+%------------------------------------------------
+\section{Idea central}
+
+%------------------------------------------------
+\begin{frame}{La idea en una frase}
+\begin{keybox}
+\centering
+\large
+La econometría pregunta: \textbf{``¿qué efecto tiene X sobre Y?''}\\[0.45em]
+La ciencia de datos pregunta: \textbf{``¿qué patrón ayuda a predecir o automatizar mejor?''}
+\end{keybox}
+
+\vspace{0.22cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\begin{contrastbox}{ccdeblue}{Econometría}
+\small
+\begin{itemize}
+  \item Busca efectos, mecanismos y parámetros interpretables.
+  \item Se preocupa por identificación, supuestos e inferencia.
+  \item Una buena respuesta debe ser creíble, no solo ajustarse a los datos.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\begin{column}{0.49\textwidth}
+\begin{contrastbox}{ccdeaccent}{Ciencia de datos}
+\small
+\begin{itemize}
+  \item Busca predicción, clasificación, segmentación y automatización.
+  \item Se preocupa por generalización, escalabilidad y operación.
+  \item Una buena respuesta debe funcionar fuera de muestra.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Por qué no basta decir ``estadística vs algoritmos''}
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.54\textwidth}
+\begin{itemize}
+  \item Ambas usan estadística, regresión, validación, programación y datos.
+  \item Ambas pueden predecir; ambas pueden ayudar a explicar.
+  \item La diferencia importante aparece cuando hay tensión entre objetivos.
+\end{itemize}
+\vspace{0.25cm}
+\begin{keybox}
+\textbf{Criterio de éxito:}\\
+Econometría: interpretación causal o estructural defendible.\\
+Ciencia de datos: utilidad predictiva u operativa robusta.
+\end{keybox}
+\end{column}
+\begin{column}{0.44\textwidth}
+\centering
+\begin{tikzpicture}[>=Latex,every node/.style={font=\small,drop shadow={opacity=0.1}}]
+  \node[draw,rounded corners,fill=white,thick,text width=3.05cm,minimum height=0.65cm,align=center] (datos) at (0,2.25) {\textbf{Datos}};
+  \node[draw,rounded corners,fill=ccdeblue!8,text width=2.48cm,minimum height=0.78cm,align=center] (causa) at (-1.45,0.65) {Inferir\\efectos};
+  \node[draw,rounded corners,fill=ccdeaccent!8,text width=2.48cm,minimum height=0.78cm,align=center] (pred) at (1.45,0.65) {Predecir\\patrones};
+  \node[draw,rounded corners,fill=ccdelight!20,text width=4.05cm,minimum height=0.78cm,align=center] (decision) at (0,-1.05) {\textbf{Mejores decisiones}};
+  \draw[->,thick,ccdeblue] (datos) -- (causa);
+  \draw[->,thick,ccdeaccent] (datos) -- (pred);
+  \draw[->,thick,ccdeblue] (causa) -- (decision);
+  \draw[->,thick,ccdeaccent] (pred) -- (decision);
+\end{tikzpicture}
+\end{column}
+\end{columns}
+
+\source{Breiman (2001); Shmueli (2010).}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Raíces históricas: dos tradiciones}
+\vspace{0.3cm}
+\centering
+\begin{tikzpicture}[>=Latex,box/.style={draw,rounded corners,text width=2.5cm,minimum height=1.05cm,align=center,font=\small,drop shadow={opacity=0.12}}]
+  \node[anchor=west,font=\normalsize\bfseries,text=ccdeblue] at (0, 4.0) {Econometría};
+  \node[anchor=west,font=\normalsize\bfseries,text=ccdeaccent] at (0, 1.3) {Ciencia de datos y puente moderno};
+
+  \node[box,fill=ccdeblue!8] (e1) at (1.7, 2.8) {\textbf{1926}\\Frisch acuña\\\emph{econometrics}};
+  \node[box,fill=ccdeblue!8] (e2) at (5.2, 2.8) {\textbf{1930}\\Nace la\\Econometric Society};
+  \node[box,fill=ccdeblue!8] (e3) at (8.7, 2.8) {\textbf{1944}\\Haavelmo: base\\probabilística};
+  \node[box,fill=ccdeblue!12] (e4) at (12.2, 2.8) {\textbf{2021}\\Nobel: inferencia\\causal};
+  \draw[->,thick,ccdeblue,shorten >=3pt,shorten <=3pt] (e1) -- (e2);
+  \draw[->,thick,ccdeblue,shorten >=3pt,shorten <=3pt] (e2) -- (e3);
+  \draw[->,thick,ccdeblue,shorten >=3pt,shorten <=3pt] (e3) -- (e4);
+
+  \node[box,fill=ccdeaccent!8] (d1) at (1.7, 0.2) {\textbf{1962}\\Tukey: análisis\\de datos};
+  \node[box,fill=ccdeaccent!8] (d2) at (5.2, 0.2) {\textbf{2001}\\Cleveland\\y Breiman};
+  \node[box,fill=ccdemid!10] (d3) at (8.7, 0.2) {\textbf{2010}\\Shmueli: explicar\\vs predecir};
+  \node[box,fill=ccdelight!24] (d4) at (12.2, 0.2) {\textbf{2017--2018}\\ML causal\\y DML};
+  \draw[->,thick,ccdeaccent,shorten >=3pt,shorten <=3pt] (d1) -- (d2);
+  \draw[->,thick,ccdeaccent,shorten >=3pt,shorten <=3pt] (d2) -- (d3);
+  \draw[->,thick,ccdeaccent,shorten >=3pt,shorten <=3pt] (d3) -- (d4);
+\end{tikzpicture}
+
+\vfill
+{\small\textcolor{ccdemid}{Dos tradiciones separadas que convergen: economía y probabilidad de un lado, computación y análisis del otro.}}
+\vfill
+
+\source{Frisch; Haavelmo (1944); Tukey (1962); Cleveland (2001); Donoho (2017); Card, Angrist, Imbens (2021).}
+\end{frame}
+
+%------------------------------------------------
+\section{Diferencias clave}
+
+%------------------------------------------------
+\begin{frame}{La pregunta manda sobre la herramienta}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdeblue}{Cuando la pregunta es causal}
+\small
+\begin{itemize}
+  \item ¿Subir el salario mínimo cambia el empleo?
+  \item ¿La educación aumenta el salario?
+  \item ¿Funcionó una política pública?
+  \item ¿Qué supuesto hace creíble el efecto?
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdeaccent}{Cuando la pregunta es predictiva}
+\small
+\begin{itemize}
+  \item ¿Quién dejará de pagar un crédito?
+  \item ¿Qué producto conviene recomendar?
+  \item ¿Qué ventas esperamos mañana?
+  \item ¿Cómo automatizar una decisión repetida?
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+
+\vspace{0.35cm}
+\begin{keybox}
+\centering
+\textbf{Regla divulgativa:} si quieres saber ``qué pasaría si cambio X'', piensa econométricamente.\\
+Si quieres anticipar ``qué pasará dado lo que observo'', piensa como ciencia de datos.
+\end{keybox}
+
+\source{Angrist y Pischke (2009); IBM CRISP-DM; scikit-learn.}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Explicar no es lo mismo que predecir}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Inferencia causal}\\[-0.05cm]
+{\scriptsize Objetivo: estimar un efecto defendible}
+
+\vspace{0.05cm}
+\begin{tikzpicture}[x=0.55cm,y=0.45cm,>=Latex]
+  \draw[->,ccdeblue!65] (0,0) -- (5.55,0) node[right,font=\scriptsize] {$X$};
+  \draw[->,ccdeblue!65] (0,0) -- (0,3.55) node[above,font=\scriptsize] {$Y$};
+  \fill[ccdeblue!15, opacity=0.5] (0.45,0.65) -- (5.1,2.5) -- (5.1,3.05) -- (0.45,1.05) -- cycle;
+  \draw[thick,ccdeblue] (0.45,0.85) -- (5.1,2.78);
+  \node[font=\scriptsize,text=ccdenavy] at (2.0, 2.5) {pendiente $\beta$};
+  \foreach \x/\y in {0.65/0.95,1.05/1.15,1.45/1.02,1.9/1.55,2.25/1.5,2.7/1.85,3.15/1.72,3.55/2.18,3.95/2.35,4.35/2.28,4.8/2.72}{
+    \fill[ccdeblue] (\x,\y) circle (1.5pt);
+  }
+  \draw[<->,thin,ccdeaccent] (1.1,0.65) -- (4.4,2.02) node[midway, below right, font=\scriptsize, inner sep=4pt] {efecto interpretable};
+\end{tikzpicture}
+
+\vspace{-0.08cm}
+\begin{itemize}\small\itemsep0pt
+  \item Pregunta: efecto de $X$ sobre $Y$.
+  \item Informa $\beta$ e incertidumbre.
+  \item Requiere identificación.
+\end{itemize}
+\end{ccdebox}
+\end{column}
+\begin{column}{0.49\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Predicción}\\[-0.05cm]
+{\scriptsize Objetivo: anticipar bien casos nuevos}
+
+\vspace{0.05cm}
+\begin{tikzpicture}[x=0.55cm,y=0.45cm,>=Latex]
+  \draw[->,ccdeblue!65] (0,0) -- (5.55,0) node[right,font=\scriptsize] {$X$};
+  \draw[->,ccdeblue!65] (0,0) -- (0,3.55) node[above,font=\scriptsize] {$Y$};
+  \draw[very thick,ccdeaccent,opacity=0.8] plot[smooth] coordinates {(0.45,0.55) (1.0,1.05) (1.55,0.92) (2.15,1.42) (2.85,1.82) (3.45,1.68) (4.15,2.2) (5.0,2.65)};
+  \node[font=\scriptsize,text=ccdeaccent] at (4.5, 1.2) {$\hat{Y}=f(X)$};
+  \foreach \x/\y in {0.55/0.72,0.95/1.22,1.35/0.78,1.85/1.24,2.25/1.62,2.75/2.0,3.2/1.5,3.65/1.9,4.05/2.12,4.55/2.48,4.95/2.82}{
+    \fill[ccdemid] (\x,\y) circle (1.5pt);
+  }
+  \foreach \x/\ya/\yp in {1.35/0.78/0.95,3.2/1.5/1.72,4.55/2.48/2.43}{
+    \draw[densely dashed,thin,warn] (\x,\ya) -- (\x,\yp);
+  }
+  \node[font=\scriptsize,text=warn] at (2.0, 3.2) {error de prueba};
+  \draw[->,thin,warn,shorten >=2pt] (1.8, 2.9) -- (1.45, 1.05);
+\end{tikzpicture}
+
+\vspace{-0.08cm}
+\begin{itemize}\small\itemsep0pt
+  \item Pregunta: valor esperado.
+  \item Minimiza error fuera de muestra.
+  \item Permite funciones flexibles.
+\end{itemize}
+\end{ccdebox}
+\end{column}
+\end{columns}
+
+\vspace{-0.05cm}
+\source{Pearl (2009), Causality; Shmueli (2010).}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Comparación rápida}
+\vfill
+\renewcommand{\arraystretch}{1.45}
+\footnotesize
+\begin{center}
+\begin{tabular}{l l l}
+\toprule
+\rowcolor{ccdenavy}
+\textcolor{white}{\textbf{Dimensión}} & \textcolor{white}{\textbf{Econometría}} & \textcolor{white}{\textbf{Ciencia de datos}} \\
+\midrule
+\textbf{Pregunta} & \parbox[c]{5.6cm}{qué efecto tiene X sobre Y} & \parbox[c]{5.6cm}{qué patrón ayuda a predecir o automatizar} \\
+\rowcolor{ccdeice!45}
+\textbf{Éxito} & \parbox[c]{5.6cm}{identificación creíble e inferencia válida} & \parbox[c]{5.6cm}{desempeño fuera de muestra y utilidad operativa} \\
+\textbf{Validación} & \parbox[c]{5.6cm}{pruebas, intervalos, placebo y robustez} & \parbox[c]{5.6cm}{train/test, validación cruzada y métricas} \\
+\rowcolor{ccdeice!45}
+\textbf{Producto} & \parbox[c]{5.6cm}{evaluación, elasticidad, informe causal} & \parbox[c]{5.6cm}{panel de control, API, puntuación, recomendador} \\
+\textbf{Riesgo} & \parbox[c]{5.6cm}{confundir correlación con causalidad} & \parbox[c]{5.6cm}{caja negra, sesgo o fuga de información} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.35cm}
+\centering
+{\footnotesize\bfseries\textcolor{ccdeblue}{No cambia solo la técnica: cambia el estándar de evidencia.}}
+\vfill
+\end{frame}
+
+%------------------------------------------------
+\section{Flujos y herramientas}
+
+%------------------------------------------------
+\begin{frame}{Flujos de trabajo: dos formas de ordenar el problema}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\begin{contrastbox}{ccdeblue}{Econometría aplicada}
+\centering
+\begin{tikzpicture}[node distance=0.44cm,>=Latex,every node/.style={font=\small,drop shadow={opacity=0.1}}]
+  \node[draw,rounded corners,fill=white,text width=4.15cm,minimum height=0.48cm,align=center] (a) {Pregunta causal};
+  \node[draw,rounded corners,fill=white,below=of a,text width=4.15cm,minimum height=0.48cm,align=center] (b) {Diseño de identificación};
+  \node[draw,rounded corners,fill=white,below=of b,text width=4.15cm,minimum height=0.48cm,align=center] (c) {Estimación};
+  \node[draw,rounded corners,fill=white,below=of c,text width=4.15cm,minimum height=0.48cm,align=center] (d) {Inferencia y robustez};
+  \node[draw,rounded corners,fill=ccdeice,below=of d,text width=4.15cm,minimum height=0.48cm,align=center] (e) {Interpretación};
+  \foreach \i/\j in {a/b,b/c,c/d,d/e}{\draw[->,thick,ccdeblue] (\i) -- (\j);}
+\end{tikzpicture}
+\end{contrastbox}
+\end{column}
+\begin{column}{0.49\textwidth}
+\begin{contrastbox}{ccdeaccent}{Ciencia de datos}
+\centering
+\begin{tikzpicture}[node distance=0.44cm,>=Latex,every node/.style={font=\small,drop shadow={opacity=0.1}}]
+  \node[draw,rounded corners,fill=white,text width=4.15cm,minimum height=0.48cm,align=center] (a) {Problema de negocio};
+  \node[draw,rounded corners,fill=white,below=of a,text width=4.15cm,minimum height=0.48cm,align=center] (b) {Datos y preparación};
+  \node[draw,rounded corners,fill=white,below=of b,text width=4.15cm,minimum height=0.58cm,align=center] (c) {Modelado y ajuste\\de hiperparámetros};
+  \node[draw,rounded corners,fill=white,below=of c,text width=4.15cm,minimum height=0.48cm,align=center] (d) {Evaluación fuera de muestra};
+  \node[draw,rounded corners,fill=ccdeice,below=of d,text width=4.15cm,minimum height=0.48cm,align=center] (e) {Despliegue y monitoreo};
+  \foreach \i/\j in {a/b,b/c,c/d,d/e}{\draw[->,thick,ccdeaccent] (\i) -- (\j);}
+\end{tikzpicture}
+\end{contrastbox}
+\end{column}
+\end{columns}
+
+\source{IBM CRISP-DM; Angrist y Pischke (2009); NIST AI RMF (2023).}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Herramientas: cajas distintas, piezas compartidas}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.33\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Econometría}\\[0.3em]
+\small
+MCO, IV, DiD, RDD, panel, GMM, ARIMA, VAR, pruebas de hipótesis.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.33\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Zona común}\\[0.3em]
+\small
+Regresión, regularización, validación, series temporales, Python, R.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.33\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Ciencia de datos}\\[0.3em]
+\small
+Árboles, bosques aleatorios, boosting, redes neuronales, agrupamiento, canalizaciones.
+\end{ccdebox}
+\end{column}
+\end{columns}
+
+\vspace{0.45cm}
+\centering
+\tagpill{R} \hspace{0.15cm}
+\tagpill{Python} \hspace{0.15cm}
+\tagpill{Stata} \hspace{0.15cm}
+\tagpill{statsmodels} \hspace{0.15cm}
+\tagpill{scikit-learn} \hspace{0.15cm}
+\tagpill{TensorFlow}
+
+\source{statsmodels; scikit-learn; TensorFlow; Stata documentation.}
+\end{frame}
+
+%------------------------------------------------
+\section{Casos de estudio}
+
+%------------------------------------------------
+\begin{frame}{Mini-caso econométrico: salario mínimo}
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.54\textwidth}
+\begin{keybox}
+\textbf{Pregunta:} ¿subir el salario mínimo redujo el empleo en restaurantes de comida rápida?
+\end{keybox}
+\vspace{0.25cm}
+\small
+\begin{itemize}
+  \item \textbf{Tratamiento:} Nueva Jersey sube el salario mínimo.
+  \item \textbf{Comparación:} Pensilvania sirve como grupo cercano.
+  \item \textbf{Idea:} mirar diferencias antes/después y entre lugares.
+  \item \textbf{Lección:} la credibilidad nace del diseño.
+\end{itemize}
+\end{column}
+\begin{column}{0.42\textwidth}
+\centering
+\begin{tikzpicture}[>=Latex,every node/.style={font=\small,drop shadow={opacity=0.1}}]
+  \node[draw,rounded corners,fill=ccdeice,text width=3.25cm,minimum height=0.9cm,align=center] (nj) at (-1.0,1.15) {\textbf{Nueva Jersey}\\salario mínimo sube};
+  \node[draw,rounded corners,fill=white,text width=3.25cm,minimum height=0.9cm,align=center] (pa) at (-1.0,-1.15) {\textbf{Pensilvania}\\comparación};
+  \node[draw,rounded corners,fill=ccdelight!22,text width=2.85cm,minimum height=1.0cm,align=center] (diff) at (2.35,0) {\textbf{Diferencia}\\de diferencias};
+  \draw[->,thick,ccdeblue] (nj) -- (diff);
+  \draw[->,thick,ccdeblue] (pa) -- (diff);
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\source{Card y Krueger (1994), American Economic Review; NBER Working Paper 4509.}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Mini-caso de ciencia de datos: pobreza desde satélites}
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.46\textwidth}
+\centering
+\begin{tikzpicture}[>=Latex,node distance=0.72cm,every node/.style={font=\small,drop shadow={opacity=0.1}}]
+  \node[draw,rounded corners,fill=white,text width=4.1cm,minimum height=0.68cm,align=center] (sat) {Imágenes satelitales};
+  \node[draw,rounded corners,fill=white,below=of sat,text width=4.1cm,minimum height=0.68cm,align=center] (ml) {Aprendizaje automático};
+  \node[draw,rounded corners,fill=ccdelight!22,below=of ml,text width=4.1cm,minimum height=0.68cm,align=center] (map) {Mapa de pobreza};
+  \draw[->,thick,ccdeaccent] (sat) -- (ml);
+  \draw[->,thick,ccdeaccent] (ml) -- (map);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.50\textwidth}
+\begin{keybox}
+\textbf{Pregunta:} ¿podemos estimar bienestar donde las encuestas son escasas o caras?
+\end{keybox}
+\vspace{0.25cm}
+\small
+\begin{itemize}
+  \item \textbf{Señales:} luces nocturnas e imágenes diurnas.
+  \item \textbf{Modelo:} aprendizaje automático para construir variables proxy.
+  \item \textbf{Uso:} focalizar recursos donde faltan encuestas.
+  \item \textbf{Lección:} predicción útil para medir mejor.
+\end{itemize}
+\end{column}
+\end{columns}
+\source{Jean et al. (2016), Science.}
+\end{frame}
+
+%------------------------------------------------
+\section{Convergencia y riesgos}
+
+%------------------------------------------------
+\begin{frame}{El puente: aprendizaje automático causal}
+\begin{center}
+\begin{tikzpicture}[>=Latex,every node/.style={drop shadow={opacity=0.15}}]
+  \node[draw,rounded corners,fill=ccdeblue!10,minimum width=4.8cm,minimum height=2.25cm,align=center] (eco) at (0,0) {\Large Econometría\\[0.25em]\small identificación\\e inferencia};
+  \node[draw,rounded corners,fill=ccdeaccent!10,minimum width=4.8cm,minimum height=2.25cm,align=center] (ds) at (7.2,0) {\Large Ciencia de datos\\[0.25em]\small predicción\\flexible};
+  \node[draw,rounded corners,fill=ccdelight!25,minimum width=5.5cm,minimum height=1.65cm,align=center] (bridge) at (3.6,-2.25) {\large\textbf{Aprendizaje automático causal}\\\small DML, efectos heterogéneos, selección flexible};
+  \draw[->,thick,ccdeblue] (eco) -- (bridge);
+  \draw[->,thick,ccdeaccent] (ds) -- (bridge);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.08cm}
+\begin{keybox}
+\centering
+La frontera moderna no pregunta ``¿econometría o aprendizaje automático?'', sino ``¿cómo usar modelos flexibles sin perder inferencia causal creíble?''.
+\end{keybox}
+
+\source{Mullainathan y Spiess (2017); Athey e Imbens (2019); Chernozhukov et al. (2018); Lechner (2023).}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Riesgos que una publicación sí debe nombrar}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.32\textwidth}
+\begin{contrastbox}{warn}{Sesgo}
+\small
+Los datos pueden heredar o amplificar exclusiones, desigualdades y decisiones pasadas.
+\end{contrastbox}
+\end{column}
+\begin{column}{0.32\textwidth}
+\begin{contrastbox}{ccdeaccent}{Caja negra}
+\small
+En decisiones de alto impacto, explicar después puede no bastar: conviene diseñar modelos inherentemente interpretables.
+\end{contrastbox}
+\end{column}
+\begin{column}{0.32\textwidth}
+\begin{contrastbox}{okgreen}{Reproducibilidad}
+\small
+Si no puede reproducirse, documentarse y auditarse, es débil como base para decisiones importantes.
+\end{contrastbox}
+\end{column}
+\end{columns}
+
+\vspace{0.45cm}
+\begin{keybox}
+\centering
+El problema no es usar modelos complejos. El problema es usarlos sin gobernanza, sin validación y sin responsabilidad.
+\end{keybox}
+
+\source{Barocas y Selbst (2016); Rudin (2019); NIST AI RMF (2023); Donoho (2017).}
+\end{frame}
+
+%------------------------------------------------
+\section{Cierre y fuentes}
+
+%------------------------------------------------
+\begin{frame}{Tres preguntas para público no técnico}
+\begin{enumerate}
+  \item \textbf{¿Queremos explicar un efecto o acertar una predicción?}
+  \item \textbf{¿Qué pasa si el modelo se equivoca?}
+  \item \textbf{¿A quién debemos justificar la decisión: cliente, regulador, juez, ministro, usuario?}
+\end{enumerate}
+
+\vspace{0.45cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Econometría}\\
+Un laboratorio imperfecto para aislar causas.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.49\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Ciencia de datos}\\
+Una sala de control para detectar señales útiles.
+\end{ccdebox}
+\end{column}
+\end{columns}
+
+\source{Shmueli (2010); Rudin (2019); NIST AI RMF (2023).}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Mensaje final}
+\begin{center}
+\begin{keybox}[width=0.86\textwidth]
+\centering
+\Large
+Las mejores decisiones no nacen de tomar partido entre econometría y ciencia de datos.\\[0.35em]
+Nacen de saber cuándo necesitamos \textbf{causalidad creíble}, cuándo necesitamos \textbf{predicción útil} y cuándo necesitamos \textbf{ambas}.
+\end{keybox}
+
+\vspace{0.55cm}
+\tagpill{Identificación} \hspace{0.2cm}
+\tagpill{Predicción} \hspace{0.2cm}
+\tagpill{Interpretabilidad} \hspace{0.2cm}
+\tagpill{Escalabilidad} \hspace{0.2cm}
+\tagpill{Responsabilidad}
+\end{center}
+
+\source{Lechner (2023); Chernozhukov et al. (2018).}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Bibliografía seleccionada I}
+\vfill
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\refentry{Haavelmo, T.}{1944}{\textit{The Probability Approach in Econometrics}. Econometrica.}
+\refentry{Tukey, J. W.}{1962}{The Future of Data Analysis. \textit{Annals of Mathematical Statistics}.}
+\refentry{Cleveland, W. S.}{2001}{Data Science: An Action Plan for Expanding Statistics. \textit{International Statistical Review}.}
+\refentry{Breiman, L.}{2001}{Statistical Modeling: The Two Cultures. \textit{Statistical Science}.}
+\end{column}
+\begin{column}{0.49\textwidth}
+\refentry{Shmueli, G.}{2010}{To Explain or to Predict? \textit{Statistical Science}.}
+\refentry{Donoho, D.}{2017}{50 Years of Data Science. \textit{J. Computational and Graphical Statistics}.}
+\refentry{Card, D. \& Krueger, A. B.}{1994}{Minimum Wages and Employment in NJ and PA. \textit{American Economic Review}.}
+\refentry{Mullainathan, S. \& Spiess, J.}{2017}{Machine Learning: An Applied Econometric Approach. \textit{Journal of Economic Perspectives}.}
+\end{column}
+\end{columns}
+
+\vfill
+\begin{center}
+{\scriptsize\textcolor{ccdemid}{Nota: Bibliografía completa, con DOI y enlaces, disponible en el documento original.}}
+\end{center}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Bibliografía seleccionada II}
+\vfill
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\refentry{Jean, N. et al.}{2016}{Combining satellite imagery and machine learning to predict poverty. \textit{Science}.}
+\refentry{Chernozhukov, V. et al.}{2018}{Double/debiased machine learning for treatment and structural parameters. \textit{The Econometrics Journal}.}
+\refentry{Athey, S. \& Imbens, G. W.}{2019}{Machine Learning Methods That Economists Should Know About. \textit{Annual Review of Economics}.}
+\refentry{Barocas, S. \& Selbst, A. D.}{2016}{Big Data's Disparate Impact. \textit{California Law Review}.}
+\end{column}
+\begin{column}{0.49\textwidth}
+\refentry{Rudin, C.}{2019}{Stop Explaining Black Box ML Models for High-Stakes Decisions. \textit{Nature Machine Intelligence}.}
+\refentry{NIST}{2023}{\textit{Artificial Intelligence Risk Management Framework (AI RMF 1.0)}. NIST AI 100-1.}
+\refentry{IBM}{2024}{CRISP-DM View. Documentación oficial IBM.}
+\refentry{Lechner, M.}{2023}{Causal Machine Learning and its Use for Public Policy. \textit{Swiss Journal of Economics and Statistics}.}
+\end{column}
+\end{columns}
+
+\vfill
+\begin{center}
+{\scriptsize\textcolor{ccdemid}{Nota: DOI y URLs completos disponibles en la versión extendida de este documento.}}
+\end{center}
+\end{frame}
+
+\end{document}

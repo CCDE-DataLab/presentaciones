@@ -1,0 +1,3296 @@
+\documentclass[11pt,a4paper]{article}
+
+%------------------------------------------------
+% PAQUETES
+%------------------------------------------------
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+
+\usepackage[a4paper,
+left=2.25cm,
+right=2.25cm,
+top=2.35cm,
+bottom=2.45cm,
+headsep=0.55cm,
+footskip=1.08cm]{geometry}
+
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{calc,babel}
+\usepackage{pgfplots}
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{compat=1.18}
+
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Corr}{Corr}
+\DeclareMathOperator{\rango}{rango}
+\DeclareMathOperator*{\plim}{plim}
+
+%------------------------------------------------
+% COLORES CCDE
+%------------------------------------------------
+
+\definecolor{ccdenavy}{RGB}{10,30,64}
+\definecolor{ccdeblue}{RGB}{34,53,94}
+\definecolor{ccdemid}{RGB}{43,91,155}
+\definecolor{ccdeaccent}{RGB}{0,119,182}
+\definecolor{ccdesky}{RGB}{61,150,210}
+\definecolor{ccdelight}{RGB}{115,196,223}
+\definecolor{ccdeice}{RGB}{235,247,252}
+\definecolor{codebg}{RGB}{245,247,250}
+\definecolor{darkgreen}{RGB}{0,100,0}
+\definecolor{darkorange}{RGB}{200,100,0}
+
+\pagecolor{ccdeice!18}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.42em}
+\linespread{1.04}
+\setlist{topsep=0.35em,itemsep=0.15em,parsep=0pt,partopsep=0pt}
+
+%------------------------------------------------
+% HYPERREF
+%------------------------------------------------
+
+\hypersetup{
+colorlinks=true,
+linkcolor=ccdeblue,
+urlcolor=ccdeblue,
+citecolor=ccdeblue
+}
+
+%------------------------------------------------
+% HEADER
+%------------------------------------------------
+
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{28pt}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\fancyhead[L]{\raisebox{-0.12cm}{\includegraphics[height=0.68cm]{CCDE logotipo.png}}}
+\fancyhead[R]{\small\bfseries\textcolor{ccdeblue}{CCDE -- Notas de estudio sobre Econometría}}
+\fancyfoot[C]{%
+\begin{tikzpicture}[baseline=(base.base)]
+\draw[ccdelight,line width=1.25pt] (-0.47\textwidth,0) -- (-0.64cm,0);
+\node[fill=white,rounded corners=1pt,inner sep=1.4pt] (base) at (0,0) {\includegraphics[height=0.34cm]{CCDE logotipo.png}};
+\draw[ccdeaccent,line width=1.25pt] (0.64cm,0) -- (0.39\textwidth,0);
+\node[fill=ccdeblue,text=white,circle,inner sep=2.2pt,font=\scriptsize\bfseries] at (0.46\textwidth,0) {\thepage};
+\end{tikzpicture}%
+}
+
+%------------------------------------------------
+% TITULOS
+%------------------------------------------------
+
+\titleformat{\section}
+{\Large\bfseries\color{ccdenavy}}
+{\colorbox{ccdeblue}{\textcolor{white}{\thesection}}}
+{0.8em}
+{}
+[\vspace{0.15em}{\color{ccdelight}\titlerule[1.2pt]}]
+
+\titlespacing*{\section}{0pt}{2.6ex plus .8ex}{1.4ex}
+
+\titleformat{\subsection}
+{\large\bfseries\color{ccdeaccent}}
+{\thesubsection}
+{0.75em}
+{}
+
+\titleformat{name=\subsection,numberless}
+{\large\bfseries\color{ccdeaccent}}
+{}
+{0pt}
+{}
+
+\titlespacing*{\subsection}{0pt}{2ex plus .5ex}{0.8ex}
+
+%------------------------------------------------
+% CAJAS
+%------------------------------------------------
+
+\tcbset{
+ccdebox/.style={
+enhanced,
+breakable,
+arc=2mm,
+boxrule=0.8pt,
+left=2.5mm,
+right=2.5mm,
+top=1.7mm,
+bottom=1.7mm,
+before skip=0.9em,
+after skip=0.9em,
+fonttitle=\bfseries,
+coltitle=white,
+attach boxed title to top left={yshift=-2mm,xshift=3mm},
+boxed title style={arc=1mm,boxrule=0pt,left=1.5mm,right=1.5mm,top=0.8mm,bottom=0.8mm}
+}
+}
+
+\newtcolorbox{concepto}{
+ccdebox,
+colback=ccdeice,
+colframe=ccdeblue,
+title=Concepto,
+boxed title style={colback=ccdeblue}
+}
+
+\newtcolorbox{definicion}[1][]{
+ccdebox,
+colback=ccdeice,
+colframe=ccdeblue,
+title={Definición\ifstrempty{#1}{}{ -- #1}},
+boxed title style={colback=ccdeblue}
+}
+
+\newtcolorbox{resultado}{
+ccdebox,
+colback=ccdelight!16,
+colframe=ccdeaccent,
+title=Resultado clave,
+boxed title style={colback=ccdeaccent}
+}
+
+\newtcolorbox{propiedad}[1]{
+ccdebox,
+colback=white,
+colframe=ccdemid,
+title=Propiedad: #1,
+boxed title style={colback=ccdemid}
+}
+
+\newtcolorbox{observacion}{
+ccdebox,
+colback=codebg,
+colframe=ccdesky,
+title=Observación,
+boxed title style={colback=ccdesky!85!ccdeblue}
+}
+
+
+\newtcolorbox{ejemplo}{
+ccdebox,
+colback=white,
+colframe=ccdeaccent,
+title=Ejemplo,
+boxed title style={colback=ccdeaccent}
+}
+
+\newtcolorbox{proposicion}{
+ccdebox,
+colback=ccdelight!12,
+colframe=ccdemid,
+title=Proposición,
+boxed title style={colback=ccdemid}
+}
+
+\newtcolorbox{teorema}[1][]{
+ccdebox,
+colback=ccdeice,
+colframe=ccdenavy,
+title={Teorema\ifstrempty{#1}{}{ -- #1}},
+boxed title style={colback=ccdenavy}
+}
+
+\newenvironment{demostración}[1][]{%
+\begin{tcolorbox}[
+ccdebox,
+colback=white,
+colframe=ccdeaccent,
+title={Demostración\ifstrempty{#1}{}{ -- #1}},
+boxed title style={colback=ccdeaccent}
+]
+}{\end{tcolorbox}}
+
+\newenvironment{demostracion}[1][]{%
+\begin{demostración}[#1]
+}{\end{demostración}}
+
+\newcommand{\separadorazul}{%
+\par\vspace{0.8em}\noindent\textcolor{ccdelight}{\rule{0.66\textwidth}{1.4pt}}\textcolor{ccdeaccent}{\rule{0.34\textwidth}{1.4pt}}\par\vspace{0.8em}%
+}
+
+%------------------------------------------------
+% CODIGO
+%------------------------------------------------
+
+\lstdefinestyle{ccde}{
+backgroundcolor=\color{ccdeice},
+basicstyle=\ttfamily\small,
+keywordstyle=\color{ccdeaccent}\bfseries,
+commentstyle=\color{ccdemid},
+stringstyle=\color{ccdenavy},
+rulecolor=\color{ccdelight},
+frame=single,
+frameround=tttt,
+breaklines=true,
+showstringspaces=false
+}
+
+\lstset{style=ccde}
+
+%------------------------------------------------
+% DOCUMENTO
+%------------------------------------------------
+
+\begin{document}
+
+\pagenumbering{Alph}
+
+%------------------------------------------------
+% PORTADA
+%------------------------------------------------
+
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+\fill[ccdeice!35] (current page.south west) rectangle (current page.north east);
+\fill[ccdenavy] (current page.north west) rectangle ([yshift=-5.4cm]current page.north east);
+\fill[ccdeblue] ([yshift=-5.4cm]current page.north west) -- ([yshift=-7.0cm]current page.north east) -- (current page.north east) -- (current page.north west) -- cycle;
+\fill[ccdelight!55,opacity=0.85] ([xshift=13.9cm,yshift=-2.0cm]current page.north west) circle (2.7cm);
+\fill[ccdeaccent!35,opacity=0.65] ([xshift=1.2cm,yshift=1.7cm]current page.south west) circle (4.1cm);
+\draw[ccdelight,line width=2pt] ([xshift=2.3cm,yshift=-6.9cm]current page.north west) -- ([xshift=-2.3cm,yshift=-6.9cm]current page.north east);
+\end{tikzpicture}
+
+\begin{center}
+\vspace*{0.8cm}
+{\setlength{\fboxsep}{8pt}\colorbox{white}{\includegraphics[width=0.16\textwidth]{CCDE logotipo.png}}}
+
+\vspace{0.35cm}
+
+\begin{tcolorbox}[enhanced,width=0.90\textwidth,arc=2mm,boxrule=0pt,colback=ccdenavy!96!ccdeblue,opacityback=0.92,left=5mm,right=5mm,top=3.5mm,bottom=3.5mm]
+\centering
+{\Huge\bfseries\textcolor{white}{Regresión Lineal y el Estimador de Mínimos Cuadrados Ordinarios}\par}
+\end{tcolorbox}
+
+\vspace{0.28cm}
+
+{\Large\bfseries\textcolor{ccdeblue}{Círculo de Ciencia de Datos y Econometría}\par}
+
+\vspace{1.35cm}
+
+\begin{tcolorbox}[
+enhanced,
+width=0.84\textwidth,
+arc=3mm,
+boxrule=0pt,
+colback=white,
+colframe=ccdeblue,
+left=6mm,
+right=6mm,
+top=4mm,
+bottom=4mm,
+drop shadow={ccdenavy!28!white},
+borderline west={4pt}{0pt}{ccdeaccent}
+]
+\centering
+{\Large\bfseries\textcolor{ccdeblue}{Notas de estudio sobre Econometría}}\\[0.4em]
+\textcolor{ccdemid}{Iniciando tus primeros pasos en la econometria frecuentista.}\\[1em]
+\textbf{Autor:} CCDE \qquad \textbf{Fecha:} \today
+\end{tcolorbox}
+\end{center}
+
+\vfill
+\begin{center}
+\textcolor{ccdeblue}{\rule{0.18\textwidth}{1.5pt}}\hspace{0.5em}\textcolor{ccdelight}{\rule{0.18\textwidth}{1.5pt}}\hspace{0.5em}\textcolor{ccdeaccent}{\rule{0.18\textwidth}{1.5pt}}
+\end{center}
+\end{titlepage}
+
+\pagenumbering{arabic}
+
+\begin{tcolorbox}[
+enhanced,
+breakable,
+colback=white,
+colframe=ccdeblue,
+arc=2mm,
+boxrule=0.8pt,
+title={Contenido de la presentación},
+fonttitle=\bfseries\large,
+coltitle=white,
+boxed title style={colback=ccdeblue,arc=1mm,boxrule=0pt},
+attach boxed title to top left={yshift=-2mm,xshift=3mm},
+borderline west={3pt}{0pt}{ccdeaccent}
+]
+\tableofcontents
+\end{tcolorbox}
+
+\newpage
+
+%------------------------------------------------
+\section{Preámbulo Estadístico para la Econometría}
+%------------------------------------------------
+
+La econometría utiliza herramientas estadísticas para estudiar relaciones entre variables económicas, estimar parámetros desconocidos y evaluar hipótesis con datos observados. Antes de introducir formalmente la regresión lineal como metodo de cuantificación marginal de los fenemomenos, es necesario repasar algunos conceptos fundamentales de los estimadores estadisticos: esperanza, varianza, covarianza, independencia, esperanza condicional y distribución.
+
+Estos conceptos permiten entender por qué un estimador como MCO Mínimos Cuadrados Ordinarios funciona como aprocimación a los efectos poblacionales mediante una muestra,la estimación de muestras a comportamientos poblacionales van a requerir de sus supuestos matematicos que vamos a esforzarnos en demostrar.
+
+\begin{observacion}
+La lógica matemática del documento sigue esta secuencia: primero se definen momentos poblacionales; luego se estudia la relación lineal entre variables; después se formula el problema de minimización MCO; finalmente se demuestra la fórmula del estimador, su varianza, su inferencia y su versión matricial para $n$ estimadores.
+\end{observacion}
+
+%=================================================
+\subsection{Valor esperado}
+%=================================================
+
+\begin{concepto}
+Sea \(X\) una variable aleatoria. El \textbf{valor esperado} o esperanza matemática de \(X\), denotado por \(\E[X]\), representa el promedio ponderado de los valores posibles de \(X\) según su distribución de probabilidad. Es el centro de gravedad de la distribución.
+\end{concepto}
+
+\begin{ejemplo}
+Consideremos el lanzamiento de un dado justo de 6 caras. Sea \(X\) la variable aleatoria que indica el resultado obtenido.
+
+Los valores posibles son \(X \in \{1,2,3,4,5,6\}\), cada uno con probabilidad \(P(X=i) = \frac{1}{6}\) para \(i=1,\dots,6\).
+
+El valor esperado se calcula como:
+
+\[
+\E[X] = \sum_{i=1}^{6} i \cdot P(X=i) = 1\cdot\frac{1}{6} + 2\cdot\frac{1}{6} + 3\cdot\frac{1}{6} + 4\cdot\frac{1}{6} + 5\cdot\frac{1}{6} + 6\cdot\frac{1}{6}
+\]
+
+\[
+\E[X] = \frac{1+2+3+4+5+6}{6} = \frac{21}{6} = 3.5
+\]
+
+Por lo tanto, el valor esperado al lanzar un dado es \(3.5\). Esto significa que, si repetimos el experimento muchas veces, el promedio de los resultados se aproximará a \(3.5\), aunque este valor no sea un resultado posible en un solo lanzamiento.
+\end{ejemplo}
+
+\subsubsection*{Definiciones formales}
+
+Si \(X\) es discreta, entonces
+\[
+\boxed{\E[X]=\sum_x xP(X=x)},
+\]
+mientras que, si \(X\) es continua con función de densidad \(f_X\), entonces
+\[
+\boxed{\E[X]=\int_{-\infty}^{\infty}xf_X(x)\,dx}.
+\]
+
+\subsubsection*{Interpretación gráfica: Variable discreta vs continua}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.95]
+% Gráfico discreto - a la izquierda
+\begin{axis}[
+    width=0.48\textwidth,
+    height=5cm,
+    xmin=-0.5,xmax=5.5,
+    ymin=0,ymax=0.35,
+    axis lines=left,
+    xlabel={Valor},
+    ylabel={Probabilidad},
+    title={Caso discreto: \(\E[X]=\sum xP(X=x)\)},
+    xtick={0,1,2,3,4,5},
+    ytick={0,0.1,0.2,0.3},
+    grid=major,
+    grid style={gray!30},
+    bar width=0.4cm
+]
+\addplot[ybar,fill=blue!60, draw=blue!80, line width=1pt] 
+    coordinates {(1,0.1) (2,0.3) (3,0.4) (4,0.15) (5,0.05)};
+\addplot[only marks, mark=o, mark size=4pt, mark options={fill=red, draw=red}] 
+    coordinates {(1,0.1) (2,0.3) (3,0.4) (4,0.15) (5,0.05)};
+\addplot[mark=none, line width=1.5pt, red, dashed] 
+    coordinates {(2.8,0) (2.8,0.5)};
+\node[anchor=south, font=\footnotesize, color=red] at (2.8,0.52) {\(\E[X]=2.8\)};
+\end{axis}
+
+% Gráfico continuo - a la derecha
+\begin{axis}[
+    xshift=7.6cm,
+    width=0.48\textwidth,
+    height=5cm,
+    xmin=0,xmax=6,
+    ymin=0,ymax=0.45,
+    axis lines=left,
+    xlabel={Valor},
+    ylabel={Densidad},
+    title={Caso continuo: \(\E[X]=\int xf(x)\,dx\)},
+    xtick={0,1,2,3,4,5,6},
+    ytick={0,0.1,0.2,0.3,0.4},
+    grid=major,
+    grid style={gray!30}
+]
+\addplot[domain=0:6, samples=100, fill=blue!20, 
+    line width=2pt, color=blue!80] {0.3*exp(-(x-2.5)^2/2)};
+\addplot[mark=none, line width=1.5pt, red, dashed] 
+    coordinates {(2.5,0) (2.5,0.3)};
+\node[anchor=south, font=\footnotesize, color=red] at (2.5, 0.37) {\(\E[X]=2.5\)};
+\node[anchor=north, font=\tiny, color=gray] at (3,0.05) {Área bajo la curva = 1};
+\end{axis}
+\end{tikzpicture}
+\caption{El valor esperado es el promedio ponderado: en discreto, suma ponderada por probabilidades; en continuo, integral ponderada por la densidad. Geométricamente, es el punto de equilibrio (centro de gravedad).}
+\end{figure}
+
+\subsubsection*{Propiedades: Linealidad de la esperanza}
+
+\begin{propiedad}{Linealidad}
+Para variables aleatorias \(X_1\), \(X_2\) y constantes \(a,b\in\mathbb{R}\), se cumple
+\[
+\boxed{\E[aX_1+bX_2]=a\E[X_1]+b\E[X_2]}.
+\]
+\end{propiedad}
+
+\noindent\textbf{Demostración (caso continuo):}
+\begin{align}
+\E[aX_1+bX_2] &= \int\int (ax_1+bx_2)f_{X_1,X_2}(x_1,x_2)\,dx_1\,dx_2\\
+&= a\int\int x_1 f_{X_1,X_2}(x_1,x_2)\,dx_1\,dx_2 + b\int\int x_2 f_{X_1,X_2}(x_1,x_2)\,dx_1\,dx_2\\
+&= a\E[X_1]+b\E[X_2]. \quad\checkmark
+\end{align}
+
+En particular, para toda constante \(c\in\mathbb{R}\), se tiene \(\E[c]=c\).
+
+\subsubsection*{Diferencia crítica: \(\E[X^2]\) vs \((\E[X])^2\)}
+
+Debe distinguirse claramente entre estos dos conceptos:
+\[
+\boxed{\E[X^2]\neq (\E[X])^2 \quad \text{en general}}.
+\]
+
+\noindent En este ejemplo: \(\E[X]=0\) pero \(\E[X^2]=\int x^2 f(x)\,dx > 0\). La diferencia \(\E[X^2]-(\E[X])^2\) mide precisamente la \textbf{dispersión} alrededor de la media.
+
+%=================================================
+\subsection{Varianza}
+%=================================================
+
+\begin{concepto}
+La \textbf{varianza} de una variable aleatoria \(X\) mide la dispersión (o variabilidad) de \(X\) alrededor de su media \(\E[X]\). Una varianza alta indica mayor esparcimiento; una varianza baja indica que los valores se concentran cerca de la media.
+\end{concepto}
+
+\begin{ejemplo}
+Retomemos el lanzamiento de un dado justo de 6 caras. Sea \(X\) el resultado obtenido, con \(\E[X] = 3.5\).
+
+La varianza se define como:
+\[
+\Var(X) = \E[(X - \E[X])^2] = \sum_{i=1}^{6} (i - 3.5)^2 \cdot \frac{1}{6}
+\]
+
+Desarrollando:
+\[
+\Var(X) = \frac{(1-3.5)^2 + (2-3.5)^2 + (3-3.5)^2 + (4-3.5)^2 + (5-3.5)^2 + (6-3.5)^2}{6}
+\]
+
+\[
+\Var(X) = \frac{(-2.5)^2 + (-1.5)^2 + (-0.5)^2 + (0.5)^2 + (1.5)^2 + (2.5)^2}{6}
+\]
+
+\[
+\Var(X) = \frac{6.25 + 2.25 + 0.25 + 0.25 + 2.25 + 6.25}{6} = \frac{17.5}{6} \approx 2.9167
+\]
+
+Por lo tanto, la varianza de un dado justo es aproximadamente \(2.9167\). Esto indica que los resultados típicos se desvían en promedio \( \sqrt{2.9167} \approx 1.71 \) unidades respecto a la media \(3.5\).
+\end{ejemplo}
+
+\subsubsection*{Definición y demostración algebraica}
+
+Su definición formal es
+\[
+\boxed{\Var(X)=\E\left[(X-\E[X])^2\right]}.
+\]
+
+Ahora derivamos la forma computacionalmente más conveniente:
+
+\noindent\textbf{Demostración paso a paso:}
+\begin{align}
+\Var(X) &= \E\left[(X-\E[X])^2\right] && \text{(definición)}\\
+&= \E\left[X^2-2X\E[X]+(\E[X])^2\right] && \text{(expansión: } (a-b)^2=a^2-2ab+b^2\text{)}\\
+&= \E[X^2]-\E[2X\E[X]]+\E[(\E[X])^2] && \text{(linealidad de esperanza)}\\
+&= \E[X^2]-2\E[X]\E[X]+(\E[X])^2 && \text{(\(\E[X]\) es constante)}\\
+&\boxed{= \E[X^2]-(\E[X])^2} && \text{(forma final)}
+\end{align}
+
+\subsubsection*{Propiedad: Varianza de una transformación lineal}
+
+\begin{propiedad}{Varianza bajo escala y traslación}
+Para constantes \(a,b\in\mathbb{R}\),
+\[
+\boxed{\Var(aX+b)=a^2\Var(X)}.
+\]
+Note que la traslación \(b\) \textbf{no afecta} la varianza (solo cambia el lugar), pero la escala \(a\) se eleva al cuadrado.
+\end{propiedad}
+
+\noindent\textbf{Demostración:}
+\begin{align}
+\Var(aX+b) &= \E\left[(aX+b-\E[aX+b])^2\right] && \text{(definición)}\\
+&= \E\left[(aX+b-a\E[X]-b)^2\right] && \text{(linealidad de esperanza)}\\
+&= \E\left[a^2(X-\E[X])^2\right] && \text{(simplificación)}\\
+&= a^2\E\left[(X-\E[X])^2\right] && \text{(linealidad de esperanza)}\\
+&= a^2\Var(X). \quad\checkmark
+\end{align}
+
+\begin{observacion}
+En particular, si \(a=0\) entonces \(\Var(aX+b)=0\) (una constante tiene varianza nula). Si \(b=0\), la traslación es irrelevante y solo importa \(a\).
+\end{observacion}
+
+%=================================================
+\subsection{Covarianza y correlación}
+%=================================================
+
+\begin{concepto}
+La \textbf{covarianza} entre dos variables aleatorias \(X\) e \(Y\) mide su tendencia a \textbf{co-variar} linealmente. Indica si cuando \(X\) crece, \(Y\) tiende a crecer (covarianza positiva), decrecer (covarianza negativa), o varían sin relación lineal sistemática (covarianza cercana a cero).
+\end{concepto}
+
+\begin{ejemplo}
+Sean \(X\) e \(Y\) los resultados del lanzamiento de dos dados justos independientes. Ambos tienen \(\E[X] = \E[Y] = 3.5\).
+
+La covarianza se define como:
+\[
+\text{Cov}(X,Y) = \E[(X - \E[X])(Y - \E[Y])] = \E[XY] - \E[X]\E[Y]
+\]
+
+Como los dados son independientes, \(\E[XY] = \E[X]\E[Y] = (3.5)(3.5) = 12.25\).
+
+Por lo tanto:
+\[
+\text{Cov}(X,Y) = 12.25 - 12.25 = 0
+\]
+
+
+\end{ejemplo}
+
+\subsubsection*{Definición y derivación algebraica}
+
+Se define como
+\[
+\boxed{\Cov(X,Y)=\E\left[(X-\E[X])(Y-\E[Y])\right]}.
+\]
+
+Derivamos la forma equivalente, más práctica:
+
+\noindent\textbf{Desarrollo algebraico:}
+\begin{align}
+\Cov(X,Y) &= \E\left[(X-\E[X])(Y-\E[Y])\right] && \text{(definición)}\\
+&= \E\left[XY - X\E[Y] - Y\E[X] + \E[X]\E[Y]\right] && \text{(expansión del producto)}\\
+&= \E[XY] - \E[X]\E[Y] - \E[X]\E[Y] + \E[X]\E[Y] && \text{(linealidad)}\\
+&\boxed{= \E[XY] - \E[X]\E[Y]}
+\end{align}
+
+\subsubsection*{Visualización gráfica: Covarianza positiva, negativa y nula}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.95]
+% Covarianza positiva
+\begin{axis}[
+    width=0.32\textwidth,
+    height=4.5cm,
+    xmin=0,xmax=10,
+    ymin=0,ymax=10,
+    axis lines=left,
+    xlabel={\(X\)},
+    ylabel={\(Y\)},
+    title={Covarianza positiva},
+    xtick={0,5,10},
+    ytick={0,5,10},
+    grid=major,
+    grid style={gray!30}
+]
+% Scatter plot simulado
+\addplot[only marks, mark=o, mark size=3pt, color=blue!70] coordinates {
+    (1,1.5) (2,2.3) (3,3.1) (4,4.2) (5,5.1) (6,6.3) (7,7.2) (8,8.1) (9,9.2)
+};
+\addplot[mark=none, line width=1.5pt, red, dashed] {x};
+\node[anchor=north, font=\small, color=blue, align=center] at (5,-1) {\(X\) y \(Y\) suben\\ juntas};
+\node[anchor=south, font=\tiny, color=red] at (8,9.5) {Relación positiva};
+\end{axis}
+
+% Covarianza nula/cercana a cero
+\begin{axis}[
+    xshift=5.4cm,
+    width=0.32\textwidth,
+    height=4.5cm,
+    xmin=0,xmax=10,
+    ymin=0,ymax=10,
+    axis lines=left,
+    xlabel={\(X\)},
+    ylabel={\(Y\)},
+    title={Covarianza $\approx 0$},
+    xtick={0,5,10},
+    ytick={0,5,10},
+    grid=major,
+    grid style={gray!30}
+]
+% Random scatter
+\addplot[only marks, mark=o, mark size=3pt, color=purple!70] coordinates {
+    (1,5.2) (2,2.8) (3,7.1) (4,3.9) (5,6.2) (6,4.3) (7,8.1) (8,2.9) (9,5.7)
+};
+\addplot[mark=none, line width=1.5pt, gray, dashed] {5};
+\node[anchor=north, font=\small, color=purple, align=center] at (5,-1) {Sin relación\\ lineal clara};
+\end{axis}
+
+% Covarianza negativa
+\begin{axis}[
+    xshift=10.8cm,
+    width=0.32\textwidth,
+    height=4.5cm,
+    xmin=0,xmax=10,
+    ymin=0,ymax=10,
+    axis lines=left,
+    xlabel={\(X\)},
+    ylabel={\(Y\)},
+    title={Covarianza negativa},
+    xtick={0,5,10},
+    ytick={0,5,10},
+    grid=major,
+    grid style={gray!30}
+]
+% Scatter plot simulado (negativa)
+\addplot[only marks, mark=o, mark size=3pt, color=red!70] coordinates {
+    (1,8.5) (2,7.7) (3,6.9) (4,5.8) (5,4.9) (6,3.7) (7,2.8) (8,1.9) (9,0.8)
+};
+\addplot[mark=none, line width=1.5pt, blue, dashed] {10-x};
+\node[anchor=north, font=\small, color=red, align=center] at (5,-1) {\(X\) sube,\\ \(Y\) baja};
+\node[anchor=south, font=\tiny, color=blue] at (2,9.5) {Relación negativa};
+\end{axis}
+\end{tikzpicture}
+\caption{Tres casos de covarianza: positiva (se mueven en la misma dirección), negativa (se mueven en direcciones opuestas), y cercana a cero (sin patrón lineal claro).}
+\end{figure}
+
+\subsubsection*{Propiedades algebraicas de la covarianza}
+
+\begin{propiedad}{Propiedades clave}
+Sean \(X\), \(Y\), \(Z\) variables aleatorias y \(a\in\mathbb{R}\). Entonces:
+\begin{align}
+\Cov(X,X) &= \Var(X), \quad\quad\text{(covarianza de una variable consigo misma)}\\
+\Cov(X,Y) &= \Cov(Y,X), \quad\quad\text{(simetría)}\\
+\Cov(aX,Y) &= a\Cov(X,Y), \quad\quad\text{(homogeneidad)}\\
+\Cov(X+Z,Y) &= \Cov(X,Y)+\Cov(Z,Y), \quad\quad\text{(aditividad)}\\
+\Cov(a,X) &= 0. \quad\quad\text{(covarianza con constante es nula)}
+\end{align}
+\end{propiedad}
+
+\noindent\textbf{Demostración de la propiedad de aditividad:}
+\begin{align}
+\Cov(X+Z,Y) &= \E[(X+Z-\E[X+Z])(Y-\E[Y])]\\
+&= \E[((X-\E[X])+(Z-\E[Z]))(Y-\E[Y])]\\
+&= \E[(X-\E[X])(Y-\E[Y])] + \E[(Z-\E[Z])(Y-\E[Y])]\\
+&= \Cov(X,Y) + \Cov(Z,Y). \quad\checkmark
+\end{align}
+
+\subsubsection*{Correlación: Estandarización de la covarianza}
+
+La covarianza tiene un problema: su magnitud depende de las unidades de medida de \(X\) e \(Y\). Para comparar relaciones lineales en una escala común (entre \(-1\) y \(+1\)), usamos la \textbf{correlación}:
+
+\[
+\boxed{\rho(X,Y) = \Corr(X,Y)=\frac{\Cov(X,Y)}{\sqrt{\Var(X)\Var(Y)}}=\frac{\Cov(X,Y)}{\sigma_X\sigma_Y}}.
+\]
+
+La correlación siempre cumple \(-1\le\rho(X,Y)\le 1\):
+\begin{itemize}
+\item \(\rho=1\): relación lineal positiva perfecta
+\item \(\rho\in(0,1)\): relación lineal positiva
+\item \(\rho=0\): sin correlación lineal
+\item \(\rho\in(-1,0)\): relación lineal negativa
+\item \(\rho=-1\): relación lineal negativa perfecta
+\end{itemize}
+
+\subsubsection*{Demostración: Independencia implica covarianza nula}
+
+\begin{proposicion}
+Si \(X\perp Y\) (son independientes), entonces \(\Cov(X,Y)=0\).
+\end{proposicion}
+
+\noindent\textbf{Demostración:}
+
+Cuando \(X\) e \(Y\) son independientes, por definición se cumple
+\[
+\E[f(X)g(Y)]=\E[f(X)]\E[g(Y)]
+\]
+para funciones medibles cualesquiera \(f\) y \(g\). En particular, tomando \(f(X)=X\) y \(g(Y)=Y\):
+\[
+\E[XY]=\E[X]\E[Y].
+\]
+
+Sustituyendo en la fórmula de covarianza:
+\begin{align}
+\Cov(X,Y) &= \E[XY] - \E[X]\E[Y]\\
+&= \E[X]\E[Y] - \E[X]\E[Y]\\
+&= 0. \quad\checkmark
+\end{align}
+
+\begin{observacion}
+\textbf{Recíproco falso:} Si \(\Cov(X,Y)=0\), no necesariamente \(X\perp Y\). Dos variables pueden no estar correladas linealmente pero mantener relaciones no lineales complejas. Excepción importante: en el caso normal multivariado, no correlación \emph{sí} implica independencia.
+\end{observacion}
+
+%=================================================
+\subsection{Varianza de una suma}
+%=================================================
+
+\begin{concepto}
+Cuando sumamos dos variables aleatorias, la varianza de la suma no es simplemente la suma de varianzas, a menos que sean independientes. El término adicional \(2\Cov(X,Y)\) captura el efecto de su covarianza.
+\end{concepto}
+
+\subsubsection*{Fórmula y demostración}
+
+Para dos variables aleatorias \(X\) e \(Y\), se cumple
+
+\[
+\boxed{\Var(X+Y)=\Var(X)+\Var(Y)+2\Cov(X,Y)}.
+\]
+
+\noindent\textbf{Demostración paso a paso:}
+\begin{align}
+\Var(X+Y) &= \E\left[(X+Y-\E[X+Y])^2\right] && \text{(definición)}\\
+&= \E\left[((X-\E[X])+(Y-\E[Y]))^2\right] && \text{(reordenamiento)}\\
+&= \E\left[(X-\E[X])^2 + 2(X-\E[X])(Y-\E[Y]) + (Y-\E[Y])^2\right] && \text{(expansión)}\\
+&= \E[(X-\E[X])^2] + 2\E[(X-\E[X])(Y-\E[Y])] + \E[(Y-\E[Y])^2] && \text{(linealidad)}\\
+&= \Var(X) + 2\Cov(X,Y) + \Var(Y). \quad\checkmark
+\end{align}
+
+\subsubsection*{Caso especial: Variables independientes}
+
+Si \(X\) e \(Y\) son independientes, entonces \(\Cov(X,Y)=0\), y por tanto
+\[
+\boxed{\Var(X+Y)=\Var(X)+\Var(Y)}.
+\]
+
+
+
+%=================================================
+\subsection{Independencia}
+%=================================================
+
+\begin{concepto}
+Las variables aleatorias \(X\) e \(Y\) son \textbf{independientes}, denotado \(X\perp Y\), si el conocimiento del valor de una variable no proporciona información sobre la otra. Formalmente, su distribución conjunta es el producto de sus distribuciones marginales.
+\end{concepto}
+
+\subsubsection*{Definición formal}
+
+Para variables continuas, la independencia se expresa como
+\[
+\boxed{f_{X,Y}(x,y) = f_X(x) \cdot f_Y(y) \quad \text{para todo } (x,y)},
+\]
+donde \(f_{X,Y}\) es la densidad conjunta y \(f_X\), \(f_Y\) son las densidades marginales.
+
+De forma equivalente, para funciones medibles \(f\) y \(g\):
+\[
+\boxed{\E[f(X)g(Y)]=\E[f(X)]\E[g(Y)]}.
+\]
+
+En particular, tomando \(f(X)=X\) y \(g(Y)=Y\):
+\[
+\E[XY]=\E[X]\E[Y].
+\]
+
+\subsubsection*{Consecuencia inmediata: Independencia implica correlación nula}
+
+Si \(X\perp Y\), entonces
+\[
+\Cov(X,Y)=\E[XY]-\E[X]\E[Y]=\E[X]\E[Y]-\E[X]\E[Y]=0.
+\]
+
+\begin{observacion}
+\textbf{Dirección única:} Independencia \(\Rightarrow\) No correlación. El recíproco es falso en general: dos variables pueden tener \(\Cov(X,Y)=0\) y aún mantener relaciones no lineales complejas.
+
+\vspace{0.3cm}
+\noindent\textbf{Excepción importante:} En la distribución normal multivariada, no correlación implica independencia. Esto es una propiedad especial de la familia normal que no se cumple en general.
+\end{observacion}
+
+\subsubsection*{Ejemplo gráfico: Independencia vs correlación}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.95]
+% Variables independientes
+\begin{axis}[
+    width=0.48\textwidth,
+    height=5cm,
+    xmin=-4,xmax=4,
+    ymin=-4,ymax=4,
+    axis lines=middle,
+    xlabel={\(X\)},
+    ylabel={\(Y\)},
+    title={Variables independientes},
+    xtick={-4,-2,0,2,4},
+    ytick={-4,-2,0,2,4},
+    grid=major,
+    grid style={gray!30}
+]
+% Scatter plot uniform
+\addplot[only marks, mark=o, mark size=2pt, color=blue!60] coordinates {
+    (-3,-2) (-2,3) (-1,-1) (-1,2) (0,-3) (0,0) (0,2) (1,-2) (1,1) (2,-1) (2,3) (3,0)
+};
+\node[anchor=north, font=\small, color=blue] at (0,-5) {\(\Cov(X,Y)=0\), sin patrón};
+\end{axis}
+
+% Variables dependientes no lineales
+\begin{axis}[
+    xshift=7.6cm,
+    width=0.48\textwidth,
+    height=5cm,
+    xmin=-4,xmax=4,
+    ymin=-4,ymax=4,
+    axis lines=middle,
+    xlabel={\(X\)},
+    ylabel={\(Y\)},
+    title={Relación no lineal: \(Y=X^2\)},
+    xtick={-4,-2,0,2,4},
+    ytick={-4,-2,0,2,4},
+    grid=major,
+    grid style={gray!30}
+]
+% Parabola
+\addplot[only marks, mark=o, mark size=2pt, color=red!70] coordinates {
+    (-3,9) (-2.5,6) (-2,4) (-1.5,2) (-1,1) (-0.5,0.25) (0,0) (0.5,0.25) (1,1) (1.5,2) (2,4) (2.5,6) (3,9)
+};
+% Una línea nula o cercana
+\addplot[mark=none, line width=0.5pt, blue, opacity=0.3] {0};
+\node[anchor=north, font=\small, color=red] at (0,-5) {\(\Cov(X,Y)\approx 0\), pero \(\textbf{NO independentes}\)};
+\end{axis}
+\end{tikzpicture}
+\caption{Izquierda: Variables verdaderamente independientes, sin patrón de relación. Derecha: Variables con relación fuerte (\(Y=X^2\)), pero con correlación nula porque la relación es simétrica alrededor del eje \(Y\).}
+\end{figure}
+
+%=================================================
+\subsection{Esperanza condicional y ley de esperanzas iteradas}
+%=================================================
+
+\begin{concepto}
+La \textbf{esperanza condicional} \(\E[Y|X]\) es el valor esperado de \(Y\) dado que conocemos que \(X\) toma un valor particular. Es una función de \(X\) que representa el pronóstico promedio de \(Y\) en función de la información contenida en \(X\).
+\end{concepto}
+
+\subsubsection*{Interpretación y relevancia en econometría}
+
+En econometría, un modelo de regresión se interpreta fundamentalmente como un modelo para la esperanza condicional:
+\[
+Y = \E[Y|X] + \varepsilon,
+\]
+donde \(\varepsilon\) es el error que cumple \(\E[\varepsilon|X]=0\).
+
+Si \(\mathcal{F}_t\) representa la información disponible hasta el momento \(t\), entonces
+\[
+\E\left[Y_{t+1}\middle|\mathcal{F}_t\right]
+\]
+es el pronóstico promedio de \(Y_{t+1}\) usando toda la información disponible.
+
+\subsubsection*{Ley de esperanzas iteradas (Tower property)}
+
+\begin{propiedad}{Ley de Esperanzas Iteradas}
+Si \(\mathcal{F}_{t-1}\subseteq\mathcal{F}_t\) (información anidada), entonces
+\[
+\boxed{\E\left[\E\left[Y_s\middle|\mathcal{F}_t\right]\middle|\mathcal{F}_{t-1}\right]
+=\E\left[Y_s\middle|\mathcal{F}_{t-1}\right]}.
+\]
+\end{propiedad}
+
+\noindent\textbf{Caso especial:} Tomando esperanza incondicional:
+\[
+\boxed{\E\left[\E[Y|X]\right]=\E[Y]}.
+\]
+
+\begin{center}
+\textbf{Demostración intuitiva (caso discreto)}
+
+\smallskip
+Si \(X\) toma valores \(x_1,\dots,x_m\), entonces:
+\end{center}
+
+\[
+\begin{aligned}
+\E[\E[Y|X]]
+&= \sum_{j=1}^{m}\E[Y|X=x_j]P(X=x_j)
+&& \text{promedio sobre \(X\)}\\
+&= \sum_{j=1}^{m}\left[\sum_y yP(Y=y|X=x_j)\right]P(X=x_j)
+&& \text{definición condicional}\\
+&= \sum_y y\sum_{j=1}^{m}P(Y=y|X=x_j)P(X=x_j)
+&& \text{reordenando}\\
+&= \sum_y y\sum_{j=1}^{m}P(Y=y,X=x_j)
+&& \text{regla de la cadena}\\
+&= \sum_y yP(Y=y)
+&& \text{probabilidad total}\\
+&= \E[Y]. \quad\checkmark
+\end{aligned}
+\]
+
+
+
+
+%=================================================
+\subsection{Variable normal y estandarización}
+%=================================================
+
+\begin{concepto}
+Una variable \(X\) sigue una distribución \textbf{normal} (gaussiana), denotado \(X\sim\mathcal{N}(\mu,\sigma^2)\), si su función de densidad es
+\[
+f_X(x) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right),
+\]
+donde \(\mu\) es la media y \(\sigma^2\) es la varianza. La distribución normal es fundamental en econometría por su aparición en resultados asintóticos, intervalos de confianza y tests de hipótesis.
+\end{concepto}
+
+\subsubsection*{Estandarización: Transformación a distribución normal estándar}
+
+La \textbf{estandarización} transforma cualquier variable normal a una con media 0 y varianza 1:
+
+Sea \(X\sim\mathcal{N}(\mu,\sigma^2)\). Definimos
+\[
+\boxed{Z=\frac{X-\mu}{\sigma} \quad \Rightarrow \quad Z\sim\mathcal{N}(0,1)}.
+\]
+
+De forma equivalente:
+\[
+X=\mu+\sigma Z.
+\]
+
+\noindent\textbf{Verificación (usando linealidad de esperanza y propiedades de varianza):}
+\begin{align}
+\E[Z] &= \E\left[\frac{X-\mu}{\sigma}\right] = \frac{1}{\sigma}\E[X-\mu] = \frac{1}{\sigma}(\mu-\mu) = 0,\\
+\Var(Z) &= \Var\left(\frac{X-\mu}{\sigma}\right) = \frac{1}{\sigma^2}\Var(X-\mu) = \frac{1}{\sigma^2}\cdot\sigma^2 = 1.
+\end{align}
+
+\subsubsection*{Visualización gráfica: Antes y después de estandarizar}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.47\textwidth,
+    height=5.2cm,
+    xmin=2,xmax=18,
+    ymin=0,ymax=0.28,
+    axis lines=left,
+    axis line style={blue!80},
+    xlabel={$X$},
+    ylabel={Densidad},
+    title={Antes: \(X\sim\mathcal{N}(10, 2.5^2)\)},
+    title style={font=\bfseries\color{blue!80}},
+    xlabel style={font=\small},
+    ylabel style={font=\small},
+    tick label style={font=\scriptsize},
+    xtick={5,10,15},
+    xticklabels={$\mu-\sigma$,$\mu$,$\mu+\sigma$},
+    ytick=\empty,
+    grid=major,
+    grid style={gray!20},
+    clip=false
+]
+\addplot[domain=2:18,samples=160, fill=blue!15,
+    very thick, color=blue!80]
+{1/(2.5*sqrt(2*pi))*exp(-((x-10)^2)/(2*2.5^2))};
+\addplot[color=red, dashed, thick] coordinates {(10,0) (10,0.18)};
+\addplot[color=orange, dashed] coordinates {(7.5,0) (7.5,0.105)};
+\addplot[color=orange, dashed] coordinates {(12.5,0) (12.5,0.105)};
+\node[anchor=south,color=red,font=\small,font=\bfseries] at (axis cs:10,0.185) {$\mu=10$};
+\node[anchor=north,align=center,font=\tiny,text=black] at (axis cs:10,-0.015)
+{\(\sigma=2.5\)\\};
+\end{axis}
+
+\begin{axis}[
+    xshift=7.6cm,
+    width=0.47\textwidth,
+    height=5.2cm,
+    xmin=-3.2,xmax=3.2,
+    ymin=0,ymax=0.46,
+    axis lines=left,
+    axis line style={blue!80},
+    xlabel={$Z=\dfrac{X-\mu}{\sigma}$},
+    ylabel={Densidad},
+    title={Después: \(Z\sim\mathcal{N}(0, 1)\) (Estándar)},
+    title style={font=\bfseries\color{blue!80}},
+    xlabel style={font=\small},
+    ylabel style={font=\small},
+    tick label style={font=\scriptsize},
+    xtick={-1,0,1},
+    xticklabels={$-1$,$0$,$1$},
+    ytick=\empty,
+    grid=major,
+    grid style={gray!20},
+    clip=false
+]
+\addplot[domain=-3.2:3.2,samples=160, fill=green!15,
+    very thick, color=green!80]
+{1/sqrt(2*pi)*exp(-(x^2)/2)};
+\addplot[color=red, dashed, thick] coordinates {(0,0) (0,0.42)};
+\addplot[color=orange, dashed] coordinates {(-1,0) (-1,0.25)};
+\addplot[color=orange, dashed] coordinates {(1,0) (1,0.25)};
+\node[anchor=south,color=red,font=\small,font=\bfseries] at (axis cs:0,0.425) {$0$};
+\node[anchor=north,align=center,font=\tiny,text=black] at (axis cs:0,-0.025)
+{\(\sigma=1\)\\};
+\end{axis}
+\end{tikzpicture}
+\caption{La estandarización transforma variables normales con diferentes medias y varianzas en una distribución normal estándar común. Esto permite: (i) comparar variables en escalas distintas, (ii) usar tablas de probabilidades, (iii) trabajar con una distribución de referencia universal.}
+\end{figure}
+
+\subsubsection*{Interpretación: Desviaciones estándar y regla empírica}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.95]
+\begin{axis}[
+    width=0.95\textwidth,
+    height=5.5cm,
+    xmin=-4,xmax=4,
+    ymin=0,ymax=0.5,
+    axis lines=left,
+    xlabel={Desviaciones estándar desde la media: \(Z = \dfrac{X-\mu}{\sigma}\)},
+    ylabel={Densidad},
+    title={Distribución Normal Estándar: Interpretación de Desviaciones Estándar},
+    xtick={-4,-3,-2,-1,0,1,2,3,4},
+    xticklabels={$-4\sigma$,$-3\sigma$,$-2\sigma$,$-\sigma$,$\mu$,$\sigma$,$2\sigma$,$3\sigma$,$4\sigma$},
+    ytick={0,0.1,0.2,0.3,0.4,0.5},
+    grid=major,
+    grid style={gray!20}
+]
+% Curva normal
+\addplot[domain=-4:4, samples=200, fill=blue!20,
+    very thick, color=blue!80, name path=curve]
+{(1/sqrt(2*pi))*exp(-(x^2)/2)};
+
+% Áreas coloreadas
+\addplot[domain=-1:1, samples=100, fill=green!30,
+    line width=0pt, color=green] {(1/sqrt(2*pi))*exp(-(x^2)/2)};
+\addplot[domain=-2:2, samples=100, fill=yellow!30,
+    line width=0pt, color=yellow, opacity=0.5] {(1/sqrt(2*pi))*exp(-(x^2)/2)};
+\addplot[domain=-3:3, samples=100, fill=orange!20,
+    line width=0pt, color=orange, opacity=0.4] {(1/sqrt(2*pi))*exp(-(x^2)/2)};
+
+% Líneas de referencia
+\addplot[color=gray, dashed, thick] coordinates {(-1,0) (-1,0.45)};
+\addplot[color=gray, dashed, thick] coordinates {(1,0) (1,0.45)};
+\addplot[color=gray, dashed, thick] coordinates {(-2,0) (-2,0.4)};
+\addplot[color=gray, dashed, thick] coordinates {(2,0) (2,0.4)};
+\addplot[color=gray, dashed, thick] coordinates {(-3,0) (-3,0.3)};
+\addplot[color=gray, dashed, thick] coordinates {(3,0) (3,0.3)};
+\addplot[color=red, dashed, very thick] coordinates {(0,0) (0,0.5)};
+
+% Anotaciones
+\node[anchor=north, font=\large, color=darkgreen, font=\bfseries] at (0,-0.08) {68\%};
+\node[anchor=north, font=\large, color=black, font=\bfseries] at (0,-0.22) {95\%};
+\node[anchor=north, font=\large, color=darkorange, font=\bfseries] at (0,-0.36) {99.7\%};
+\node[anchor=south, font=\tiny, color=darkgreen] at (0, 0.42) {\(\pm 1\sigma\)};
+\node[anchor=south, font=\tiny, color=black] at (0, 0.38) {\(\pm 2\sigma\)};
+\node[anchor=south, font=\tiny, color=darkorange] at (0, 0.32) {\(\pm 3\sigma\)};
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{Regla empírica:} En una distribución normal, aproximadamente 68\% de los datos caen dentro de \(\pm 1\sigma\), 95\% dentro de \(\pm 2\sigma\), y 99.7\% dentro de \(\pm 3\sigma\) de la media.}
+\end{figure}
+
+\subsubsection*{Utilidad de la estandarización}
+
+\begin{enumerate}
+\item \textbf{Comparabilidad:} Expresar observaciones en desviaciones estándar permite comparar variables en escalas completamente distintas.
+\item \textbf{Cálculos de probabilidades:} Una sola tabla de la distribución normal estándar (\(Z\sim\mathcal{N}(0,1)\)) sirve para todas las variables normales.
+\item \textbf{Tests e intervalos:} La mayoría de contrastes de hipótesis y construcciones de intervalos de confianza se basan en la distribución normal estándar.
+\item \textbf{Resultados asintóticos:} El Teorema Central del Límite converge a la distribución normal estándar.
+\end{enumerate}
+
+%=================================================
+\subsection{Resumen de identidades fundamentales}
+%=================================================
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{2}
+\begin{tabular}{@{}|c|c|c|@{}}
+\hline
+\textbf{Operador o concepto} & \textbf{Definición principal} & \textbf{Forma equivalente o caso especial} \\
+\hline\hline
+Esperanza: \(\E[X]\) & \(\displaystyle\sum xP(X=x)\) o \(\int xf_X(x)\,dx\) & Promedio teórico; centro de gravedad \\
+\hline
+Varianza: \(\Var(X)\) & \(\E[(X-\E[X])^2]\) & \(\E[X^2]-(\E[X])^2\) \\
+\hline
+Covarianza: \(\Cov(X,Y)\) & \(\E[(X-\E[X])(Y-\E[Y])]\) & \(\E[XY]-\E[X]\E[Y]\) \\
+\hline
+Correlación: \(\Corr(X,Y)\) & \(\displaystyle\frac{\Cov(X,Y)}{\sqrt{\Var(X)\Var(Y)}}\) & Rango: \([-1,+1]\); estandariza covarianza \\
+\hline
+Var. de suma: \(\Var(X+Y)\) & \(\Var(X)+\Var(Y)+2\Cov(X,Y)\) & Si independientes: \(\Var(X)+\Var(Y)\) \\
+\hline
+Esperanza condicional & \(\E[Y|X]\) es función de \(X\) & Pronóstico promedio; \(\E[\E[Y|X]]=\E[Y]\) \\
+\hline
+Estandarización & \(Z=\dfrac{X-\mu}{\sigma}\) & \(Z\sim\mathcal{N}(0,1)\) si \(X\sim\mathcal{N}(\mu,\sigma^2)\) \\
+\hline
+\end{tabular}
+\caption{Resumen de conceptos, definiciones y formas equivalentes fundamentales.}
+\end{table}
+
+
+
+
+
+
+
+
+
+
+
+%------------------------------------------------
+\section{Introducción}
+%------------------------------------------------
+
+El análisis de regresión lineal constituye una de las herramientas fundamentales en econometría y en el modelado estadístico de relaciones entre variables. Su objetivo principal es describir la dependencia lineal de una variable respuesta \(Y\) respecto de un conjunto de variables explicativas \(X_1, X_2, \dots, X_k\). Dentro de este marco, el estimador de Mínimos Cuadrados Ordinarios (MCO) se erige como el procedimiento estándar para obtener los coeficientes que mejor se ajustan a los datos observados, minimizando la suma de los residuos al cuadrado.
+
+%------------------------------------------------
+\subsection{Función de Regresión Poblacional (FRP)}
+%------------------------------------------------
+
+\begin{definicion}[FRP]
+La \textbf{Función de Regresión Poblacional} (FRP) representa la relación teórica entre la variable dependiente \(Y\) y las variables explicativas \(X_1, X_2, \dots, X_k\) en toda la población. Se expresa como:
+
+\[
+\boxed{Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \dots + \beta_k X_{ki} + u_i}
+\]
+
+donde:
+\begin{itemize}
+    \item \(Y_i\): variable dependiente o respuesta para la observación \(i\)
+    \item \(\beta_0\): intercepto (término constante)
+    \item \(\beta_1, \beta_2, \dots, \beta_k\): coeficientes de regresión poblacionales (parámetros desconocidos)
+    \item \(X_{1i}, X_{2i}, \dots, X_{ki}\): variables explicativas o regresores
+    \item \(u_i\): término de error o perturbación aleatoria
+\end{itemize}
+
+La FRP también puede escribirse en forma matricial como:
+
+\[
+\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{u}
+\]
+
+donde \(\mathbf{Y}\) es el vector de \(n\) observaciones, \(\mathbf{X}\) es la matriz de regresores (\(n \times (k+1)\)), \(\boldsymbol{\beta}\) es el vector de parámetros (\((k+1) \times 1\)), y \(\mathbf{u}\) es el vector de errores.
+\end{definicion}
+
+La \textbf{esperanza condicional} de \(Y\) dado \(X\) define la línea de regresión poblacional:
+
+\[
+\E[Y|X] = \beta_0 + \beta_1 X_{1} + \beta_2 X_{2} + \dots + \beta_k X_{k}
+\]
+
+Esta ecuación representa el valor promedio de \(Y\) para cada conjunto de valores de \(X\).
+
+%------------------------------------------------
+\subsection{Función de Regresión Muestral (FRM)}
+%------------------------------------------------
+
+\begin{definicion}[FRM]
+La \textbf{Función de Regresión Muestral} (FRM) es la contraparte empírica de la FRP, estimada a partir de una muestra de datos. Se expresa como:
+
+\[
+\boxed{\hat{Y}_i = \hat{\beta}_0 + \hat{\beta}_1 X_{1i} + \hat{\beta}_2 X_{2i} + \dots + \hat{\beta}_k X_{ki}}
+\]
+
+donde:
+\begin{itemize}
+    \item \(\hat{Y}_i\): valor ajustado o pronosticado de \(Y_i\)
+    \item \(\hat{\beta}_0, \hat{\beta}_1, \dots, \hat{\beta}_k\): estimadores muestrales de los parámetros poblacionales
+\end{itemize}
+
+El residuo muestral se define como la diferencia entre el valor observado y el valor ajustado:
+
+\[
+\boxed{\hat{u}_i = Y_i - \hat{Y}_i}
+\]
+
+En forma matricial, la FRM se escribe como:
+
+\[
+\hat{\mathbf{Y}} = \mathbf{X}\hat{\boldsymbol{\beta}}
+\]
+
+\[
+\hat{\mathbf{u}} = \mathbf{Y} - \hat{\mathbf{Y}} = \mathbf{Y} - \mathbf{X}\hat{\boldsymbol{\beta}}
+\]
+\end{definicion}
+
+%------------------------------------------------
+\subsection{Relación entre FRP y FRM}
+%------------------------------------------------
+
+La FRM es una aproximación de la FRP basada en datos muestrales. La calidad de esta aproximación depende del tamaño muestral y de la validez de los supuestos econométricos.
+
+\[
+\underbrace{Y_i}_{\text{Observado}} = \underbrace{\hat{Y}_i}_{\text{FRM}} + \underbrace{\hat{u}_i}_{\text{Residuo}}
+\]
+
+\[
+\underbrace{Y_i}_{\text{Observado}} = \underbrace{\E[Y|X]}_{\text{FRP}} + \underbrace{u_i}_{\text{Error}}
+\]
+
+\begin{center}
+\fbox{
+\begin{minipage}{0.85\textwidth}
+\textbf{Relación clave:} La FRM (\(\hat{Y}_i\)) estima la FRP (\(\E[Y|X]\)). El residuo \(\hat{u}_i\) estima el error poblacional \(u_i\). A medida que \(n \to \infty\), \(\hat{\boldsymbol{\beta}} \xrightarrow{p} \boldsymbol{\beta}\) (consistencia).
+\end{minipage}
+}
+\end{center}
+
+
+%------------------------------------------------
+\subsection{Visualización gráfica: FRP vs FRM}
+%------------------------------------------------
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+\begin{axis}[
+    width=0.92\textwidth,
+    height=7.5cm,
+    xmin=-0.5, xmax=10.5,
+    ymin=-0.5, ymax=11,
+    axis lines=left,
+    xlabel={\(X\) (Variable explicativa)},
+    ylabel={\(Y\) (Variable respuesta)},
+    title={Comparación entre la FRP y la FRM},
+    title style={font=\Large\bfseries, yshift=8pt},
+    xtick={0,2,4,6,8,10},
+    ytick={0,2,4,6,8,10},
+    xticklabel style={font=\small},
+    yticklabel style={font=\small},
+    grid=major,
+    grid style={gray!20, line width=0.5pt},
+    legend style={
+        at={(0.02,0.98)}, 
+        anchor=north west, 
+        font=\small, 
+        draw=black, 
+        fill=white, 
+        fill opacity=0.92,
+        line width=1pt,
+        inner sep=5pt
+    },
+    clip=false
+]
+
+% ===== FRP: Línea azul (verdadera poblacional) =====
+\addplot[
+    mark=none, 
+    line width=2.8pt, 
+    color=blue, 
+    smooth,
+    domain=0:10
+] {1 + 0.8*x};
+\addlegendentry{FRP: \(\mathbb{E}[Y|X] = 1 + 0.8X\) (poblacional)}
+
+% ===== FRM: Línea roja punteada (estimada) =====
+\addplot[
+    mark=none, 
+    line width=2.8pt, 
+    red, 
+    dashed,
+    smooth,
+    domain=0:10
+] {0.8 + 0.85*x};
+\addlegendentry{FRM: \(\hat{Y} = 0.8 + 0.85X\) (muestral)}
+
+% ===== Datos muestrales (puntos azules) =====
+\addplot[
+    only marks, 
+    mark=*, 
+    mark size=4.5pt, 
+    color=blue!65!cyan,
+    opacity=0.8
+] coordinates {
+    (0.8,1.5) (1,1.2) (1.5,2.5) (1.8,1.8)
+    (2.5,2.9) (2.8,2.8) (3,3.5) (3.2,4.2) (3.5,3.9)
+    (4.5,4.5) (4.8,4.2) (5,4.8) (5.2,5.5) (5.5,5.8)
+    (6.5,6.3) (6.8,6.0) (7,6.5) (7.2,7.8) (7.5,7.2)
+    (8.5,8.3) (8.8,7.8) (9,8.2) (9.2,9.5) (9.5,9.0)
+};
+
+% ===== Línea vertical de referencia en X=5 =====
+\draw[dashed, gray!35, line width=0.8pt] (axis cs:5,-0.5) -- (axis cs:5,4.8);
+
+% ===== Punto observado en X=5 =====
+\addplot[only marks, mark=*, mark size=5pt, color=black] coordinates {(5,4.8)};
+
+% ===== Error poblacional u_i =====
+\addplot[
+    mark=none, 
+    line width=1.8pt, 
+    purple!75, 
+    dotted
+] coordinates {(5,4.8) (5,5.0)};
+\addplot[
+    only marks, 
+    mark=square*, 
+    mark size=3.5pt, 
+    color=purple!75
+] coordinates {(5,5.0)};
+
+% ===== Residuo muestral ũ_i =====
+\addplot[
+    mark=none, 
+    line width=1.8pt, 
+    orange!80!red, 
+    dotted
+] coordinates {(5,4.8) (5,5.07)};
+\addplot[
+    only marks, 
+    mark=triangle*, 
+    mark size=3.5pt, 
+    color=orange!80!red
+] coordinates {(5,5.07)};
+
+% ===== Anotación: Error u_i =====
+\node[
+    anchor=west, 
+    font=\small\color{purple!75},
+    inner sep=3pt
+] at (axis cs:5.35, 4.95) {\(u_i\) (error)};
+
+% ===== Anotación: Residuo ũ_i =====
+\node[
+    anchor=west, 
+    font=\small\color{orange!80!red},
+    inner sep=3pt
+] at (axis cs:5.35, 4.65) {\(\hat{u}_i\) (residuo)};
+
+% ===== Anotación FRP =====
+\node[
+    anchor=south west, 
+    font=\small\bfseries\color{blue}
+] at (axis cs:8.5, 7.8) {FRP};
+
+% ===== Anotación FRM =====
+\node[
+    anchor=south west, 
+    font=\small\bfseries\color{red}
+] at (axis cs:8.2, 6.9) {FRM};
+
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{Comparación entre la FRP y la FRM.} La línea azul continua representa la Función de Regresión Poblacional (FRP) verdadera \(\mathbb{E}[Y|X]=1+0.8X\). La línea roja discontinua representa la Función de Regresión Muestral (FRM) estimada \(\hat{Y}=0.8+0.85X\) a partir de la muestra. Los puntos azules son los datos muestrales. Para la observación en \(X=5\), se muestran el error poblacional \(u_i\) (púrpura) y el residuo muestral \(\hat{u}_i\) (naranja).}
+\label{fig:frp_frm}
+\end{figure}
+%------------------------------------------------
+\subsection{Estimadores de la FRP}
+%------------------------------------------------
+
+El estimador MCO para la FRP se obtiene minimizando la suma de residuos al cuadrado:
+
+\[
+\hat{\boldsymbol{\beta}}_{\text{MCO}} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{Y}
+\]
+
+Existen otros estimadores lineales para la FRP, dependiendo de los supuestos sobre los errores:
+
+\begin{table}[H]
+\centering
+\caption{Estimadores lineales para la FRP}
+\label{tab:estimadores}
+\begin{tabular}{lcc}
+\hline
+\textbf{Estimador} & \textbf{Fórmula} & \textbf{Caso de uso} \\
+\hline
+MCO & \((\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{Y}\) & Errores esféricos (estándar) \\
+Máxima Verosimilitud & \((\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{Y}\) & Errores normales \\
+Momentos & \((\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{Y}\) & Estimación por momentos \\
+MCG & \((\mathbf{X}'\boldsymbol{\Omega}^{-1}\mathbf{X})^{-1}\mathbf{X}'\boldsymbol{\Omega}^{-1}\mathbf{Y}\) & Heterocedasticidad / Autocorrelación \\
+Variables Instrumentales & \((\mathbf{Z}'\mathbf{X})^{-1}\mathbf{Z}'\mathbf{Y}\) & Endogeneidad (\(\text{Cov}(X,u)\neq0\)) \\
+Ridge & \((\mathbf{X}'\mathbf{X} + \lambda\mathbf{I})^{-1}\mathbf{X}'\mathbf{Y}\) & Multicolinealidad \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{observacion}
+Existen otros estimadores como se muestran en la tabla, pero el resto del documento se enfoca en el estimador MCO.
+\end{observacion}
+
+\begin{propiedad}[Teorema de Gauss-Markov]
+Bajo los supuestos de linealidad, exogeneidad estricta, ausencia de autocorrelación y homocedasticidad, el estimador MCO es el \textbf{mejor estimador lineal insesgado} (MELI).
+\end{propiedad}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%================================================
+\section{El Modelo de Regresión Lineal}
+%================================================
+
+\subsection{Especificación del modelo}
+
+Considérese una muestra de \(n\) observaciones. Para cada unidad \(i = 1, \dots, n\) se dispone de una variable dependiente \(y_i\) y un vector de \(k\) variables explicativas \(\mathbf{x}_i = (1, x_{i2}, \dots, x_{ik})'\). El modelo de regresión lineal múltiple se expresa de forma individual como
+
+\[
+\boxed{y_i = \beta_1 + \beta_2 x_{i2} + \beta_3 x_{i3} + \cdots + \beta_k x_{ik} + \varepsilon_i, \quad i=1,\dots,n},
+\]
+
+o, de manera más compacta, en notación matricial:
+
+\[
+\boxed{\mathbf{y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}},
+\]
+
+donde
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.8}
+\begin{tabular}{@{}|l|p{7cm}|@{}}
+\hline
+\textbf{Elemento} & \textbf{Descripción} \\
+\hline\hline
+\(\mathbf{y} \in \mathbb{R}^{n \times 1}\) & Vector columna de observaciones: \(\mathbf{y} = (y_1, y_2, \dots, y_n)'\) \\
+\hline
+\(\mathbf{X} \in \mathbb{R}^{n \times k}\) & Matriz de diseño (regresores). Primera columna: unos (intercepto). Restantes: variables explicativas \\
+\hline
+\(\boldsymbol{\beta} \in \mathbb{R}^{k \times 1}\) & Vector de parámetros desconocidos a estimar: \(\boldsymbol{\beta} = (\beta_1, \beta_2, \dots, \beta_k)'\) \\
+\hline
+\(\boldsymbol{\varepsilon} \in \mathbb{R}^{n \times 1}\) & Vector de perturbaciones aleatorias no observables: \(\boldsymbol{\varepsilon} = (\varepsilon_1, \varepsilon_2, \dots, \varepsilon_n)'\) \\
+\hline
+\(n\) & Número de observaciones en la muestra \\
+\hline
+\(k\) & Número de parámetros (variables explicativas + intercepto) \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Supuestos clásicos del modelo de regresión lineal}
+
+Para garantizar que el estimador MCO posee las propiedades deseables (insesgadez, consistencia, eficiencia), es imperativo que se satisfagan los siguientes supuestos sobre la estructura del modelo y la naturaleza de las perturbaciones:
+
+%================================================
+\subsubsection{Supuesto 1: Exogeneidad estricta de los regresores}
+%================================================
+
+\begin{tcolorbox}[colback=white, colframe=blue!60, colbacktitle=blue!60, coltitle=white, title=Supuesto 1: Exogeneidad Estricta, fonttitle=\bfseries]
+\[
+\boxed{\E[\boldsymbol{\varepsilon}|\mathbf{X}] = \mathbf{0}},
+\]
+Equivalente para cada observación:
+\[
+\boxed{\E[\varepsilon_i|\mathbf{X}] = 0, \quad i=1,\dots,n}.
+\]
+es decir, la esperanza condicional del vector de perturbaciones, dado el conjunto completo de regresores, es cero.
+\end{tcolorbox}
+
+\noindent\textbf{Interpretación económica:}
+
+La exogeneidad estricta establece que \textbf{no existe correlación entre los errores y ninguno de los regresores}. En otras palabras:
+
+\begin{itemize}
+\item Las variables explicativas son \textbf{determinísticas} (o pueden tratarse como tales condicionando en \(\mathbf{X}\))
+\item Las perturbaciones capturan variación no explicada que es \textbf{ortogonal} a toda la información en \(\mathbf{X}\)
+\item El modelo contiene \textbf{todos los efectos relevantes} (no hay variables omitidas correlacionadas con \(\mathbf{X}\))
+\end{itemize}
+
+\noindent\textbf{Reformulación equivalente:}
+
+Componente por componente, este supuesto implica que para cada observación \(i\) y cada regresor \(j\):
+\[
+\E[\varepsilon_i | \mathbf{X}] = 0 \quad \Rightarrow \quad \E[\varepsilon_i | x_{i1}, x_{i2}, \dots, x_{in}] = 0.
+\]
+
+De forma aún más restrictiva (exogeneidad contemporánea):
+\[
+\E[\varepsilon_i | x_i] = 0, \quad \text{para } i=1,\dots,n,
+\]
+donde \(x_i = (x_{i1}, x_{i2}, \dots, x_{ik})\) es el vector de regresores de la observación \(i\).
+
+\noindent\textbf{Consecuencias de la exogeneidad estricta:}
+
+Si \(\E[\boldsymbol{\varepsilon}|\mathbf{X}] = \mathbf{0}\), entonces se cumple de forma automática:
+
+\begin{align}
+\E[\varepsilon_i] &= \E[\E[\varepsilon_i|\mathbf{X}]] = 0 \quad \text{(por ley de esperanzas iteradas)}\\
+\Cov(\mathbf{X}, \boldsymbol{\varepsilon}) &= 0 \quad \text{(no hay correlación entre regresores y errores)}
+\end{align}
+
+\noindent\textbf{Demostración de la covarianza cero:}
+
+\begin{align}
+\Cov(\mathbf{X}, \boldsymbol{\varepsilon}) &= \E[\mathbf{X}\boldsymbol{\varepsilon}'] - \E[\mathbf{X}]\E[\boldsymbol{\varepsilon}']\\
+&= \E[\E[\mathbf{X}\boldsymbol{\varepsilon}'|\mathbf{X}]] - \E[\mathbf{X}] \cdot \mathbf{0}\\
+&= \E[\mathbf{X}\E[\boldsymbol{\varepsilon}'|\mathbf{X}]] \quad \text{(linealidad, esperanza iterada)}\\
+&= \E[\mathbf{X} \cdot \mathbf{0}']\\
+&= \mathbf{0}.
+\end{align}
+\subsubsection*{¿Cuándo falla la exogeneidad?}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+
+% ===== PANEL IZQUIERDO: EXOGENEIDAD OK =====
+\begin{axis}[
+    width=0.42\textwidth,
+    height=5.8cm,
+    xmin=-3.5, xmax=3.5,
+    ymin=-3.5, ymax=3.5,
+    axis lines=middle,
+    axis line style={line width=1pt},
+    xlabel style={at={(axis description cs:0.95,-0.05)}, font=\small},
+    xlabel={\(X\)},
+    ylabel style={at={(axis description cs:-0.05,0.95)}, rotate=90, font=\small},
+    ylabel={\(\varepsilon\)},
+    title style={font=\bfseries\footnotesize, color=green!70!black, align=center, yshift=-1mm},
+    title={Exogeneidad cumplida\\[-0.2em]\(\mathbb{E}[\varepsilon|X]=0\)},
+    xtick={-3,-1.5,0,1.5,3},
+    ytick={-3,-1.5,0,1.5,3},
+    xticklabel style={font=\scriptsize},
+    yticklabel style={font=\scriptsize},
+    grid=major,
+    grid style={gray!15, dashed, line width=0.5pt},
+    clip=false,
+    enlargelimits=0.02
+]
+
+% Puntos aleatorios (exógenos)
+\addplot[
+    only marks, 
+    mark=o, 
+    mark size=2.8pt, 
+    color=green!60!blue,
+    opacity=0.75,
+    mark options={line width=1pt, draw=green!40!black}
+] coordinates {
+    (-3,-0.8) (-2.8,1.2) (-2.5,-0.3) (-2.2,0.9) (-2,-1.5)
+    (-1.8,0.4) (-1.5,1.3) (-1.2,-0.7) (-1,0.2) (-0.8,-1.1)
+    (-0.5,0.6) (-0.2,-0.9) (0,0.1) (0.3,1.2) (0.5,-0.4)
+    (0.8,0.8) (1.2,-1.3) (1.5,0.5) (1.8,-0.6) (2,1.1)
+    (2.2,-0.2) (2.5,0.7) (2.8,-1.0) (3,0.3) (3.2,1.4)
+};
+
+% Línea horizontal en y=0
+\addplot[
+    mark=none, 
+    line width=2.5pt, 
+    red!70,
+    opacity=0.8
+] {0};
+
+% Anotación de media cero
+\node[
+    anchor=south east,
+    font=\scriptsize\bfseries,
+    color=red!70,
+    fill=white,
+    fill opacity=0.9,
+    inner sep=2pt,
+    rounded corners=2pt
+] at (axis cs:-3.2, 2.8) {\(\mathbb{E}[\varepsilon]=0\)};
+
+% Relleno de zona OK
+\fill[green!20, opacity=0.3] (axis cs:-3.5,-0.8) rectangle (axis cs:3.5,0.8);
+
+% Anotación de distribución
+\node[
+    anchor=north,
+    font=\scriptsize,
+    color=green!60!black,
+    align=center,
+    fill=white,
+    fill opacity=0.85,
+    inner sep=3pt,
+    rounded corners=2pt
+] at (axis cs:0, -3.05) {Aleatorio:\\sin patrón con \(X\)};
+
+% Flecha indicadora
+\draw[->, green!70, line width=1.5pt] (axis cs:0.5, -2.7) -- (axis cs:0.5, -1.5);
+
+\end{axis}
+
+% ===== PANEL DERECHO: ENDOGENEIDAD =====
+\begin{axis}[
+    xshift=8.2cm,
+    width=0.42\textwidth,
+    height=5.8cm,
+    xmin=-3.5, xmax=3.5,
+    ymin=-3.5, ymax=3.5,
+    axis lines=middle,
+    axis line style={line width=1pt},
+    xlabel style={at={(axis description cs:0.95,-0.05)}, font=\small},
+    xlabel={\(X\)},
+    ylabel style={at={(axis description cs:-0.05,0.95)}, rotate=90, font=\small},
+    ylabel={\(\varepsilon\)},
+    title style={font=\bfseries\footnotesize, color=red!70!black, align=center, yshift=-1mm},
+    title={Falla exogeneidad\\[-0.2em]\(\mathrm{Cov}(X,\varepsilon)\neq 0\)},
+    xtick={-3,-1.5,0,1.5,3},
+    ytick={-3,-1.5,0,1.5,3},
+    xticklabel style={font=\scriptsize},
+    yticklabel style={font=\scriptsize},
+    grid=major,
+    grid style={gray!15, dashed, line width=0.5pt},
+    clip=false,
+    enlargelimits=0.02
+]
+
+% Puntos correlacionados (endógenos)
+\addplot[
+    only marks, 
+    mark=o, 
+    mark size=2.8pt, 
+    color=red!60!orange,
+    opacity=0.75,
+    mark options={line width=1pt, draw=red!40!black}
+] coordinates {
+    (-3.2,-2.5) (-3,-2.3) (-2.8,-2.0) (-2.5,-1.9) (-2.2,-1.7)
+    (-2,-1.5) (-1.8,-1.2) (-1.5,-1.0) (-1.2,-0.8) (-1,-0.5)
+    (-0.8,-0.3) (-0.5,0.0) (-0.2,0.2) (0,0.5) (0.2,0.8)
+    (0.5,1.0) (0.8,1.3) (1,1.5) (1.2,1.8) (1.5,2.0)
+    (1.8,2.2) (2,2.5) (2.2,2.7) (2.5,2.8) (2.8,3.0)
+};
+
+% Línea de tendencia (correlación)
+\addplot[
+    mark=none, 
+    line width=2.5pt, 
+    blue!70,
+    dashed,
+    domain=-3.5:3.5
+] {0.95*x};
+
+% Anotación de correlación
+\node[
+    anchor=south west,
+    font=\scriptsize\bfseries,
+    color=blue!70,
+    fill=white,
+    fill opacity=0.9,
+    inner sep=2pt,
+    rounded corners=2pt
+] at (axis cs:-3.2, 2.05) {Patrón: \(\hat{\varepsilon}\approx0.95X\)};
+
+% Relleno de zonas problemáticas
+\fill[red!20, opacity=0.2] (axis cs:-3.5,-3.5) rectangle (axis cs:0,0);
+\fill[red!20, opacity=0.2] (axis cs:0,0) rectangle (axis cs:3.5,3.5);
+
+% Anotación del problema
+\node[
+    anchor=north,
+    font=\scriptsize,
+    color=red!70!black,
+    align=center,
+    fill=white,
+    fill opacity=0.85,
+    inner sep=3pt,
+    rounded corners=2pt
+] at (axis cs:0, -3.05) {Correlación:\\errores dependen de \(X\)};
+
+% Flecha indicadora
+\draw[->, red!70, line width=1.5pt] (axis cs:0.5, -2.7) -- (axis cs:1.2, -1.8);
+
+\end{axis}
+
+\end{tikzpicture}
+\caption{\textbf{Exogeneidad vs Endogeneidad.} \emph{Izquierda:} Cuando se cumple la exogeneidad, los errores se distribuyen aleatoriamente alrededor de cero sin relación con \(X\). \emph{Derecha:} Cuando hay endogeneidad, los errores muestran una correlación sistemática con \(X\), violando el supuesto fundamental de que \(\mathbb{E}[\varepsilon|X]=0\). Esta violación causa sesgos en los estimadores MCO.}
+\label{fig:exogeneidad_endogeneidad}
+\end{figure}
+
+\noindent\textbf{Fuentes comunes de endogeneidad:}
+
+\begin{enumerate}
+\item \textbf{Variables omitidas} correlacionadas con \(\mathbf{X}\): Si \(Y = \beta_1 + \beta_2 X + \gamma Z + \varepsilon\) pero estimamos sin incluir \(Z\), entonces el error estimado captura a \(Z\), violando exogeneidad.
+
+\item \textbf{Simultaneidad}: Si \(Y\) afecta a \(X\) y viceversa (retroalimentación), entonces \(\Cov(X,\varepsilon) \neq 0\).
+
+\item \textbf{Errores de medición} en los regresores: Si observamos \(X^* = X + u\) donde \(u\) es ruido de medición, la regresión sobre \(X^*\) genera endogeneidad.
+
+\item \textbf{Selección muestral}: Si la muestra es seleccionada en función de \(Y\) o de factores correlacionados con \(\varepsilon\).
+\end{enumerate}
+
+%================================================
+\subsubsection{Supuesto 2: Rango completo de la matriz de diseño}
+%================================================
+
+\begin{tcolorbox}[colback=white, colframe=green!60, colbacktitle=green!60, coltitle=white, title=Supuesto 2: Ausencia de Multicolinealidad Perfecta, fonttitle=\bfseries]
+\[
+\boxed{\text{rango}(\mathbf{X}) = k},
+\]
+es decir, la matriz \(\mathbf{X}\) de dimensión \(n \times k\) tiene rango completo. De forma equivalente, la matriz \(\mathbf{X}'\mathbf{X}\) de dimensión \(k \times k\) es invertible.
+\end{tcolorbox}
+
+\noindent\textbf{¿Qué significa rango completo?}
+
+Cuando \(\text{rango}(\mathbf{X}) = k\), las \(k\) columnas de \(\mathbf{X}\) son \textbf{linealmente independientes}. Esto implica que:
+
+\begin{itemize}
+\item Ninguna columna de \(\mathbf{X}\) puede expresarse como combinación lineal de las otras
+\item No hay dos variables explicativas que sean perfectamente colineales
+\item No hay una variable explicativa que sea constante en todas las observaciones (excepto el intercepto)
+\end{itemize}
+
+\noindent\textbf{Necesidad de invertibilidad:}
+
+Para resolver el problema de minimización MCO, necesitamos calcular
+\[
+\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}.
+\]
+
+Esta fórmula requiere que \(\mathbf{X}'\mathbf{X}\) sea invertible, lo que ocurre si y solo si \(\text{rango}(\mathbf{X}) = k\).
+
+\noindent\textbf{Demostración: Relación entre rango de \(\mathbf{X}\) y rango de \(\mathbf{X}'\mathbf{X}\):}
+
+\begin{proposicion}
+Si \(\text{rango}(\mathbf{X}) = k\), entonces \(\text{rango}(\mathbf{X}'\mathbf{X}) = k\).
+\end{proposicion}
+
+\noindent\textbf{Prueba:}
+
+Sea \(\mathbf{c} \in \mathbb{R}^k\) un vector tal que \(\mathbf{X}'\mathbf{X}\mathbf{c} = \mathbf{0}\). Entonces:
+
+\begin{align}
+\mathbf{X}'\mathbf{X}\mathbf{c} = \mathbf{0} &\Rightarrow \mathbf{c}'(\mathbf{X}'\mathbf{X})\mathbf{c} = \mathbf{0}\\
+&\Rightarrow \mathbf{c}'\mathbf{X}'\mathbf{X}\mathbf{c} = \mathbf{0}\\
+&\Rightarrow (\mathbf{X}\mathbf{c})'(\mathbf{X}\mathbf{c}) = \mathbf{0}\\
+&\Rightarrow \mathbf{X}\mathbf{c} = \mathbf{0} \quad \text{(norma euclidiana nula $\Rightarrow$ vector nulo)}
+\end{align}
+
+Como \(\text{rango}(\mathbf{X}) = k\), el espacio nulo de \(\mathbf{X}\) contiene solo el vector cero. Por lo tanto, \(\mathbf{c} = \mathbf{0}\). Esto prueba que \(\text{rango}(\mathbf{X}'\mathbf{X}) = k\). \(\quad\checkmark\)
+
+
+
+\noindent\textbf{Ejemplos de violación del rango completo:}
+
+\begin{enumerate}
+\item \textbf{Trampa de las variables ficticias}: Si incluimos dummies para todas las categorías (sin excluir ninguna) junto con un intercepto, hay colinealidad perfecta.
+
+\item \textbf{Variables proporcionales}: Incluir simultáneamente \(X\) e \(Y=2X\) (o cualquier múltiplo).
+
+\item \textbf{Dependencias determinísticas}: Ejemplo: \(X_3 = X_1 + X_2\) implica colinealidad.
+
+\item \textbf{Más variables que observaciones}: Si \(k > n\), es imposible que todas las columnas sean independientes.
+\end{enumerate}
+
+%================================================
+\subsubsection{Supuesto 3: Perturbaciones esféricas (Homocedasticidad y no autocorrelación)}
+%================================================
+
+\begin{tcolorbox}[colback=white, colframe=orange!60, colbacktitle=orange!70, coltitle=white, title=Supuesto 3: Perturbaciones Esféricas, fonttitle=\bfseries]
+\[
+\boxed{\mathrm{Var}(\boldsymbol{\varepsilon}|\mathbf{X}) = \sigma^2 \mathbf{I}_n},
+\]
+es decir, la matriz de varianza-covarianza condicional del vector de perturbaciones es escalar múltiplo de la matriz identidad.
+\end{tcolorbox}
+
+\noindent\textbf{Descomposición del supuesto:}
+
+Este supuesto comprende dos componentes distintos:
+
+\begin{enumerate}
+\item \textbf{Homocedasticidad}: Varianza constante de los errores
+\[
+\Var(\varepsilon_i|\mathbf{X}) = \sigma^2, \quad \forall i = 1, \dots, n.
+\]
+Los errores tienen la misma dispersión en todas las observaciones.
+
+\item \textbf{No autocorrelación}: Errores no correlacionados entre observaciones
+\[
+\Cov(\varepsilon_i, \varepsilon_j|\mathbf{X}) = 0, \quad \forall i \neq j.
+\]
+El error de una observación no está relacionado con el error de ninguna otra.
+\end{enumerate}
+
+\noindent\textbf{Expresión matricial equivalente:}
+
+\[
+\E[\boldsymbol{\varepsilon}\boldsymbol{\varepsilon}'|\mathbf{X}] = \sigma^2 \mathbf{I}_n,
+\]
+donde
+\[
+\boldsymbol{\varepsilon}\boldsymbol{\varepsilon}' = \begin{pmatrix}
+\varepsilon_1^2 & \varepsilon_1\varepsilon_2 & \cdots & \varepsilon_1\varepsilon_n\\
+\varepsilon_2\varepsilon_1 & \varepsilon_2^2 & \cdots & \varepsilon_2\varepsilon_n\\
+\vdots & \vdots & \ddots & \vdots\\
+\varepsilon_n\varepsilon_1 & \varepsilon_n\varepsilon_2 & \cdots & \varepsilon_n^2
+\end{pmatrix}.
+\]
+
+Cuando el supuesto es válido:
+\[
+\E[\boldsymbol{\varepsilon}\boldsymbol{\varepsilon}'|\mathbf{X}] = \begin{pmatrix}
+\sigma^2 & 0 & \cdots & 0\\
+0 & \sigma^2 & \cdots & 0\\
+\vdots & \vdots & \ddots & \vdots\\
+0 & 0 & \cdots & \sigma^2
+\end{pmatrix} = \sigma^2 \begin{pmatrix}
+1 & 0 & \cdots & 0\\
+0 & 1 & \cdots & 0\\
+\vdots & \vdots & \ddots & \vdots\\
+0 & 0 & \cdots & 1
+\end{pmatrix} = \sigma^2 \mathbf{I}_n.
+\]
+
+\subsubsection*{¿Cuándo falla la homocedasticidad?}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.9]
+% Homocedasticidad
+\begin{axis}[
+    width=0.48\textwidth,
+    height=5cm,
+    xmin=0,xmax=10,
+    ymin=-6,ymax=6,
+    axis lines=middle,
+    xlabel={\(X\)},
+    ylabel={\(\varepsilon\)},
+    title={Homocedasticidad OK: Varianza constante},
+    xtick={0,2,4,6,8,10},
+    ytick={-6,-3,0,3,6},
+    grid=major,
+    grid style={gray!20}
+]
+\addplot[only marks, mark=o, mark size=2pt, color=blue!70] coordinates {
+    (1,-1.2) (1,0.8) (1,1.5) (1,-0.5)
+    (3,-1.8) (3,1.2) (3,0.3) (3,-0.9)
+    (5,-2.1) (5,1.5) (5,0.7) (5,-1.3)
+    (7,-1.5) (7,1.0) (7,0.2) (7,-0.8)
+    (9,-1.9) (9,1.3) (9,0.6) (9,-1.1)
+};
+\addplot[mark=none, line width=2pt, red, dashed, opacity=0.6] {0};
+\addplot[mark=none, line width=1pt, green, dashed, opacity=0.4] {2};
+\addplot[mark=none, line width=1pt, green, dashed, opacity=0.4] {-2};
+\node[anchor=south, font=\tiny, color=green] at (5,2.2) {\(\sigma^2\) igual en todo X};
+\end{axis}
+
+% Heterocedasticidad
+\begin{axis}[
+    xshift=7.6cm,
+    width=0.48\textwidth,
+    height=5cm,
+    xmin=0,xmax=10,
+    ymin=-12,ymax=12,
+    axis lines=middle,
+    xlabel={\(X\)},
+    ylabel={\(\varepsilon\)},
+    title={Heterocedasticidad NO: Varianza creciente},
+    xtick={0,2,4,6,8,10},
+    ytick={-12,-6,0,6,12},
+    grid=major,
+    grid style={gray!20}
+]
+\addplot[only marks, mark=o, mark size=2pt, color=red!70] coordinates {
+    (1,-0.5) (1,0.3) (1,0.7) (1,-0.8)
+    (3,-1.5) (3,1.8) (3,-0.6) (3,2.2)
+    (5,-3.2) (5,2.1) (5,3.8) (5,-2.9)
+    (7,-5.1) (7,4.3) (7,-6.2) (7,5.5)
+    (9,-7.8) (9,6.9) (9,-8.1) (9,7.2)
+};
+\addplot[mark=none, line width=2pt, blue, dashed, opacity=0.6] {0};
+\addplot[mark=none, line width=1pt, orange, dashed, opacity=0.4] {0.8*x};
+\addplot[mark=none, line width=1pt, orange, dashed, opacity=0.4] {-0.8*x};
+\node[anchor=south, font=\tiny, color=orange] at (5,8) {\(\sigma^2\) aumenta con X};
+\end{axis}
+\end{tikzpicture}
+\caption{Izquierda: Homocedasticidad — la dispersión de los errores es constante para todos los niveles de \(X\). Derecha: Heterocedasticidad — la dispersión de los errores aumenta con \(X\), violando el supuesto.}
+\end{figure}
+
+\noindent\textbf{Consecuencias de la heterocedasticidad:}
+
+\begin{itemize}
+\item El estimador MCO \emph{sigue siendo insesgado}, pero \emph{pierde eficiencia}
+\item Los errores estándar de MCO son \textbf{incorrectos}
+\item Los intervalos de confianza y los tests de hipótesis pierden validez
+\item Existen estimadores alternativos (Mínimos Cuadrados Ponderados) que son más eficientes
+\end{itemize}
+
+\noindent\textbf{Causas comunes de heterocedasticidad:}
+
+\begin{enumerate}
+\item \textbf{Naturaleza de los datos}: Variables financieras, de riqueza, o tamaño suelen mostrar varianza proporcional a su nivel.
+
+\item \textbf{Agregación}: Datos agregados regionalmente o sectorialmente pueden tener varianzas distintas según el tamaño de la región/sector.
+
+\item \textbf{Aprendizaje a lo largo del tiempo}: La precisión de predicciones o mediciones puede mejorar con el tiempo.
+\end{enumerate}
+
+\subsubsection*{¿Cuándo falla la no autocorrelación?}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.9]
+% No autocorrelación
+\begin{axis}[
+    width=0.42\textwidth,
+    height=4.7cm,
+    xmin=0,xmax=21,
+    ymin=-4,ymax=4,
+    axis lines=middle,
+    xlabel={Tiempo (\(t\))},
+    ylabel={\(\varepsilon_t\)},
+    title style={font=\bfseries\scriptsize, align=center},
+    title={No autocorrelación\\errores aleatorios},
+    xtick={0,5,10,15,20},
+    ytick={-4,-2,0,2,4},
+    xticklabel style={font=\scriptsize},
+    yticklabel style={font=\scriptsize},
+    grid=major,
+    grid style={gray!20}
+]
+\addplot[only marks, mark=*, mark size=2.1pt, color=blue!70, opacity=0.85] coordinates {
+    (1,1.4) (2,-0.9) (3,2.1) (4,-2.2) (5,0.3) (6,1.7) (7,-1.6) (8,0.8) (9,-2.5)
+    (10,1.0) (11,-0.4) (12,2.4) (13,-1.1) (14,0.1) (15,-2.0) (16,1.9) (17,-0.7) (18,0.6)
+    (19,-1.8) (20,1.2)
+};
+\addplot[mark=none, line width=0.45pt, blue!35, opacity=0.25] 
+    coordinates {(1,1.4) (2,-0.9) (3,2.1) (4,-2.2) (5,0.3) (6,1.7) (7,-1.6) (8,0.8) (9,-2.5)
+    (10,1.0) (11,-0.4) (12,2.4) (13,-1.1) (14,0.1) (15,-2.0) (16,1.9) (17,-0.7) (18,0.6)
+    (19,-1.8) (20,1.2)};
+\addplot[mark=none, line width=1.2pt, red, dashed, opacity=0.6] {0};
+\node[anchor=north, font=\tiny, color=blue!70!black] at (axis cs:10,-3.65) {Sin secuencia persistente};
+\end{axis}
+
+% Autocorrelación positiva
+\begin{axis}[
+    xshift=8.5cm,
+    width=0.42\textwidth,
+    height=4.7cm,
+    xmin=0,xmax=21,
+    ymin=-4,ymax=4,
+    axis lines=middle,
+    xlabel={Tiempo (\(t\))},
+    ylabel={\(\varepsilon_t\)},
+    title style={font=\bfseries\scriptsize, align=center},
+    title={Falla no autocorrelación\\patrón persistente},
+    xtick={0,5,10,15,20},
+    ytick={-4,-2,0,2,4},
+    xticklabel style={font=\scriptsize},
+    yticklabel style={font=\scriptsize},
+    grid=major,
+    grid style={gray!20}
+]
+\addplot[only marks, mark=*, mark size=2.1pt, color=red!70, opacity=0.85] coordinates {
+    (1,0.4) (2,0.9) (3,1.4) (4,1.8) (5,1.5) (6,1.1) (7,0.5) (8,-0.2) (9,-0.8)
+    (10,-1.3) (11,-1.8) (12,-1.5) (13,-0.9) (14,-0.1) (15,0.6) (16,1.1) (17,1.7) (18,1.3)
+    (19,0.8) (20,0.2)
+};
+\addplot[mark=none, line width=0.7pt, red!55, opacity=0.45] 
+    coordinates {(1,0.4) (2,0.9) (3,1.4) (4,1.8) (5,1.5) (6,1.1) (7,0.5) (8,-0.2) (9,-0.8)
+    (10,-1.3) (11,-1.8) (12,-1.5) (13,-0.9) (14,-0.1) (15,0.6) (16,1.1) (17,1.7) (18,1.3)
+    (19,0.8) (20,0.2)};
+\addplot[mark=none, line width=1.2pt, red, dashed, opacity=0.6] {0};
+\node[anchor=north, font=\tiny, color=red!70!black] at (axis cs:10,-3.65) {Rachas positivas y negativas};
+\end{axis}
+\end{tikzpicture}
+\caption{Izquierda: No autocorrelación — los errores fluctúan aleatoriamente sin patrón temporal. Derecha: Autocorrelación positiva — se observan ciclos donde errores positivos tienden a seguir a errores positivos (y negativos a negativos).}
+\end{figure}
+
+\noindent\textbf{Consecuencias de la autocorrelación:}
+
+\begin{itemize}
+\item El estimador MCO \textbf{es insesgado pero ineficiente}
+\item Los errores estándar estimados son \textbf{subestimados} (sesgados hacia abajo)
+\item Los intervalos de confianza son \textbf{demasiado estrechos}
+\item Los tests de hipótesis tienen \textbf{tamaño distorsionado}
+\end{itemize}
+
+\noindent\textbf{Causas típicas de autocorrelación (datos de series temporales):}
+
+\begin{enumerate}
+\item \textbf{Inercia económica}: Variables económicas muestran persistencia; shocks tienen efectos duraderos.
+
+\item \textbf{Variables omitidas con efecto temporal}: Si omitimos una variable que tiene autocorrelación, el error la hereda.
+
+\item \textbf{Especificación errónea funcional}: Si la relación verdadera es no lineal pero ajustamos un modelo lineal.
+
+\item \textbf{Reversión a la media incompleta}: Procesos que no se ajustan instantáneamente a shocks.
+\end{enumerate}
+
+%------------------------------------------------
+\section{El Estimador de Mínimos Cuadrados Ordinarios}
+%------------------------------------------------
+
+\begin{concepto}
+El estimador MCO es el vector \(\hat{\boldsymbol{\beta}}\) que minimiza la suma de cuadrados de los residuos \(\mathbf{e} = \mathbf{y} - \mathbf{X}\boldsymbol{\beta}\).
+\end{concepto}
+
+Formalmente, el problema de minimización es
+
+\[
+\min_{\boldsymbol{\beta}} S(\boldsymbol{\beta}) = \min_{\boldsymbol{\beta}} \sum_{i=1}^{n} (y_i - \mathbf{x}_i'\boldsymbol{\beta})^2
+= \min_{\boldsymbol{\beta}} (\mathbf{y} - \mathbf{X}\boldsymbol{\beta})'(\mathbf{y} - \mathbf{X}\boldsymbol{\beta}).
+\]
+
+La solución a este problema proporciona una aproximación lineal óptima en el sentido de la mínima distancia euclidiana entre los valores observados y los valores ajustados.
+
+%------------------------------------------------
+\section{Modelo Bivariado}
+%------------------------------------------------
+
+El modelo de regresión lineal simple estudia la relación entre una variable dependiente \(Y\) y una única variable explicativa \(X\). Su forma poblacional es
+
+\[
+Y_i = \beta_1 + \beta_2X_i + \varepsilon_i, \qquad i=1,\dots,n.
+\]
+
+En este modelo, \(\beta_1\) es el intercepto, \(\beta_2\) es la pendiente y \(\varepsilon_i\) recoge todos los factores no observados que afectan a \(Y_i\) pero que no están incluidos explícitamente en \(X_i\).
+
+\begin{resultado}
+Si \(\E[\varepsilon_i|X_i]=0\), entonces
+\[
+\E[Y_i|X_i]=\beta_1+\beta_2X_i.
+\]
+Por tanto, la recta de regresión es una función de esperanza condicional.
+\end{resultado}
+
+La pendiente \(\beta_2\) tiene una interpretación marginal: mide el cambio esperado en \(Y\) ante un incremento de una unidad en \(X\), manteniendo constante todo lo demás que esté incorporado en el término de error bajo el supuesto de exogeneidad.
+
+En el caso simple, los estimadores MCO pueden escribirse como
+
+\[
+\hat{\beta}_2 = \frac{\sum_{i=1}^{n}(X_i-\bar{X})(Y_i-\bar{Y})}{\sum_{i=1}^{n}(X_i-\bar{X})^2},
+\qquad
+\hat{\beta}_1 = \bar{Y}-\hat{\beta}_2\bar{X}.
+\]
+
+Estas expresiones muestran que la pendiente estimada depende de la covariación muestral entre \(X\) e \(Y\), normalizada por la variabilidad de \(X\).
+
+\subsection{Demostración del modelo bivariado por MCO}
+
+Considérese el modelo bivariado
+
+\[
+y_i = \beta_1+\beta_2x_i+u_i,
+\qquad i=1,\dots,n.
+\]
+
+La recta estimada se escribe como
+
+\[
+\hat{y}_i = \hat{\beta}_1+\hat{\beta}_2x_i,
+\]
+
+y el residuo muestral es
+
+\[
+\hat{u}_i = y_i-\hat{y}_i = y_i-\hat{\beta}_1-\hat{\beta}_2x_i.
+\]
+
+El criterio de Mínimos Cuadrados Ordinarios consiste en elegir \(\hat{\beta}_1\) y \(\hat{\beta}_2\) para minimizar la suma de cuadrados de los residuos:
+
+\[
+SCR(\hat{\beta}_1,\hat{\beta}_2)=\sum_{i=1}^{n}\hat{u}_i^2
+=\sum_{i=1}^{n}\left(y_i-\hat{\beta}_1-\hat{\beta}_2x_i\right)^2.
+\]
+
+Las condiciones de primer orden se obtienen derivando respecto al intercepto y a la pendiente:
+
+\begin{align}
+\frac{\partial SCR}{\partial \hat{\beta}_1}
+&=-2\sum_{i=1}^{n}\left(y_i-\hat{\beta}_1-\hat{\beta}_2x_i\right)=0, \label{eq:cpo_intercepto}\\
+\frac{\partial SCR}{\partial \hat{\beta}_2}
+&=-2\sum_{i=1}^{n}x_i\left(y_i-\hat{\beta}_1-\hat{\beta}_2x_i\right)=0. \label{eq:cpo_pendiente}
+\end{align}
+
+Dividiendo entre \(-2\), las condiciones anteriores implican
+
+\begin{align}
+\sum_{i=1}^{n}\hat{u}_i &=0, \\
+\sum_{i=1}^{n}x_i\hat{u}_i &=0.
+\end{align}
+
+La primera condición dice que los residuos suman cero cuando el modelo incluye intercepto. A partir de \eqref{eq:cpo_intercepto},
+
+\begin{align}
+\sum_{i=1}^{n}y_i-n\hat{\beta}_1-\hat{\beta}_2\sum_{i=1}^{n}x_i&=0, \\
+n\hat{\beta}_1&=\sum_{i=1}^{n}y_i-\hat{\beta}_2\sum_{i=1}^{n}x_i, \\
+\hat{\beta}_1&=\bar{y}-\hat{\beta}_2\bar{x}. \label{eq:beta1_bivariado}
+\end{align}
+
+Para obtener la pendiente, se reemplaza \eqref{eq:beta1_bivariado} en \eqref{eq:cpo_pendiente}:
+
+\begin{align}
+0&=\sum_{i=1}^{n}x_i\left(y_i-\hat{\beta}_1-\hat{\beta}_2x_i\right) \notag \\
+&=\sum_{i=1}^{n}x_iy_i-\hat{\beta}_1\sum_{i=1}^{n}x_i-\hat{\beta}_2\sum_{i=1}^{n}x_i^2 \notag \\
+&=\sum_{i=1}^{n}x_iy_i-(\bar{y}-\hat{\beta}_2\bar{x})\sum_{i=1}^{n}x_i-\hat{\beta}_2\sum_{i=1}^{n}x_i^2 \notag \\
+&=\sum_{i=1}^{n}x_iy_i-n\bar{x}\bar{y}+\hat{\beta}_2n\bar{x}^{2}-\hat{\beta}_2\sum_{i=1}^{n}x_i^2. \notag
+\end{align}
+
+Reordenando,
+
+\[
+\hat{\beta}_2\left(\sum_{i=1}^{n}x_i^2-n\bar{x}^{2}\right)
+=\sum_{i=1}^{n}x_iy_i-n\bar{x}\bar{y}.
+\]
+
+Como
+
+\[
+\sum_{i=1}^{n}(x_i-\bar{x})^2=\sum_{i=1}^{n}x_i^2-n\bar{x}^{2}
+\]
+
+y
+
+\[
+\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})=\sum_{i=1}^{n}x_iy_i-n\bar{x}\bar{y},
+\]
+
+se obtiene la fórmula final:
+
+\begin{resultado}
+\[
+\boxed{\hat{\beta}_2=\frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}{\sum_{i=1}^{n}(x_i-\bar{x})^2}},
+\qquad
+\boxed{\hat{\beta}_1=\bar{y}-\hat{\beta}_2\bar{x}}.
+\]
+\end{resultado}
+
+La condición suficiente de segundo orden se verifica con la matriz Hessiana:
+
+\[
+H=2
+\begin{pmatrix}
+n & \sum_{i=1}^{n}x_i \\
+\sum_{i=1}^{n}x_i & \sum_{i=1}^{n}x_i^2
+\end{pmatrix}.
+\]
+
+Esta matriz es semidefinida positiva y es definida positiva si existe variación muestral en \(x_i\), es decir, si \(\sum_{i=1}^{n}(x_i-\bar{x})^2>0\). Por tanto, la solución encontrada corresponde a un mínimo de la suma de cuadrados.
+
+\subsection{Propiedades algebraicas de la regresión bivariada}
+
+En el modelo con intercepto, los estimadores MCO cumplen:
+
+\begin{enumerate}[noitemsep]
+    \item \(\sum_{i=1}^{n}\hat{u}_i=0\): los residuos tienen media muestral cero.
+    \item \(\sum_{i=1}^{n}x_i\hat{u}_i=0\): los residuos son ortogonales a la variable explicativa.
+    \item \(\sum_{i=1}^{n}\hat{y}_i\hat{u}_i=0\): los valores ajustados son ortogonales a los residuos.
+    \item \(\bar{\hat{y}}=\bar{y}\): el promedio de los valores ajustados coincide con el promedio observado de \(Y\).
+\end{enumerate}
+
+Estas propiedades explican la descomposición de la variación total en variación explicada y variación residual.
+
+
+
+
+%================================================
+\section{Análisis de Regresión Múltiple}
+%================================================
+ 
+\subsection{Introducción y motivación}
+ 
+La regresión lineal múltiple extiende el análisis bivariado al caso realista donde la variable dependiente se explica mediante varias variables explicativas simultáneamente. Este enfoque permite:
+ 
+\begin{itemize}[noitemsep]
+    \item Estimar \textbf{efectos parciales} de cada variable, manteniendo constantes las demás
+    \item \textbf{Controlar} por factores confundentes
+    \item Mejorar la \textbf{predicción} y \textbf{explicación} del fenómeno
+    \item Evaluar la \textbf{significancia} de múltiples variables conjuntamente
+\end{itemize}
+ 
+\subsection{Modelo poblacional de regresión múltiple}
+ 
+\subsubsection*{Formulación escalar}
+ 
+Para cada observación $i = 1, 2, \ldots, n$:
+ 
+\[
+Y_i = \beta_1 + \beta_2 X_{2i} + \beta_3 X_{3i} + \cdots + \beta_k X_{ki} + u_i
+\]
+ 
+donde:
+\begin{itemize}[noitemsep]
+    \item $Y_i$: variable dependiente
+    \item $X_{ji}$: j-ésima variable explicativa para la observación $i$
+    \item $\beta_j$: parámetro poblacional a estimar
+    \item $u_i$: error aleatorio
+    \item $k$: número total de parámetros (incluyendo intercepto)
+\end{itemize}
+ 
+\subsubsection*{Sistema de ecuaciones}
+ 
+Escribiendo para todas las $n$ observaciones:
+ 
+\begin{align*}
+Y_1 &= \beta_1 + \beta_2 X_{21} + \beta_3 X_{31} + \cdots + \beta_k X_{k1} + u_1 \\
+Y_2 &= \beta_1 + \beta_2 X_{22} + \beta_3 X_{32} + \cdots + \beta_k X_{k2} + u_2 \\
+&\vdots \\
+Y_n &= \beta_1 + \beta_2 X_{2n} + \beta_3 X_{3n} + \cdots + \beta_k X_{kn} + u_n
+\end{align*}
+ 
+\subsubsection*{Ejemplo Ilustrativo}
+ 
+Supongamos un modelo con 3 parámetros ($k=3$): $Y_i = \beta_1 + \beta_2 X_{2i} + \beta_3 X_{3i} + u_i$
+ 
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Obs.} & $Y_i$ & $X_{2i}$ & $X_{3i}$ & $u_i$ \\
+\hline
+1 & 10 & 5 & 2 & $u_1$ \\
+2 & 15 & 8 & 3 & $u_2$ \\
+3 & 20 & 10 & 4 & $u_3$ \\
+$\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\
+$n$ & $Y_n$ & $X_{2n}$ & $X_{3n}$ & $u_n$ \\
+\hline
+\end{tabular}
+\caption{Estructura de datos para regresión múltiple}
+\label{tab:datos_multiples}
+\end{table}
+ 
+\subsection{Forma matricial del modelo}
+ 
+\subsubsection*{Definición Compacta}
+ 
+\begin{resultado}
+\[
+\boxed{\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{U}}
+\]
+\end{resultado}
+ 
+donde las dimensiones son:
+ 
+\[
+\begin{pmatrix} \text{n} \times 1 \end{pmatrix} = \begin{pmatrix} \text{n} \times \text{k} \end{pmatrix} \begin{pmatrix} \text{k} \times 1 \end{pmatrix} + \begin{pmatrix} \text{n} \times 1 \end{pmatrix}
+\]
+ 
+\subsubsection*{Matrices Explícitas}
+ 
+El vector de observaciones:
+\[
+\mathbf{Y} = \begin{pmatrix}
+Y_1 \\ Y_2 \\ \vdots \\ Y_n
+\end{pmatrix}_{n \times 1}
+\]
+ 
+La matriz de regresores (con columna de unos para intercepto):
+\[
+\mathbf{X} = \begin{pmatrix}
+1 & X_{21} & X_{31} & \cdots & X_{k1} \\
+1 & X_{22} & X_{32} & \cdots & X_{k2} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & X_{2n} & X_{3n} & \cdots & X_{kn}
+\end{pmatrix}_{n \times k}
+\]
+ 
+El vector de parámetros:
+\[
+\boldsymbol{\beta} = \begin{pmatrix}
+\beta_1 \\ \beta_2 \\ \vdots \\ \beta_k
+\end{pmatrix}_{k \times 1}
+\]
+ 
+El vector de errores:
+\[
+\mathbf{U} = \begin{pmatrix}
+u_1 \\ u_2 \\ \vdots \\ u_n
+\end{pmatrix}_{n \times 1}
+\]
+ 
+\subsubsection*{Visualización de Dimensiones}
+ 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.2]
+% Y vector
+\draw[thick, fill=ccdelight!40] (0,2) rectangle (0.5,5.5);
+\node at (0.25, 6) {$\mathbf{Y}$};
+\node[font=\small] at (0.25, 3.75) {$n \times 1$};
+ 
+% X matrix
+\draw[thick, fill=ccdelight!40] (1.5,2) rectangle (3.5,5.5);
+\node at (2.5, 6) {$\mathbf{X}$};
+\node[font=\small] at (2.5, 3.75) {$n \times k$};
+ 
+% β vector
+\draw[thick, fill=ccdeaccent!40] (4,2) rectangle (4.5,5.5);
+\node at (4.25, 6) {$\boldsymbol{\beta}$};
+\node[font=\small] at (4.25, 3.75) {$k \times 1$};
+ 
+% U vector
+\draw[thick, fill=ccdeaccent!40] (5.5,2) rectangle (6,5.5);
+\node at (5.75, 6) {$\mathbf{U}$};
+\node[font=\small] at (5.75, 3.75) {$n \times 1$};
+ 
+% Equation
+\node at (3.25, 0.7) {$\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \mathbf{U}$};
+ 
+% Flechas
+\draw[->, line width=1.5pt] (0.7, 3.75) -- (1.3, 3.75);
+\draw[->, line width=1.5pt] (3.7, 3.75) -- (3.8, 3.75);
+\draw[-, line width=1.5pt] (4.7, 3.75) -- (5.3, 3.75);
+\node at (4.7, 3.75) {$+$};
+ 
+\end{tikzpicture}
+\caption{Estructura matricial del modelo de regresión múltiple}
+\label{fig:estructura_matrices}
+\end{figure}
+ 
+\begin{observacion}
+La primera columna de $\mathbf{X}$ consta de unos cuando el modelo incluye término de intercepto (práctica estándar). Cada fila de $\mathbf{X}$ representa una observación completa, y cada columna representa una variable explicativa (más la constante).
+\end{observacion}
+ 
+
+
+
+
+\subsection{Criterio MCO en forma matricial}
+
+El vector de residuos es
+
+\[
+\mathbf{e}=\mathbf{y}-\mathbf{X}\hat{\boldsymbol{\beta}}.
+\]
+
+El criterio MCO minimiza la suma de cuadrados de los residuos:
+
+\[
+SCR(\boldsymbol{\beta})=\mathbf{e}'\mathbf{e}
+=(\mathbf{y}-\mathbf{X}\boldsymbol{\beta})'(\mathbf{y}-\mathbf{X}\boldsymbol{\beta}).
+\]
+
+Expandiendo la expresión:
+
+\begin{align}
+SCR(\boldsymbol{\beta})
+&=\mathbf{y}'\mathbf{y}-\mathbf{y}'\mathbf{X}\boldsymbol{\beta}
+-\boldsymbol{\beta}'\mathbf{X}'\mathbf{y}
++\boldsymbol{\beta}'\mathbf{X}'\mathbf{X}\boldsymbol{\beta} \notag\\
+&=\mathbf{y}'\mathbf{y}-2\boldsymbol{\beta}'\mathbf{X}'\mathbf{y}
++\boldsymbol{\beta}'\mathbf{X}'\mathbf{X}\boldsymbol{\beta}. \label{eq:scr_matricial}
+\end{align}
+
+La igualdad anterior usa que \(\mathbf{y}'\mathbf{X}\boldsymbol{\beta}\) es un escalar y, por tanto, coincide con su transpuesta \(\boldsymbol{\beta}'\mathbf{X}'\mathbf{y}\).
+
+\subsection{Derivación matricial del estimador MCO}
+
+Derivando \eqref{eq:scr_matricial} respecto a \(\boldsymbol{\beta}\), se obtiene
+
+\[
+\frac{\partial SCR(\boldsymbol{\beta})}{\partial\boldsymbol{\beta}}
+=-2\mathbf{X}'\mathbf{y}+2\mathbf{X}'\mathbf{X}\boldsymbol{\beta}.
+\]
+
+La condición de primer orden exige igualar esta derivada a cero:
+
+\[
+-2\mathbf{X}'\mathbf{y}+2\mathbf{X}'\mathbf{X}\hat{\boldsymbol{\beta}}=\mathbf{0}.
+\]
+
+De aquí se obtienen las ecuaciones normales:
+
+\[
+\mathbf{X}'\mathbf{X}\hat{\boldsymbol{\beta}}=\mathbf{X}'\mathbf{y}.
+\]
+
+Si \(\mathbf{X}\) tiene rango columna completo, entonces \(\mathbf{X}'\mathbf{X}\) es invertible y el estimador MCO es
+
+\begin{resultado}
+\[
+\boxed{\hat{\boldsymbol{\beta}}=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}}.
+\]
+\end{resultado}
+
+Esta fórmula generaliza la regresión bivariada. Cuando el modelo solo tiene intercepto y una variable explicativa, la expresión matricial produce las mismas fórmulas de \(\hat{\beta}_1\) y \(\hat{\beta}_2\) derivadas anteriormente.
+
+\subsection{Matriz sombrero y proyección lineal}
+
+Los valores ajustados pueden escribirse como
+
+\[
+\hat{\mathbf{y}}=\mathbf{X}\hat{\boldsymbol{\beta}}
+=\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y}.
+\]
+
+Se define la matriz sombrero como
+
+\[
+\mathbf{H}=\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'.
+\]
+
+Entonces
+
+\[
+\hat{\mathbf{y}}=\mathbf{H}\mathbf{y},
+\qquad
+\mathbf{e}=(\mathbf{I}_n-\mathbf{H})\mathbf{y}.
+\]
+
+La matriz \(\mathbf{H}\) proyecta el vector \(\mathbf{y}\) sobre el espacio generado por las columnas de \(\mathbf{X}\). Por ello, MCO tiene una interpretación geométrica: encuentra el punto de ese espacio que está más cerca de \(\mathbf{y}\) en distancia euclidiana.
+
+
+%------------------------------------------------
+\section{Propiedades del Estimador MCO}
+%------------------------------------------------
+
+Bajo los supuestos clásicos enunciados, el estimador MCO goza de propiedades deseables:
+
+\begin{enumerate}[noitemsep]
+    \item \textbf{Insesgadez.} \(E(\hat{\boldsymbol{\beta}}|\mathbf{X}) = \boldsymbol{\beta}\).
+    \item \textbf{Varianza mínima.} Dentro de la clase de estimadores lineales e insesgados, \(\hat{\boldsymbol{\beta}}\) es el de varianza mínima (teorema de Gauss-Márkov).
+    \item \textbf{Consistencia.} Si \( \frac{1}{n}\mathbf{X}'\mathbf{X} \) converge a una matriz definida positiva y se mantiene la exogeneidad, \(\hat{\boldsymbol{\beta}} \xrightarrow{p} \boldsymbol{\beta}\).
+\end{enumerate}
+
+\subsection*{Demostración de insesgadez}
+
+Partiendo de la expresión matricial del estimador,
+
+\[
+\hat{\boldsymbol{\beta}}=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{y},
+\]
+
+y usando que \(\mathbf{y}=\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}\), se obtiene
+
+\begin{align}
+\hat{\boldsymbol{\beta}}
+&=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'(\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}) \notag\\
+&=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{X}\boldsymbol{\beta}
++(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\boldsymbol{\varepsilon} \notag\\
+&=\boldsymbol{\beta}+(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\boldsymbol{\varepsilon}. \label{eq:beta_hat_error}
+\end{align}
+
+Tomando esperanza condicional en \(\mathbf{X}\):
+
+\begin{align}
+\E(\hat{\boldsymbol{\beta}}|\mathbf{X})
+&=\boldsymbol{\beta}+(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\E(\boldsymbol{\varepsilon}|\mathbf{X}) \notag\\
+&=\boldsymbol{\beta}. \notag
+\end{align}
+
+Por tanto, bajo exogeneidad, MCO es insesgado.
+
+\subsection*{Demostración de la matriz de varianzas}
+
+De \eqref{eq:beta_hat_error},
+
+\[
+\hat{\boldsymbol{\beta}}-\boldsymbol{\beta}=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\boldsymbol{\varepsilon}.
+\]
+
+Entonces,
+
+\begin{align}
+\Var(\hat{\boldsymbol{\beta}}|\mathbf{X})
+&=\Var\left((\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\boldsymbol{\varepsilon}\middle|\mathbf{X}\right) \notag\\
+&=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\Var(\boldsymbol{\varepsilon}|\mathbf{X})\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1} \notag\\
+&=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'(\sigma^2\mathbf{I}_n)\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1} \notag\\
+&=\sigma^2(\mathbf{X}'\mathbf{X})^{-1}. \notag
+\end{align}
+
+La matriz de varianzas-covarianzas del estimador está dada por
+
+\[
+\mathrm{Var}(\hat{\boldsymbol{\beta}}|\mathbf{X}) = \sigma^2 (\mathbf{X}'\mathbf{X})^{-1}.
+\]
+
+\subsection*{Demostración breve del estimador de \(\sigma^2\)}
+
+Sea la matriz sombrero
+
+\[
+\mathbf{H}=\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}',
+\]
+
+y sea la matriz generadora de residuos
+
+\[
+\mathbf{M}=\mathbf{I}_n-\mathbf{H}.
+\]
+
+Como los valores ajustados son \(\hat{\mathbf{Y}}=\mathbf{H}\mathbf{Y}\), el vector de residuos puede escribirse como
+
+\begin{align*}
+\mathbf{e}
+&=\mathbf{Y}-\hat{\mathbf{Y}} \\
+&=\mathbf{Y}-\mathbf{H}\mathbf{Y} \\
+&=(\mathbf{I}_n-\mathbf{H})\mathbf{Y} \\
+&=\mathbf{M}\mathbf{Y}.
+\end{align*}
+
+Usando el modelo \(\mathbf{Y}=\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}\), se obtiene
+
+\begin{align*}
+\mathbf{e}
+&=\mathbf{M}(\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}) \\
+&=\mathbf{M}\mathbf{X}\boldsymbol{\beta}+\mathbf{M}\boldsymbol{\varepsilon}.
+\end{align*}
+
+Pero
+
+\begin{align*}
+\mathbf{M}\mathbf{X}
+&=(\mathbf{I}_n-\mathbf{H})\mathbf{X} \\
+&=\mathbf{X}-\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{X} \\
+&=\mathbf{X}-\mathbf{X} \\
+&=\mathbf{0}.
+\end{align*}
+
+Por tanto,
+
+\[
+\mathbf{e}=\mathbf{M}\boldsymbol{\varepsilon}.
+\]
+
+La suma de cuadrados de los residuos es
+
+\begin{align*}
+\mathbf{e}'\mathbf{e}
+&=(\mathbf{M}\boldsymbol{\varepsilon})'(\mathbf{M}\boldsymbol{\varepsilon}) \\
+&=\boldsymbol{\varepsilon}'\mathbf{M}'\mathbf{M}\boldsymbol{\varepsilon}.
+\end{align*}
+
+Como \(\mathbf{M}\) es simétrica e idempotente, \(\mathbf{M}'\mathbf{M}=\mathbf{M}\). Así,
+
+\[
+\mathbf{e}'\mathbf{e}=\boldsymbol{\varepsilon}'\mathbf{M}\boldsymbol{\varepsilon}.
+\]
+
+Tomando esperanza condicional en \(\mathbf{X}\),
+
+\begin{align*}
+\E(\mathbf{e}'\mathbf{e}\mid\mathbf{X})
+&=\E(\boldsymbol{\varepsilon}'\mathbf{M}\boldsymbol{\varepsilon}\mid\mathbf{X}) \\
+&=\operatorname{tr}\left[\mathbf{M}\E(\boldsymbol{\varepsilon}\boldsymbol{\varepsilon}'\mid\mathbf{X})\right].
+\end{align*}
+
+Bajo homocedasticidad y no autocorrelación,
+
+\[
+\E(\boldsymbol{\varepsilon}\boldsymbol{\varepsilon}'\mid\mathbf{X})=\sigma^2\mathbf{I}_n.
+\]
+
+Entonces,
+
+\begin{align*}
+\E(\mathbf{e}'\mathbf{e}\mid\mathbf{X})
+&=\operatorname{tr}(\mathbf{M}\sigma^2\mathbf{I}_n) \\
+&=\sigma^2\operatorname{tr}(\mathbf{M}).
+\end{align*}
+
+Además,
+
+\begin{align*}
+\operatorname{tr}(\mathbf{M})
+&=\operatorname{tr}(\mathbf{I}_n-\mathbf{H}) \\
+&=\operatorname{tr}(\mathbf{I}_n)-\operatorname{tr}(\mathbf{H}) \\
+&=n-k,
+\end{align*}
+
+porque \(\mathbf{H}\) tiene rango \(k\) y, al ser idempotente, su traza coincide con su rango. En consecuencia,
+
+\begin{resultado}
+\[
+\boxed{\E(\mathbf{e}'\mathbf{e}\mid\mathbf{X})=(n-k)\sigma^2}.
+\]
+\end{resultado}
+
+Dividiendo entre \(n-k\),
+
+\[
+\E\left(\frac{\mathbf{e}'\mathbf{e}}{n-k}\middle|\mathbf{X}\right)
+=\frac{1}{n-k}\E(\mathbf{e}'\mathbf{e}\mid\mathbf{X})
+=\sigma^2.
+\]
+
+Por tanto, el estimador insesgado de \(\sigma^2\) es
+
+\[
+\boxed{\hat{\sigma}^2 = \frac{\mathbf{e}'\mathbf{e}}{n - k}}.
+\]
+
+\subsection*{Demostración matemática del teorema de Gauss-Márkov}
+
+\subsubsection*{(i) Enunciado del resultado}
+
+\begin{concepto}
+El teorema de \textbf{Gauss--Márkov} afirma que, bajo linealidad, rango completo, exogeneidad y errores esféricos, el estimador MCO \(\hat{\boldsymbol{\beta}}\) es el \textbf{Mejor Estimador Lineal Insesgado} (MELI), o \textbf{BLUE}. Esto significa que, entre todos los estimadores lineales e insesgados de \(\boldsymbol{\beta}\), MCO posee la menor matriz de varianzas-covarianzas.
+\end{concepto}
+
+El estimador MCO es
+
+\[
+\hat{\boldsymbol{\beta}}=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{Y}.
+\]
+
+Supongamos ahora que existe un estimador alternativo lineal e insesgado, denotado por \(\tilde{\boldsymbol{\beta}}\), de la forma
+
+\[
+\tilde{\boldsymbol{\beta}}=\mathbf{A}\mathbf{Y},
+\]
+
+donde \(\mathbf{A}\) es una matriz \(k\times n\). Para escribirlo como una modificación del estimador MCO, tomamos
+
+\[
+\mathbf{A}=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'+\mathbf{C}',
+\]
+
+donde \(\mathbf{C}\) es una matriz \(n\times k\). Entonces
+
+\begin{align*}
+\tilde{\boldsymbol{\beta}}
+&=\left[(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'+\mathbf{C}'\right]\mathbf{Y} \\
+&=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{Y}+\mathbf{C}'\mathbf{Y} \\
+&=\hat{\boldsymbol{\beta}}+\mathbf{C}'\mathbf{Y}.
+\end{align*}
+
+\subsubsection*{(ii) Condición de insesgadez del estimador alternativo}
+
+Reemplazando el modelo poblacional \(\mathbf{Y}=\mathbf{X}\boldsymbol{\beta}+\mathbf{U}\), se obtiene
+
+\begin{align*}
+\tilde{\boldsymbol{\beta}}
+&=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'(\mathbf{X}\boldsymbol{\beta}+\mathbf{U})
++\mathbf{C}'(\mathbf{X}\boldsymbol{\beta}+\mathbf{U}) \\
+&=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{X}\boldsymbol{\beta}
++(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{U}
++\mathbf{C}'\mathbf{X}\boldsymbol{\beta}+\mathbf{C}'\mathbf{U} \\
+&=\boldsymbol{\beta}+(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{U}
++\mathbf{C}'\mathbf{X}\boldsymbol{\beta}+\mathbf{C}'\mathbf{U}.
+\end{align*}
+
+Tomando esperanza condicional en \(\mathbf{X}\), y usando \(\E(\mathbf{U}\mid\mathbf{X})=\mathbf{0}\),
+
+\begin{align*}
+\E(\tilde{\boldsymbol{\beta}}\mid\mathbf{X})
+&=\boldsymbol{\beta}
++(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\E(\mathbf{U}\mid\mathbf{X})
++\mathbf{C}'\mathbf{X}\boldsymbol{\beta}
++\mathbf{C}'\E(\mathbf{U}\mid\mathbf{X}) \\
+&=\boldsymbol{\beta}+\mathbf{C}'\mathbf{X}\boldsymbol{\beta}.
+\end{align*}
+
+Para que \(\tilde{\boldsymbol{\beta}}\) sea insesgado para cualquier valor de \(\boldsymbol{\beta}\), debe cumplirse
+
+\begin{resultado}
+\[
+\boxed{\mathbf{C}'\mathbf{X}=\mathbf{0}}.
+\]
+\end{resultado}
+
+Con esta condición,
+
+\[
+\tilde{\boldsymbol{\beta}}-\boldsymbol{\beta}
+=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{U}+\mathbf{C}'\mathbf{U}.
+\]
+
+\subsubsection*{(iii) Comparación de varianzas}
+
+La matriz de varianzas del estimador alternativo es
+
+\begin{align*}
+\Var(\tilde{\boldsymbol{\beta}}\mid\mathbf{X})
+&=\E\left[(\tilde{\boldsymbol{\beta}}-\boldsymbol{\beta})
+(\tilde{\boldsymbol{\beta}}-\boldsymbol{\beta})'\mid\mathbf{X}\right] \\
+&=\E\left[\left((\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{U}+\mathbf{C}'\mathbf{U}\right)
+\left((\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{U}+\mathbf{C}'\mathbf{U}\right)'\middle|\mathbf{X}\right].
+\end{align*}
+
+Expandiendo:
+
+\begin{align*}
+\Var(\tilde{\boldsymbol{\beta}}\mid\mathbf{X})
+&=(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\E(\mathbf{U}\mathbf{U}'\mid\mathbf{X})\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1} \\
+&\quad +(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\E(\mathbf{U}\mathbf{U}'\mid\mathbf{X})\mathbf{C} \\
+&\quad +\mathbf{C}'\E(\mathbf{U}\mathbf{U}'\mid\mathbf{X})\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1} \\
+&\quad +\mathbf{C}'\E(\mathbf{U}\mathbf{U}'\mid\mathbf{X})\mathbf{C}.
+\end{align*}
+
+Bajo errores esféricos, \(\E(\mathbf{U}\mathbf{U}'\mid\mathbf{X})=\sigma^2\mathbf{I}_n\). Por tanto,
+
+\begin{align*}
+\Var(\tilde{\boldsymbol{\beta}}\mid\mathbf{X})
+&=\sigma^2(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1} \\
+&\quad +\sigma^2(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{C}
++\sigma^2\mathbf{C}'\mathbf{X}(\mathbf{X}'\mathbf{X})^{-1}
++\sigma^2\mathbf{C}'\mathbf{C}.
+\end{align*}
+
+Como \(\mathbf{C}'\mathbf{X}=\mathbf{0}\), entonces también \(\mathbf{X}'\mathbf{C}=\mathbf{0}\). Los términos cruzados desaparecen y queda
+
+\[
+\Var(\tilde{\boldsymbol{\beta}}\mid\mathbf{X})
+=\sigma^2(\mathbf{X}'\mathbf{X})^{-1}+\sigma^2\mathbf{C}'\mathbf{C}.
+\]
+
+Pero para MCO,
+
+\[
+\Var(\hat{\boldsymbol{\beta}}\mid\mathbf{X})=\sigma^2(\mathbf{X}'\mathbf{X})^{-1}.
+\]
+
+Por consiguiente,
+
+\begin{resultado}
+\[
+\boxed{
+\Var(\tilde{\boldsymbol{\beta}}\mid\mathbf{X})
+-\Var(\hat{\boldsymbol{\beta}}\mid\mathbf{X})
+=\sigma^2\mathbf{C}'\mathbf{C}
+}
+\]
+\end{resultado}
+
+Como \(\mathbf{C}'\mathbf{C}\) es semidefinida positiva,
+
+\[
+\Var(\tilde{\boldsymbol{\beta}}\mid\mathbf{X})
+-\Var(\hat{\boldsymbol{\beta}}\mid\mathbf{X})\succeq \mathbf{0}.
+\]
+
+Esto demuestra que la matriz de varianzas del estimador alternativo es mayor o igual que la de MCO:
+
+\[
+\Var(\tilde{\boldsymbol{\beta}}\mid\mathbf{X})\succeq
+\Var(\hat{\boldsymbol{\beta}}\mid\mathbf{X}).
+\]
+
+Por tanto, \(\hat{\boldsymbol{\beta}}\) es el estimador lineal insesgado de mínima varianza; es decir, es MELI/BLUE.
+
+\begin{observacion}
+La desigualdad correcta es que la varianza del estimador alternativo es mayor o igual que la varianza de MCO. Por eso no debe escribirse \(\Var(\hat{\boldsymbol{\beta}})>\Var(\tilde{\boldsymbol{\beta}})\); lo correcto es
+\[
+\Var(\tilde{\boldsymbol{\beta}}\mid\mathbf{X})\succeq
+\Var(\hat{\boldsymbol{\beta}}\mid\mathbf{X}).
+\]
+\end{observacion}
+
+Estas propiedades convierten al estimador MCO en el punto de partida indispensable para el análisis de regresión y la inferencia econométrica.
+
+\subsubsection*{Expansión algebraica detallada}
+ 
+\begin{demostración}[Expansión de SCR]
+ 
+Expandimos el producto:
+ 
+\begin{align}
+\text{SCR}(\boldsymbol{\beta}) &= (\mathbf{Y} - \mathbf{X}\boldsymbol{\beta})'(\mathbf{Y} - \mathbf{X}\boldsymbol{\beta}) \\
+&= \mathbf{Y}'\mathbf{Y} - \mathbf{Y}'\mathbf{X}\boldsymbol{\beta} - \boldsymbol{\beta}'\mathbf{X}'\mathbf{Y} + \boldsymbol{\beta}'\mathbf{X}'\mathbf{X}\boldsymbol{\beta}
+\end{align}
+ 
+Ahora, observamos que $\mathbf{Y}'\mathbf{X}\boldsymbol{\beta}$ es un escalar (matriz $1 \times 1$), por lo tanto:
+\[
+\mathbf{Y}'\mathbf{X}\boldsymbol{\beta} = (\mathbf{Y}'\mathbf{X}\boldsymbol{\beta})' = \boldsymbol{\beta}'\mathbf{X}'\mathbf{Y}
+\]
+ 
+Sustituyendo:
+\begin{align}
+\text{SCR}(\boldsymbol{\beta}) &= \mathbf{Y}'\mathbf{Y} - 2\boldsymbol{\beta}'\mathbf{X}'\mathbf{Y} + \boldsymbol{\beta}'\mathbf{X}'\mathbf{X}\boldsymbol{\beta}
+\end{align}
+ 
+\end{demostración}
+ 
+\subsubsection*{Condición de primer orden}
+ 
+Derivamos con respecto a $\boldsymbol{\beta}$:
+ 
+\begin{demostración}[Derivada vectorial]
+ 
+Usamos las reglas de derivación matricial:
+\begin{itemize}[noitemsep]
+    \item $\frac{\partial}{\partial \boldsymbol{\beta}}(\boldsymbol{\beta}'\mathbf{X}'\mathbf{Y}) = \mathbf{X}'\mathbf{Y}$
+    \item $\frac{\partial}{\partial \boldsymbol{\beta}}(\boldsymbol{\beta}'\mathbf{X}'\mathbf{X}\boldsymbol{\beta}) = 2\mathbf{X}'\mathbf{X}\boldsymbol{\beta}$
+\end{itemize}
+ 
+Por lo tanto:
+\[
+\frac{\partial \text{SCR}}{\partial \boldsymbol{\beta}} = -2\mathbf{X}'\mathbf{Y} + 2\mathbf{X}'\mathbf{X}\boldsymbol{\beta}
+\]
+ 
+\end{demostración}
+ 
+Igualando a cero (condición de primer orden):
+ 
+\[
+-2\mathbf{X}'\mathbf{Y} + 2\mathbf{X}'\mathbf{X}\hat{\boldsymbol{\beta}} = \mathbf{0}
+\]
+ 
+Simplificando:
+ 
+\[
+\mathbf{X}'\mathbf{X}\hat{\boldsymbol{\beta}} = \mathbf{X}'\mathbf{Y}
+\]
+
+ 
+\subsection{Estimación de la varianza del error}
+ 
+\subsubsection*{Estimador insesgado de \(\sigma^2\)}
+ 
+\begin{teorema}[Estimador de $\sigma^2$]
+ 
+Un estimador insesgado de $\sigma^2$ es:
+ 
+\begin{resultado}
+\[
+\boxed{\hat{\sigma}^2 = \frac{\text{SCR}}{n-k} = \frac{\hat{\mathbf{U}}'\hat{\mathbf{U}}}{n-k}}
+\]
+ 
+donde $k$ es el número total de parámetros estimados (incluyendo el intercepto).
+\end{resultado}
+ 
+\end{teorema}
+ 
+\begin{demostración}[Insesgadez de $\hat{\sigma}^2$]
+ 
+Demostrar que $\E[\hat{\sigma}^2 \mid \mathbf{X}] = \sigma^2$.
+ 
+Bajo los supuestos clásicos (incluyendo errores esféricos), puede demostrarse que:
+\[
+\E[\text{SCR} \mid \mathbf{X}] = (n-k)\sigma^2
+\]
+ 
+Por lo tanto:
+\[
+\E[\hat{\sigma}^2 \mid \mathbf{X}] = \frac{1}{n-k}\E[\text{SCR} \mid \mathbf{X}] = \frac{(n-k)\sigma^2}{n-k} = \sigma^2
+\]
+ 
+\end{demostración}
+ 
+\subsection{Bondad de ajuste y coeficiente \(R^2\)}
+
+Una vez estimado el modelo, es necesario evaluar qué proporción de la variabilidad de \(Y\) es explicada por la regresión. Con intercepto, la variación total se descompone en variación explicada y variación residual:
+
+\begin{teorema}[Identidad Fundamental SCT = SCE + SCR]
+
+\begin{resultado}
+\[
+\boxed{\text{SCT} = \text{SCE} + \text{SCR}}
+\]
+\end{resultado}
+
+donde:
+\begin{itemize}[noitemsep]
+    \item \(\text{SCT}=\sum_{i=1}^{n}(Y_i-\bar{Y})^2\) es la variación total.
+    \item \(\text{SCE}=\sum_{i=1}^{n}(\hat{Y}_i-\bar{Y})^2\) es la variación explicada por el modelo.
+    \item \(\text{SCR}=\sum_{i=1}^{n}\hat{u}_i^2\) es la variación residual no explicada.
+\end{itemize}
+
+El coeficiente de determinación se define como:
+
+\begin{resultado}
+\[
+\boxed{R^2 = \frac{\text{SCE}}{\text{SCT}} = 1 - \frac{\text{SCR}}{\text{SCT}}}
+\]
+\end{resultado}
+
+Propiedades:
+\begin{itemize}[noitemsep]
+    \item \(0 \leq R^2 \leq 1\) cuando el modelo incluye intercepto.
+    \item \(R^2\) se interpreta como la proporción de varianza explicada por el modelo.
+    \item \(R^2=1\) indica ajuste perfecto \(\hat{u}_i=0\) para todo \(i\).
+    \item \(R^2=0\) indica que el modelo no explica variación adicional respecto de la media.
+\end{itemize}
+
+\end{teorema}
+ 
+\subsubsection*{Relación Alternativa}
+ 
+Usando las ecuaciones normales $\mathbf{X}'\mathbf{X}\hat{\boldsymbol{\beta}} = \mathbf{X}'\mathbf{Y}$:
+ 
+\[
+R^2 = \frac{\hat{\boldsymbol{\beta}}'\mathbf{X}'\mathbf{Y} - n\bar{Y}^2}{\mathbf{Y}'\mathbf{Y} - n\bar{Y}^2}
+\]
+ 
+\subsubsection*{\(R^2\) ajustado}
+ 
+\begin{teorema}[$\bar{R}^2$ - $R^2$ Ajustado]
+ 
+Dado que $R^2$ siempre aumenta al agregar variables (incluso irrelevantes), usamos:
+ 
+\begin{resultado}
+\[
+\boxed{\bar{R}^2 = 1 - \frac{\text{SCR}/(n-k)}{\text{SCT}/(n-1)} = 1 - \frac{n-1}{n-k}(1-R^2)}
+\]
+\end{resultado}
+ 
+\end{teorema}
+ 
+ 
+\subsection{Pruebas de hipótesis en regresión múltiple}
+ 
+\subsubsection*{Prueba \(F\) de significancia global}
+ 
+\begin{teorema}[Prueba $F$ Global]
+ 
+Para probar si todas las variables explicativas (excepto el intercepto) son conjuntamente significativas:
+ 
+\[
+H_0: \beta_2 = \beta_3 = \cdots = \beta_k = 0 \quad \text{vs} \quad H_1: \text{al menos uno} \neq 0
+\]
+ 
+El estadístico es:
+ 
+\begin{resultado}
+\[
+\boxed{F = \frac{\text{SCE}/(k-1)}{\text{SCR}/(n-k)} = \frac{R^2/(k-1)}{(1-R^2)/(n-k)} \sim F_{k-1, n-k}}
+\]
+\end{resultado}
+ 
+Regla de decisión: Rechazar $H_0$ si $F > F_{\alpha, k-1, n-k}$
+ 
+\end{teorema}
+ 
+\subsubsection*{Distribución del Estadístico}
+ 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=10cm,
+    height=6cm,
+    xlabel={Valor de $F$},
+    ylabel={Densidad},
+    title={Distribución $F_{k-1, n-k}$ con región de rechazo},
+    grid=major,
+    domain=0:5,
+    samples=200,
+    every axis plot/.append style={thick}
+]
+ 
+% Función de densidad F aproximada
+\addplot[fill=ccdelight!60, opacity=0.5]
+{(2*((x/2.5)^1.5)*(1-x/5)^7)};
+ 
+% Región de rechazo
+\addplot[fill=red!40, opacity=0.7]
+{(2*((x/2.5)^1.5)*(1-x/5)^7)};
+\addlegendentry{Región de rechazo}
+ 
+% Línea del valor crítico
+\draw[dashed, line width=2pt, color=red] (3.2, 0) -- (3.2, 1.2);
+\node[color=red, font=\large] at (3.2, 1.3) {$F_{\alpha}$};
+ 
+% Línea del F calculado
+\draw[dashed, line width=1.5pt, color=blue] (2.2, 0) -- (2.2, 0.8);
+\node[color=blue, font=\small] at (2.2, 0.9) {$F_{calc}$};
+ 
+\end{axis}
+\end{tikzpicture}
+\caption{Distribución $F$ y regiones de aceptación/rechazo}
+\label{fig:distribucion_f}
+\end{figure}
+ 
+\subsubsection*{Interpretación intuitiva}
+ 
+La prueba $F$ compara:
+\begin{itemize}[noitemsep]
+    \item \textbf{Numerador:} variación explicada por el modelo (relativa a sus grados de libertad)
+    \item \textbf{Denominador:} variación no explicada (relativa a sus grados de libertad)
+\end{itemize}
+ 
+Si el modelo es bueno, el numerador es grande. Un $F$ alto rechaza la hipótesis nula de que todas las variables son irrelevantes.
+ 
+\subsection{Ejemplo numérico completo}
+ 
+\subsubsection*{Enunciado}
+ 
+Se dispone de datos sobre salarios (Y), años de educación ($X_2$) y años de experiencia ($X_3$) para 6 individuos:
+ 
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|c|c|c|c|}
+\hline
+Individuo & Salario ($Y$) & Educación ($X_2$) & Experiencia ($X_3$) \\
+\hline
+1 & 20 & 12 & 2 \\
+2 & 25 & 14 & 4 \\
+3 & 30 & 16 & 6 \\
+4 & 35 & 16 & 8 \\
+5 & 40 & 18 & 10 \\
+6 & 45 & 20 & 12 \\
+\hline
+\end{tabular}
+\caption{Datos: salarios, educación y experiencia}
+\label{tab:datos_salarios}
+\end{table}
+ 
+Estimar: $Y_i = \beta_1 + \beta_2 X_{2i} + \beta_3 X_{3i} + u_i$
+ 
+\subsubsection*{Construcción de matrices}
+ 
+Matriz $\mathbf{X}$ (con columna de unos):
+\[
+\mathbf{X} = \begin{pmatrix}
+1 & 12 & 2 \\
+1 & 14 & 4 \\
+1 & 16 & 6 \\
+1 & 16 & 8 \\
+1 & 18 & 10 \\
+1 & 20 & 12
+\end{pmatrix}, \quad
+\mathbf{Y} = \begin{pmatrix} 20 \\ 25 \\ 30 \\ 35 \\ 40 \\ 45 \end{pmatrix}
+\]
+ 
+\subsubsection*{Cálculo de matrices intermedias}
+ 
+\[
+\mathbf{X}'\mathbf{X} = \begin{pmatrix}
+6 & 96 & 42 \\
+96 & 1576 & 724 \\
+42 & 724 & 364
+\end{pmatrix}
+\]
+ 
+\[
+\mathbf{X}'\mathbf{Y} = \begin{pmatrix} 195 \\ 3250 \\ 1540 \end{pmatrix}
+\]
+ 
+\subsubsection*{Estimador MCO}
+ 
+Resolvemos $(\mathbf{X}'\mathbf{X})\hat{\boldsymbol{\beta}} = \mathbf{X}'\mathbf{Y}$:
+ 
+\[
+\hat{\boldsymbol{\beta}} = \begin{pmatrix} 15 \\ 0 \\ 2.5 \end{pmatrix}
+\]
+ 
+\textbf{Modelo estimado:} \(\hat{Y} = 15 + 0X_2 + 2.5X_3\).
+ 
+\subsubsection*{Interpretación}
+ 
+\begin{itemize}[noitemsep]
+    \item $\hat{\beta}_1 = 15$: salario base esperado (miles) cuando educación=0 y experiencia=0
+    \item $\hat{\beta}_2 = 0$: controlando por experiencia, la educación no aporta variación marginal adicional en este ejemplo numérico
+    \item $\hat{\beta}_3 = 2.5$: cada año adicional de experiencia aumenta salario en 2.5 (miles), ceteris paribus
+\end{itemize}
+
+\begin{observacion}
+Este es un ejemplo ilustrativo; en la práctica, el coeficiente de educación suele ser positivo y significativo.
+\end{observacion}
+ 
+%------------------------------------------------
+\section{Inferencia Básica en Regresión}
+%------------------------------------------------
+
+La inferencia estadística permite evaluar hipótesis sobre los parámetros poblacionales. En regresión lineal, una pregunta frecuente es si una variable explicativa tiene un efecto estadísticamente distinto de cero sobre \(Y\).
+
+Para un coeficiente \(\beta_j\), se plantea la hipótesis
+
+\[
+H_0: \beta_j = 0
+\qquad \text{frente a} \qquad
+H_1: \beta_j \neq 0.
+\]
+
+El estadístico de prueba usual es
+
+\[
+t = \frac{\hat{\beta}_j - \beta_{j,0}}{se(\hat{\beta}_j)},
+\]
+
+donde \(se(\hat{\beta}_j)\) es el error estándar estimado del coeficiente.
+
+\subsection*{Origen matemático del estadístico \(t\)}
+
+Bajo normalidad de los errores y los supuestos clásicos,
+
+\[
+\hat{\beta}_j|\mathbf{X}\sim\mathcal{N}\left(\beta_j,\sigma^2 c_{jj}\right),
+\]
+
+donde \(c_{jj}\) es el elemento \(j\)-ésimo de la diagonal de \((\mathbf{X}'\mathbf{X})^{-1}\). Al reemplazar \(\sigma\) por \(\hat{\sigma}\), se obtiene
+
+\[
+\frac{\hat{\beta}_j-\beta_j}{se(\hat{\beta}_j)}\sim t_{n-k}.
+\]
+
+Por eso, si \(|t|\) es suficientemente grande, se rechaza \(H_0\) al nivel de significancia elegido.
+
+\subsection{Estimación por intervalos}
+
+La precisión de un estimador depende de su error estándar. Por ello, además de reportar una estimación puntual, es usual construir un intervalo alrededor de ella que contenga al parámetro poblacional con un nivel de confianza determinado.
+
+Para un parámetro \(\beta_j\), la idea general es encontrar un valor positivo \(\delta\) tal que
+
+\[
+\Pr\left(\hat{\beta}_j-\delta \leq \beta_j \leq \hat{\beta}_j+\delta\right)=1-\alpha,
+\]
+
+donde \(\alpha\) es el nivel de significancia y \(1-\alpha\) es el nivel de confianza. El valor \(\delta\) determina la amplitud del intervalo: cuanto mayor sea el error estándar, más amplio será el intervalo de confianza.
+
+En el modelo bivariado escrito como
+
+\[
+Y_i=\beta_0+\beta_1X_i+u_i,
+\]
+
+el intervalo de confianza para la pendiente \(\beta_1\) se obtiene a partir del estadístico estandarizado. Si \(\sigma^2\) fuera conocida, usaríamos un estadístico normal estándar:
+
+\[
+Z=\frac{\hat{\beta}_1-\beta_1}{se(\hat{\beta}_1)}
+=\frac{(\hat{\beta}_1-\beta_1)\sqrt{\sum_{i=1}^{n}(X_i-\bar{X})^2}}{\sigma}.
+\]
+
+En ese caso, \(Z\sim\mathcal{N}(0,1)\). Sin embargo, esta situación es poco común en aplicaciones econométricas.
+
+Como en la práctica se estima \(\sigma^2\) mediante \(\hat{\sigma}^2\), desde este punto el estadístico relevante es \(t\), que en el modelo general con \(k\) parámetros sigue una distribución \(t_{n-k}\):
+
+\[
+t=\frac{\hat{\beta}_1-\beta_1}{se(\hat{\beta}_1)}
+=\frac{\text{Estimador}-\text{Parámetro}}{\text{Error estándar del estimador}}
+=\frac{(\hat{\beta}_1-\beta_1)\sqrt{\sum_{i=1}^{n}(X_i-\bar{X})^2}}{\hat{\sigma}}
+\sim t_{n-k}.
+\]
+
+En regresión bivariada con intercepto, \(k=2\), por lo que los grados de libertad son \(n-2\).
+
+Por definición del valor crítico positivo \(t_{\alpha/2,n-2}\),
+
+\[
+\Pr\left(-t_{\alpha/2,n-2}\leq t\leq t_{\alpha/2,n-2}\right)=1-\alpha.
+\]
+
+Reemplazando el estadístico de la pendiente,
+
+\[
+\Pr\left(-t_{\alpha/2,n-2}\leq
+\frac{\hat{\beta}_1-\beta_1}{se(\hat{\beta}_1)}
+\leq t_{\alpha/2,n-2}\right)=1-\alpha.
+\]
+
+Al despejar \(\beta_1\), se obtiene el intervalo de confianza al nivel \(100(1-\alpha)\%\):
+
+\begin{resultado}
+\[
+\boxed{
+\hat{\beta}_1-t_{\alpha/2,n-2}\,se(\hat{\beta}_1)
+\leq \beta_1 \leq
+\hat{\beta}_1+t_{\alpha/2,n-2}\,se(\hat{\beta}_1)
+}.
+\]
+\end{resultado}
+
+De forma compacta,
+
+\[
+\boxed{\beta_1\in \hat{\beta}_1\pm t_{\alpha/2,n-2}\,se(\hat{\beta}_1)}.
+\]
+
+El mismo razonamiento aplica para el intercepto \(\beta_0\):
+
+\[
+\Pr\left(-t_{\alpha/2,n-2}\leq
+\frac{\hat{\beta}_0-\beta_0}{se(\hat{\beta}_0)}
+\leq t_{\alpha/2,n-2}\right)=1-\alpha.
+\]
+
+Por tanto,
+
+\begin{resultado}
+\[
+\boxed{
+\hat{\beta}_0-t_{\alpha/2,n-2}\,se(\hat{\beta}_0)
+\leq \beta_0 \leq
+\hat{\beta}_0+t_{\alpha/2,n-2}\,se(\hat{\beta}_0)
+}.
+\]
+\end{resultado}
+
+Equivalentemente, el intervalo de confianza para \(\beta_0\) es
+
+\[
+\boxed{\beta_0\in \hat{\beta}_0\pm t_{\alpha/2,n-2}\,se(\hat{\beta}_0)}.
+\]
+
+En regresión bivariada con intercepto, los errores estándar estimados son
+
+\[
+se(\hat{\beta}_1)=\frac{\hat{\sigma}}{\sqrt{\sum_{i=1}^{n}(X_i-\bar{X})^2}},
+\]
+
+\[
+se(\hat{\beta}_0)=\hat{\sigma}\sqrt{\frac{1}{n}+\frac{\bar{X}^2}{\sum_{i=1}^{n}(X_i-\bar{X})^2}}.
+\]
+
+\begin{observacion}
+El nivel de significancia \(\alpha\) controla la probabilidad de error asociada al procedimiento. Un intervalo al \(95\%\) de confianza corresponde a \(\alpha=0.05\), mientras que un intervalo al \(99\%\) corresponde a \(\alpha=0.01\). Manteniendo todo lo demás constante, un mayor nivel de confianza produce intervalos más amplios.
+\end{observacion}
+
+\subsection{Prueba global de significancia}
+
+Además de evaluar coeficientes individuales, es común contrastar si un conjunto de regresores tiene poder explicativo conjunto. En el modelo múltiple, la hipótesis global usual es
+
+\[
+H_0:\beta_2=\beta_3=\cdots=\beta_k=0
+\qquad \text{frente a} \qquad
+H_1:\text{al menos un coeficiente es distinto de cero}.
+\]
+
+El estadístico \(F\) compara la variación explicada por el modelo con la variación no explicada:
+
+\[
+F=\frac{SCE/(k-1)}{SCR/(n-k)}.
+\]
+
+\subsection*{Forma general de una prueba \(F\) con restricciones}
+
+Si se desean probar \(q\) restricciones lineales,
+
+\[
+H_0:\mathbf{R}\boldsymbol{\beta}=\mathbf{r},
+\]
+
+entonces el estadístico general es
+
+\[
+F=\frac{(SCR_R-SCR_{NR})/q}{SCR_{NR}/(n-k)},
+\]
+
+donde \(SCR_R\) es la suma de cuadrados residual del modelo restringido y \(SCR_{NR}\) corresponde al modelo no restringido. Si las restricciones empeoran mucho el ajuste, \(SCR_R-SCR_{NR}\) será grande y se rechazará \(H_0\).
+
+Si el estadístico \(F\) es suficientemente grande, se rechaza la hipótesis nula y se concluye que el modelo tiene capacidad explicativa conjunta.
+
+%------------------------------------------------
+\section{Elementos Adicionales de Econometría Aplicada}
+%------------------------------------------------
+
+\subsection{Tipos de datos econométricos}
+
+En econometría, la forma de los datos condiciona la interpretación y los métodos de estimación:
+
+\begin{enumerate}[noitemsep]
+    \item \textbf{Corte transversal:} observaciones de muchas unidades en un mismo momento, por ejemplo hogares, estudiantes, empresas o regiones.
+    \item \textbf{Series de tiempo:} observaciones de una o varias variables a lo largo del tiempo, por ejemplo inflación mensual, PBI trimestral o tipo de cambio diario.
+    \item \textbf{Datos de panel:} combinan corte transversal y tiempo; por ejemplo, empresas observadas durante varios años.
+\end{enumerate}
+
+Cada estructura presenta problemas distintos. En corte transversal suele preocupar la heterocedasticidad; en series de tiempo, la autocorrelación y la estacionariedad; en panel, la heterogeneidad no observada entre unidades.
+
+\subsection{Interpretación económica de los coeficientes}
+
+La interpretación de un coeficiente depende de la forma funcional del modelo:
+
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.45}
+\begin{tabular}{@{}p{2.4cm}p{4.0cm}p{7.1cm}@{}}
+\toprule
+\textbf{Modelo} & \textbf{Forma} & \textbf{Interpretación de la pendiente} \\
+\midrule
+Lineal-lineal & \(Y=\beta_1+\beta_2X+u\) & Un cambio de 1 unidad en \(X\) cambia \(Y\) en \(\beta_2\) unidades. \\
+Log-lineal & \(\ln(Y)=\beta_1+\beta_2X+u\) & Un cambio de 1 unidad en \(X\) cambia \(Y\) aproximadamente en \(100\beta_2\%\). \\
+Lineal-log & \(Y=\beta_1+\beta_2\ln(X)+u\) & Un aumento de 1\% en \(X\) cambia \(Y\) aproximadamente en \(\beta_2/100\) unidades. \\
+Log-log & \(\ln(Y)=\beta_1+\beta_2\ln(X)+u\) & \(\beta_2\) es una elasticidad. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Estas transformaciones son frecuentes cuando se estudian retornos a la educación, demanda, producción, salarios, precios o elasticidades macroeconómicas.
+
+%------------------------------------------------
+\section{Referencias bibliográficas}
+%------------------------------------------------
+
+Las siguientes referencias reúnen los textos base utilizados para la elaboración de estas notas.
+
+
+
+\begin{enumerate}[label=\arabic*.]
+    \item Wooldridge, J. M. (2010). \textit{Introducción a la econometría: Un enfoque moderno} (4.\textsuperscript{a} ed.). Cengage Learning.
+    \item Novales Cinca, A. (1993). \textit{Econometría} (2.\textsuperscript{a} ed.). McGraw-Hill.
+    \item García Núñez, L. (2015). \textit{Econometría 1: Introducción a la econometría moderna} (1.\textsuperscript{a} ed.). Fondo Editorial de la Pontificia Universidad Católica del Perú.
+\end{enumerate}
+
+
+\end{document}

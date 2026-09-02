@@ -1,0 +1,1152 @@
+\documentclass[aspectratio=169,11pt,table]{beamer}
+
+% ================================================================
+% PAQUETES
+% ================================================================
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,babel,shapes.geometric,shadows}
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+
+% ================================================================
+% IDENTIDAD VISUAL CCDE (replicada de la presentación de referencia)
+% ================================================================
+\definecolor{ccdenavy}{RGB}{10,30,64}
+\definecolor{ccdeblue}{RGB}{34,53,94}
+\definecolor{ccdemid}{RGB}{43,91,155}
+\definecolor{ccdeaccent}{RGB}{0,119,182}
+\definecolor{ccdesky}{RGB}{61,150,210}
+\definecolor{ccdelight}{RGB}{115,196,223}
+\definecolor{ccdeice}{RGB}{235,247,252}
+\definecolor{codebg}{RGB}{245,247,250}
+\definecolor{warn}{RGB}{202,93,54}
+\definecolor{okgreen}{RGB}{22,128,95}
+
+\usetheme{default}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{section in toc}[sections numbered]
+\setbeamertemplate{itemize item}{\color{ccdeaccent}\small$\blacktriangleright$}
+\setbeamertemplate{itemize subitem}{\color{ccdesky}\scriptsize$\bullet$}
+\setbeamertemplate{enumerate item}{\color{ccdeaccent}\insertenumlabel.}
+
+\setbeamercolor{normal text}{fg=ccdenavy,bg=ccdeice!18}
+\setbeamercolor{frametitle}{fg=white,bg=ccdenavy}
+\setbeamercolor{title}{fg=white,bg=ccdenavy}
+\setbeamercolor{subtitle}{fg=ccdeice}
+\setbeamercolor{structure}{fg=ccdeaccent}
+\setbeamercolor{block title}{fg=white,bg=ccdeblue}
+\setbeamercolor{block body}{fg=ccdenavy,bg=white}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.72cm,dp=0.24cm,leftskip=0.38cm,rightskip=0.38cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}
+}
+
+\newcommand{\ccdelogofile}{CCDE-logo-whatsapp-cropped.png}
+
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.70\paperwidth,ht=0.38cm,dp=0.12cm,leftskip=0.35cm]{author in head/foot}%
+      \scriptsize\textcolor{ccdemid}{CCDE -- Árboles de decisión y métodos de ensamble}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.20\paperwidth,ht=0.38cm,dp=0.12cm,center]{date in head/foot}%
+      \IfFileExists{\ccdelogofile}{\includegraphics[height=0.25cm]{\ccdelogofile}}{}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.10\paperwidth,ht=0.38cm,dp=0.12cm,rightskip=0.35cm]{page number in head/foot}%
+      \hfill\scriptsize\textcolor{ccdeblue}{\insertframenumber/\inserttotalframenumber}
+    \end{beamercolorbox}%
+  }%
+}
+
+% ================================================================
+% COMPONENTES
+% ================================================================
+\newcommand{\source}[1]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[
+      anchor=south west,
+      text=ccdemid,
+      font=\tiny,
+      align=left,
+      text width=15.2cm
+    ] at ([xshift=0.35cm,yshift=0.56cm]current page.south west) {Fuente: #1};
+  \end{tikzpicture}%
+}
+
+\newcommand{\sourceright}[1]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[
+      anchor=south west,
+      text=ccdemid,
+      font=\tiny,
+      align=left,
+      text width=6.7cm
+    ] at ([xshift=8.25cm,yshift=0.56cm]current page.south west) {Fuente: #1};
+  \end{tikzpicture}%
+}
+
+\newcommand{\tagpill}[1]{%
+  \tikz[baseline=(x.base)]\node[
+    fill=ccdeice,draw=ccdelight,rounded corners=2pt,
+    inner xsep=4pt,inner ysep=2pt
+  ] (x) {\scriptsize\bfseries\textcolor{ccdeblue}{#1}};%
+}
+
+\newtcolorbox{ccdebox}[1][]{
+  enhanced,
+  colback=white,
+  colframe=ccdeblue,
+  arc=1.5mm,
+  boxrule=0.7pt,
+  left=2.2mm,
+  right=2.2mm,
+  top=1.5mm,
+  bottom=1.5mm,
+  #1
+}
+
+\newtcolorbox{keybox}[1][]{
+  enhanced,
+  colback=ccdelight!13,
+  colframe=ccdeaccent,
+  arc=1.5mm,
+  boxrule=0.8pt,
+  left=2.4mm,
+  right=2.4mm,
+  top=1.6mm,
+  bottom=1.6mm,
+  fontupper=\small,
+  #1
+}
+
+\newtcolorbox{contrastbox}[2]{
+  enhanced,
+  colback=#1!8,
+  colframe=#1!80!ccdenavy,
+  title=#2,
+  fonttitle=\bfseries,
+  coltitle=white,
+  boxed title style={colback=#1!80!ccdenavy,arc=1mm,boxrule=0pt},
+  attach boxed title to top left={yshift=-2mm,xshift=2mm},
+  arc=1.5mm,
+  boxrule=0.7pt,
+  left=2.2mm,
+  right=2.2mm,
+  top=2.8mm,
+  bottom=1.6mm
+}
+
+\lstdefinestyle{ccdepython}{
+  language=Python,
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\bfseries\color{ccdeaccent},
+  commentstyle=\itshape\color{okgreen},
+  stringstyle=\color{warn},
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{ccdelight},
+  frameround=tttt,
+  showstringspaces=false,
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  aboveskip=0cm,
+  belowskip=0cm
+}
+
+\title{Árboles de decisión y métodos de ensamble}
+\subtitle{De CART al bootstrap, bagging, random forests y boosting}
+\author{Círculo de Ciencia de Datos y Econometría}
+\date{22 de julio de 2026}
+
+\begin{document}
+
+% ================================================================
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[ccdeice!35] (current page.south west) rectangle (current page.north east);
+  \fill[ccdenavy] (current page.north west) rectangle ([yshift=-1.25cm]current page.north east);
+  \fill[ccdeblue] ([yshift=-1.25cm]current page.north west) rectangle ([yshift=-1.52cm]current page.north east);
+  \fill[ccdelight!45,opacity=0.85] ([xshift=13.6cm,yshift=-1.05cm]current page.north west) circle (1.25cm);
+  \fill[ccdeaccent!18,opacity=0.7] ([xshift=0.6cm,yshift=0.5cm]current page.south west) circle (2.4cm);
+  \draw[ccdelight,line width=1.4pt] ([xshift=0.75cm,yshift=-7.05cm]current page.north west) --
+    ([xshift=-0.75cm,yshift=-7.05cm]current page.north east);
+\end{tikzpicture}
+
+\vspace*{0.62cm}
+\begin{center}
+\begin{tcolorbox}[
+  enhanced,width=0.88\textwidth,colback=white,colframe=ccdelight,
+  arc=2mm,boxrule=0.9pt,left=6mm,right=6mm,top=5mm,bottom=5mm,
+  drop shadow={ccdenavy!22!white},borderline west={4pt}{0pt}{ccdeaccent}
+]
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.22\textwidth}
+\centering
+\IfFileExists{\ccdelogofile}{\includegraphics[width=0.88\linewidth]{\ccdelogofile}}{}
+\end{column}
+\begin{column}{0.74\textwidth}
+{\LARGE\bfseries\textcolor{ccdenavy}{Árboles de decisión y métodos de ensamble}\par}
+\vspace{0.22cm}
+{\large\textcolor{ccdeblue}{De CART al bootstrap, bagging, random forests y boosting}\par}
+\vspace{0.38cm}
+{\normalsize\bfseries\textcolor{ccdeaccent}{Círculo de Ciencia de Datos y Econometría}}\\[0.25em]
+{\small 22 de julio de 2026}
+\end{column}
+\end{columns}
+\end{tcolorbox}
+\end{center}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Mapa de la presentación}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.58\textwidth}
+\tableofcontents
+\end{column}
+\begin{column}{0.37\textwidth}
+\begin{keybox}
+\textbf{Pregunta guía}\\[0.15cm]
+¿Cómo pasamos de un árbol interpretable pero inestable a modelos colectivos con mejor capacidad predictiva?
+\end{keybox}
+\vspace{0.18cm}
+\begin{ccdebox}
+\small
+\textbf{Fuentes troncales}\\
+Géron, cap. 6; James et al., cap. 8.\\[0.12cm]
+\textbf{Aplicación}\\
+Código reproducible en Python.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\section{Fundamentos de árboles}
+
+\begin{frame}{¿Qué aprende un árbol de decisión?}
+\small
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.45\textwidth}
+\begin{itemize}
+  \item Divide el espacio de predictores en \textbf{regiones rectangulares}.
+  \item En cada nodo formula una regla del tipo \(x_j \leq t\).
+  \item En una hoja devuelve una clase, probabilidad o promedio.
+  \item Las reglas forman una secuencia legible: \textbf{si--entonces}.
+\end{itemize}
+\vspace{0.15cm}
+\begin{keybox}
+Un árbol es un modelo no paramétrico: no presupone linealidad ni una forma funcional global.
+\end{keybox}
+\end{column}
+\begin{column}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[
+  level distance=1.28cm,
+  level 1/.style={sibling distance=3.65cm},
+  level 2/.style={sibling distance=1.72cm},
+  every node/.style={font=\scriptsize,align=center},
+  split/.style={draw,rounded corners,fill=white,text width=1.92cm,minimum height=0.58cm,drop shadow={opacity=0.10}},
+  leaf/.style={draw,rounded corners,fill=ccdeice,text width=1.30cm,minimum height=0.52cm},
+  edge from parent/.style={draw,-{Latex},thick,ccdemid}
+]
+\node[split]{ingreso \(\leq\) 2500}
+  child {node[split]{deuda \(\leq\) 35\%}
+    child {node[leaf,fill=ccdelight!24]{riesgo\\bajo}}
+    child {node[leaf,fill=warn!12]{riesgo\\medio}}
+  }
+  child {node[split]{mora previa = sí}
+    child {node[leaf,fill=warn!18]{riesgo\\alto}}
+    child {node[leaf,fill=ccdelight!24]{riesgo\\bajo}}
+  };
+\node[text=ccdeaccent,font=\scriptsize\bfseries] at (-1.80,1.05) {sí};
+\node[text=ccdeaccent,font=\scriptsize\bfseries] at (1.80,1.05) {no};
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\source{Géron (2022), cap. 6; James et al. (2013), sec. 8.1.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{CART: crecer el árbol mediante divisiones binarias}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.52\textwidth}
+\begin{contrastbox}{ccdeblue}{Búsqueda voraz}
+\footnotesize
+\begin{enumerate}
+  \item Evaluar pares: característica \(k\) y umbral \(t_k\).
+  \item Elegir la división que más reduce la impureza.
+  \item Repetir el proceso en cada subconjunto.
+  \item Detenerse por pureza o por restricciones.
+\end{enumerate}
+\end{contrastbox}
+\vspace{0.22cm}
+\begin{keybox}
+CART no busca el árbol globalmente óptimo: toma la mejor decisión disponible en cada nodo.
+\end{keybox}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Función de coste de una división}
+\[
+J(k,t_k)=
+\frac{m_{\mathrm{izq}}}{m}G_{\mathrm{izq}}
++\frac{m_{\mathrm{der}}}{m}G_{\mathrm{der}}
+\]
+\footnotesize
+\begin{itemize}
+  \item \(G\): impureza o error del nodo.
+  \item \(m\): número de observaciones.
+  \item Se elige \((k,t_k)\) que minimiza \(J\).
+\end{itemize}
+\end{ccdebox}
+\vspace{0.18cm}
+\centering
+\tagpill{Entrenamiento: \(O(n\,m\log m)\)}\\[0.14cm]
+\tagpill{Predicción: \(O(\log m)\)}
+\end{column}
+\end{columns}
+\source{Géron (2022), ``The CART Training Algorithm'' y ``Computational Complexity''.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{De la raíz a la predicción}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.47\textwidth}
+\begin{contrastbox}{ccdeblue}{Clasificación}
+\footnotesize
+\begin{itemize}
+  \item La instancia recorre una única ruta.
+  \item La clase predicha es la mayoritaria en la hoja.
+  \item La probabilidad estimada es la proporción de cada clase dentro de esa hoja.
+\end{itemize}
+\[
+\widehat{P}(Y=k\mid x)=\frac{m_{k,\mathrm{hoja}}}{m_{\mathrm{hoja}}}
+\]
+\end{contrastbox}
+\end{column}
+\begin{column}{0.47\textwidth}
+\begin{contrastbox}{ccdeaccent}{Regresión}
+\footnotesize
+\begin{itemize}
+  \item La partición del espacio es análoga.
+  \item Cada hoja predice el promedio de \(y\).
+  \item CART elige divisiones que reducen el error cuadrático.
+\end{itemize}
+\[
+\widehat{y}(x)=\frac{1}{m_{\mathrm{hoja}}}
+\sum_{i\in\mathrm{hoja}}y_i
+\]
+\end{contrastbox}
+\end{column}
+\end{columns}
+\vspace{0.18cm}
+\begin{keybox}
+\centering
+La frontera de decisión es escalonada: flexible ante no linealidades, pero sensible a pequeñas variaciones de los datos.
+\end{keybox}
+\source{Géron (2022), ``Making Predictions'', ``Estimating Class Probabilities'' y ``Regression''.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{¿Cómo medir la calidad de una división?}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.31\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Gini}\\[-0.05cm]
+\[
+G=1-\sum_{k=1}^{K}p_k^2
+\]
+\footnotesize
+Rápido, criterio predeterminado de scikit-learn. Favorece nodos puros.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.31\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Entropía}\\[-0.05cm]
+\[
+H=-\sum_{k=1}^{K}p_k\log_2p_k
+\]
+\footnotesize
+Mide desorden informacional. Suele producir árboles muy similares a Gini.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.31\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Error de clasificación}\\[-0.05cm]
+\[
+E=1-\max_k p_k
+\]
+\footnotesize
+Útil para evaluar una hoja; Gini y entropía son más sensibles al crecer el árbol.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\vspace{0.28cm}
+\begin{keybox}
+\textbf{Lectura práctica:} la elección Gini/entropía suele importar menos que controlar profundidad, tamaño de hojas y validación fuera de muestra.
+\end{keybox}
+\source{Géron (2022), ``Gini Impurity or Entropy?''; James et al. (2013), sec. 8.1.2.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Regularizar y podar: evitar que el árbol memorice}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdeblue}{Pre-poda}
+\footnotesize
+Detener el crecimiento antes de que el árbol sea demasiado complejo:
+\begin{itemize}
+  \item \texttt{max\_depth}
+  \item \texttt{min\_samples\_split}
+  \item \texttt{min\_samples\_leaf}
+  \item \texttt{max\_leaf\_nodes}
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdeaccent}{Poda por complejidad}
+\footnotesize
+Crecer un árbol grande y seleccionar un subárbol \(T\):
+\[
+\sum_{m=1}^{|T|}\sum_{i:x_i\in R_m}(y_i-\hat y_{R_m})^2+\alpha|T|
+\]
+\begin{itemize}
+  \item \(\alpha\) penaliza hojas adicionales.
+  \item Se elige con validación cruzada.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+\vspace{0cm}
+\begin{keybox}
+\centering
+Más profundidad reduce sesgo, pero aumenta varianza. La complejidad debe elegirse con datos no usados para ajustar.
+\end{keybox}
+\source{Géron (2022), ``Regularization Hyperparameters''; James et al. (2013), ``Tree Pruning''.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Ventajas y límites de un árbol individual}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.47\textwidth}
+\begin{contrastbox}{okgreen}{Lo que hace bien}
+\footnotesize
+\begin{itemize}
+  \item Reglas fáciles de explicar y visualizar.
+  \item Captura interacciones y no linealidades con poca preparación.
+  \item Sirve para clasificación y regresión.
+  \item Predicción rápida.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\begin{column}{0.47\textwidth}
+\begin{contrastbox}{warn}{Lo que exige cuidado}
+\footnotesize
+\begin{itemize}
+  \item Alta varianza: sensible a cambios y a la orientación de los ejes.
+  \item Un árbol profundo sobreajusta.
+  \item Menor precisión que buenos ensambles.
+  \item Importancia por impureza puede sesgarse.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+\vspace{0.08cm}
+\begin{keybox}
+\centering
+La inestabilidad del árbol no es solo un problema: también es la oportunidad que explota \textbf{bagging}.
+\end{keybox}
+\source{Géron (2022), ``Sensitivity to Axis Orientation'' y ``Decision Trees Have a High Variance''; James et al. (2013), sec. 8.1.4.}
+\end{frame}
+
+% ================================================================
+\section{Bootstrap y bagging}
+
+\begin{frame}{Bootstrap: muchas muestras a partir de una sola}
+\small
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.45\textwidth}
+\begin{itemize}
+  \item Partimos de una muestra \(D\) con \(n\) observaciones.
+  \item Construimos \(B\) muestras \(D^{*(b)}\) de tamaño \(n\).
+  \item Cada muestra se obtiene \textbf{con reemplazo}.
+  \item Una observación puede repetirse o quedar fuera.
+\end{itemize}
+\vspace{0.16cm}
+\begin{keybox}[fontupper=\footnotesize]
+En promedio, cada muestra bootstrap contiene cerca del \(63.2\%\) de observaciones únicas; el resto queda \emph{out-of-bag}.
+\end{keybox}
+\end{column}
+\begin{column}{0.51\textwidth}
+\centering
+\begin{tikzpicture}[
+  obs/.style={circle,draw=ccdemid,fill=white,minimum size=0.52cm,font=\scriptsize},
+  sample/.style={rounded corners,draw=ccdeaccent,fill=ccdeice,minimum width=4.65cm,minimum height=0.7cm,font=\scriptsize},
+  >=Latex
+]
+\foreach \x/\v in {0/1,0.8/2,1.6/3,2.4/4,3.2/5,4/6}{
+  \node[obs] (o\v) at (\x,2.25) {\v};
+}
+\node[font=\small\bfseries,text=ccdeblue] at (2,3.0) {Muestra original};
+\node[sample] (s1) at (2,0.9) {\(\{2,5,2,1,6,3\}\)};
+\node[sample] (s2) at (2,-0.15) {\(\{4,4,1,6,2,4\}\)};
+\node[sample] (s3) at (2,-1.2) {\(\{3,5,6,5,1,2\}\)};
+\coordinate (branch) at (-0.72,1.58);
+\draw[->,thick,ccdeaccent] (2,1.98) -- (2,1.58);
+\draw[thick,ccdeaccent] (2,1.58) -- (branch) -- ++(0,-2.78);
+\fill[ccdeaccent] (branch) circle (1.2pt);
+\draw[->,thick,ccdeaccent] (-0.72,0.9) -- (s1.west);
+\draw[->,thick,ccdeaccent] (-0.72,-0.15) -- (s2.west);
+\draw[->,thick,ccdeaccent] (-0.72,-1.2) -- (s3.west);
+\node[anchor=west,font=\scriptsize,text=ccdemid] at (4.55,0.9) {bootstrap 1};
+\node[anchor=west,font=\scriptsize,text=ccdemid] at (4.55,-0.15) {bootstrap 2};
+\node[anchor=west,font=\scriptsize,text=ccdemid] at (4.55,-1.2) {bootstrap \(B\)};
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\sourceright{James et al. (2013), sec. 8.2.1.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Bagging: entrenar en paralelo y agregar}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.54\textwidth}
+\centering
+\begin{tikzpicture}[
+  box/.style={draw,rounded corners,fill=white,text width=1.65cm,minimum height=0.58cm,align=center,font=\scriptsize,drop shadow={opacity=0.09}},
+  >=Latex
+]
+\node[box,fill=ccdeice] (d) at (0,2.55) {datos \(D\)};
+\node[box] (b1) at (-2.65,1.3) {bootstrap 1};
+\node[box] (b2) at (0,1.3) {bootstrap 2};
+\node[box] (b3) at (2.65,1.3) {bootstrap \(B\)};
+\node[box,fill=ccdeblue!8] (t1) at (-2.65,0.0) {árbol 1};
+\node[box,fill=ccdeblue!8] (t2) at (0,0.0) {árbol 2};
+\node[box,fill=ccdeblue!8] (t3) at (2.65,0.0) {árbol \(B\)};
+\node[box,fill=ccdelight!25,text width=2.75cm] (a) at (0,-1.40) {promedio o voto};
+\foreach \x in {b1,b2,b3}{\draw[->,thick,ccdeaccent] (d) -- (\x);}
+\draw[->,thick,ccdeblue] (b1) -- (t1);
+\draw[->,thick,ccdeblue] (b2) -- (t2);
+\draw[->,thick,ccdeblue] (b3) -- (t3);
+\foreach \x in {t1,t2,t3}{\draw[->,thick,ccdeaccent] (\x) -- (a);}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.42\textwidth}
+\begin{contrastbox}{ccdeaccent}{Algoritmo de bagging}
+\footnotesize
+\begin{enumerate}
+  \item Generar \(B\) muestras bootstrap.
+  \item Ajustar un árbol profundo en cada muestra.
+  \item Regresión: promediar predicciones.
+  \item Clasificación: votar o promediar probabilidades.
+\end{enumerate}
+\end{contrastbox}
+\vspace{0.16cm}
+\begin{keybox}
+\textbf{Bagging} = \emph{bootstrap aggregating}. Los modelos se entrenan de manera independiente y paralelizable.
+\end{keybox}
+\end{column}
+\end{columns}
+\source{Breiman (1996); James et al. (2013), sec. 8.2.1.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{¿Por qué funciona bagging? Reducción de varianza}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.51\textwidth}
+\begin{ccdebox}
+\footnotesize
+Si \(B\) estimadores tienen varianza \(\sigma^2\) y correlación media \(\rho\), la varianza de su promedio es aproximadamente:
+\[
+\mathrm{Var}(\bar f)\approx
+\rho\sigma^2+\frac{1-\rho}{B}\sigma^2
+\]
+\begin{itemize}
+  \item Al crecer \(B\), desaparece la parte no correlacionada.
+  \item La correlación \(\rho\) impone un piso.
+  \item Árboles profundos: bajo sesgo, alta varianza.
+\end{itemize}
+\end{ccdebox}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{keybox}[fontupper=\footnotesize]
+\textbf{Intuición}\\[0.12cm]
+Los errores particulares de cada árbol se compensan cuando promediamos.
+\end{keybox}
+\vspace{0.10cm}
+\begin{contrastbox}{warn}{Límite}
+\footnotesize
+Si todos los árboles se parecen demasiado, sus errores se mueven juntos y el promedio mejora menos.
+\end{contrastbox}
+\vspace{0.10cm}
+\begin{contrastbox}{ccdeaccent}{Siguiente paso}
+\footnotesize
+Random forests sortea variables para \textbf{decorrelacionar} los árboles.
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{James et al. (2013), sec. 8.2.1.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Error out-of-bag: validación ``gratis'' dentro de bagging}
+\small
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\begin{itemize}
+  \item Para cada observación \(i\), identificar árboles que no la usaron.
+  \item Predecir \(i\) solo con esos árboles OOB.
+  \item Comparar la predicción agregada con \(y_i\).
+  \item Promediar el error sobre todas las observaciones.
+\end{itemize}
+\vspace{0.18cm}
+\begin{keybox}
+El error OOB aproxima el error de prueba sin reservar otro conjunto ni ejecutar validación cruzada completa.
+\end{keybox}
+\end{column}
+\begin{column}{0.47\textwidth}
+\centering
+\begin{tikzpicture}[
+  card/.style={draw,rounded corners,minimum width=2.6cm,minimum height=0.75cm,align=center,font=\scriptsize},
+  >=Latex
+]
+\node[card,fill=ccdeice] (x) at (0,2.05) {observación \(i\)};
+\node[card,fill=warn!12] (oob) at (0,0.72) {árboles donde \(i\)\\quedó fuera};
+\node[card,fill=ccdelight!24] (p) at (0,-0.72) {predicción OOB\\\(\hat y_i^{\mathrm{OOB}}\)};
+\node[card,fill=white] (e) at (0,-2.05) {pérdida\\\(L(y_i,\hat y_i^{\mathrm{OOB}})\)};
+\draw[->,thick,ccdeaccent] (x)--(oob);
+\draw[->,thick,ccdeaccent] (oob)--(p);
+\draw[->,thick,ccdeaccent] (p)--(e);
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\source{James et al. (2013), ``Out-of-Bag Error Estimation''.}
+\end{frame}
+
+% ================================================================
+\section{Bosques y boosting}
+
+\begin{frame}{Random forests: bagging con árboles menos correlacionados}
+\small
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdeblue}{Bagging de árboles}
+\small
+En cada división se consideran las \(p\) variables disponibles. Un predictor muy fuerte puede dominar muchos árboles.
+\end{contrastbox}
+\vspace{0.28cm}
+\begin{contrastbox}{ccdeaccent}{Random forest}
+\small
+En cada nodo se sortea un subconjunto de \(m\) variables y la mejor división se busca solo allí.
+\[
+m\approx\sqrt{p}\quad\text{en clasificación}
+\]
+\end{contrastbox}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{ccdebox}
+\small
+\textbf{Efecto de la aleatoriedad}
+\begin{itemize}
+  \item Da oportunidad a predictores distintos.
+  \item Reduce correlación entre árboles.
+  \item Mantiene la reducción de varianza por promedio.
+  \item Suele mejorar la precisión respecto a bagging puro.
+\end{itemize}
+\end{ccdebox}
+\vspace{0.18cm}
+\begin{keybox}
+Bagging es el caso particular de random forest con \(m=p\).
+\end{keybox}
+\end{column}
+\end{columns}
+\source{James et al. (2013), sec. 8.2.2.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Boosting: aprender de los errores anteriores}
+\small
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.53\textwidth}
+\centering
+\begin{tikzpicture}[
+  box/.style={draw,rounded corners,fill=white,text width=1.25cm,minimum height=0.64cm,align=center,font=\tiny,drop shadow={opacity=0.08}},
+  >=Latex
+]
+\node[box,fill=ccdeice] (r0) at (-2.85,0.65) {datos\\\(r^{(0)}=y\)};
+\node[box,fill=ccdeblue!8] (t1) at (-0.95,0.65) {árbol\\\(\hat f_1\)};
+\node[box,fill=ccdeblue!8] (t2) at (0.95,0.65) {árbol sobre\\residuos};
+\node[box,fill=ccdelight!25] (sum) at (2.85,0.65) {suma\\\(\sum_b\lambda\hat f_b\)};
+\draw[->,thick,ccdeaccent] (r0)--(t1);
+\draw[->,thick,ccdeaccent] (t1)--(t2);
+\draw[->,thick,ccdeaccent] (t2)--(sum);
+\node[font=\scriptsize,text=warn,align=center] at (0,-1.05) {cada árbol depende\\de los anteriores};
+\draw[->,warn] (0,-0.65) -- (0,0.15);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.43\textwidth}
+\begin{contrastbox}{ccdeaccent}{Tres hiperparámetros}
+\small
+\begin{itemize}
+  \item Número de árboles \(B\).
+  \item Tasa de aprendizaje \(\lambda\).
+  \item Profundidad \(d\) de cada árbol.
+\end{itemize}
+\end{contrastbox}
+\vspace{0.18cm}
+\begin{keybox}
+Boosting es secuencial y no necesita muestras bootstrap: cada nuevo árbol corrige parte del error acumulado.
+\end{keybox}
+\end{column}
+\end{columns}
+\source{James et al. (2013), sec. 8.2.3, algoritmo de boosting para regresión.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Árbol, bagging, random forest y boosting}
+\vfill
+\renewcommand{\arraystretch}{1.34}
+\setlength{\tabcolsep}{5.8pt}
+\scriptsize
+\begin{center}
+\begin{tabular}{lllll}
+\toprule
+\rowcolor{ccdenavy}
+\parbox{1.75cm}{\textcolor{white}{\textbf{Método}}} &
+\parbox{2.55cm}{\textcolor{white}{\textbf{Entrenamiento}}} &
+\parbox{2.55cm}{\textcolor{white}{\textbf{Agregación}}} &
+\parbox{2.60cm}{\textcolor{white}{\textbf{Fortaleza}}} &
+\parbox{2.45cm}{\textcolor{white}{\textbf{Riesgo}}}\\
+\midrule
+\parbox{1.75cm}{\textbf{Árbol}} &
+\parbox{2.55cm}{un modelo} &
+\parbox{2.55cm}{una ruta} &
+\parbox{2.60cm}{interpretación} &
+\parbox{2.45cm}{alta varianza}\\
+\rowcolor{ccdeice!50}
+\parbox{1.75cm}{\textbf{Bagging}} &
+\parbox{2.55cm}{bootstrap, paralelo} &
+\parbox{2.55cm}{promedio o voto} &
+\parbox{2.60cm}{reduce varianza} &
+\parbox{2.45cm}{árboles correlacionados}\\
+\parbox{1.75cm}{\textbf{Random forest}} &
+\parbox{2.55cm}{bootstrap + variables aleatorias} &
+\parbox{2.55cm}{promedio o voto} &
+\parbox{2.60cm}{precisión robusta} &
+\parbox{2.45cm}{menor interpretabilidad}\\
+\rowcolor{ccdeice!50}
+\parbox{1.75cm}{\textbf{Boosting}} &
+\parbox{2.55cm}{secuencial, corrige errores} &
+\parbox{2.55cm}{suma ponderada} &
+\parbox{2.60cm}{bajo sesgo y alta precisión} &
+\parbox{2.45cm}{sensible al ajuste}\\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.30cm}
+\begin{keybox}
+\centering
+No hay ganador universal: la elección depende del objetivo, costo de errores, volumen de datos y necesidad de explicación.
+\end{keybox}
+\vfill
+\end{frame}
+
+% ================================================================
+\section{Aplicaciones reales}
+
+\begin{frame}{¿Dónde aparecen estos modelos en la vida real?}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.32\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Finanzas}\\[0.18cm]
+\footnotesize
+Riesgo de crédito, fraude, mora y priorización de cobranzas.
+\end{ccdebox}
+\vspace{0.10cm}
+\begin{ccdebox}
+\centering
+\textbf{Salud}\\[0.18cm]
+\footnotesize
+Apoyo diagnóstico, riesgo de readmisión y triaje clínico.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.32\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Marketing}\\[0.18cm]
+\footnotesize
+Churn, respuesta a campañas, propensión de compra y segmentación.
+\end{ccdebox}
+\vspace{0.10cm}
+\begin{ccdebox}
+\centering
+\textbf{Operaciones}\\[0.18cm]
+\footnotesize
+Mantenimiento predictivo, fallas, demanda e inventarios.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.32\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Sector público}\\[0.18cm]
+\footnotesize
+Focalización, inspección, alertas tempranas y asignación de recursos.
+\end{ccdebox}
+\vspace{0.10cm}
+\begin{ccdebox}
+\centering
+\textbf{Ambiente}\\[0.18cm]
+\footnotesize
+Riesgo de incendios, uso de suelo, calidad del aire y agricultura.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\vspace{0.14cm}
+\begin{keybox}
+\textbf{Principio de uso responsable:} una buena métrica predictiva no sustituye validación temporal, análisis de sesgos ni revisión humana cuando la decisión afecta derechos.
+\end{keybox}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Mini-caso: sistema de apoyo para riesgo crediticio}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.45\textwidth}
+\centering
+\vspace{1.10cm}
+\begin{tikzpicture}[
+  node distance=0.46cm,
+  box/.style={draw,rounded corners,fill=white,text width=4.25cm,minimum height=0.55cm,align=center,font=\small,drop shadow={opacity=0.08}},
+  >=Latex
+]
+\node[box] (x) {ingresos, deuda, historial, estabilidad};
+\node[box,fill=ccdeice,below=of x] (m) {árbol o ensamble};
+\node[box,fill=ccdelight!22,below=of m] (p) {probabilidad de mora};
+\node[box,below=of p] (d) {revisión + decisión + monitoreo};
+\foreach \a/\b in {x/m,m/p,p/d}{\draw[->,thick,ccdeaccent] (\a)--(\b);}
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.51\textwidth}
+\begin{keybox}
+\textbf{Pregunta:} ¿quién requiere una evaluación crediticia más cuidadosa?
+\end{keybox}
+\vspace{0.15cm}
+\footnotesize
+\begin{itemize}
+  \item \textbf{Métrica:} ROC-AUC, recall de mora y costo esperado.
+  \item \textbf{Validación:} corte temporal, no solo partición aleatoria.
+  \item \textbf{Explicación:} reglas, importancia por permutación o SHAP.
+  \item \textbf{Riesgo:} proxies de atributos protegidos y deriva económica.
+  \item \textbf{Uso:} apoyo a la decisión, con mecanismos de revisión.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\section{Código Python}
+
+\begin{frame}[fragile]{Python 1/3: datos, partición y árbol regularizado}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.62\textwidth}
+\begin{lstlisting}[style=ccdepython]
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+data = load_breast_cancer(as_frame=True)
+X_train, X_test, y_train, y_test = train_test_split(
+    data.data, data.target, test_size=0.25,
+    stratify=data.target, random_state=42
+)
+tree = DecisionTreeClassifier(
+    max_depth=3, min_samples_leaf=8,
+    random_state=42
+)
+tree.fit(X_train, y_train)
+\end{lstlisting}
+\end{column}
+\begin{column}{0.34\textwidth}
+\begin{keybox}
+\textbf{Decisiones metodológicas}
+\begin{itemize}
+  \item \texttt{stratify}: conserva proporciones.
+  \item Profundidad y hoja mínima: regularizan.
+  \item \texttt{random\_state}: reproducibilidad.
+\end{itemize}
+\end{keybox}
+\vspace{0cm}
+\begin{ccdebox}
+\scriptsize
+Datos: Breast Cancer Wisconsin, incluidos en scikit-learn. El objetivo es clasificación binaria.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}[fragile]{Python 2/3: bagging y random forest}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.62\textwidth}
+\begin{lstlisting}[style=ccdepython]
+from sklearn.ensemble import (
+    BaggingClassifier, RandomForestClassifier
+)
+
+bag = BaggingClassifier(
+    estimator=DecisionTreeClassifier(random_state=42),
+    n_estimators=300, max_samples=0.8,
+    bootstrap=True, oob_score=True,
+    n_jobs=-1, random_state=42
+)
+
+rf = RandomForestClassifier(
+    n_estimators=500, max_features="sqrt",
+    min_samples_leaf=2, oob_score=True,
+    n_jobs=-1, random_state=42
+)
+
+bag.fit(X_train, y_train)
+rf.fit(X_train, y_train)
+\end{lstlisting}
+\end{column}
+\begin{column}{0.34\textwidth}
+\begin{keybox}
+\textbf{Correspondencia teórica}
+\begin{itemize}
+  \item \texttt{bootstrap=True}: remuestreo.
+  \item \texttt{oob\_score=True}: error OOB.
+  \item \texttt{max\_features}: decorrelación.
+  \item \texttt{n\_jobs=-1}: paralelismo.
+\end{itemize}
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}[fragile]{Python 3/3: boosting y evaluación}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.61\textwidth}
+\begin{lstlisting}[style=ccdepython]
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import accuracy_score, roc_auc_score
+
+boost = GradientBoostingClassifier(
+    n_estimators=150, learning_rate=0.05,
+    max_depth=2, random_state=42
+)
+boost.fit(X_train, y_train)
+
+for name, model in models.items():
+    pred = model.predict(X_test)
+    prob = model.predict_proba(X_test)[:, 1]
+    print(name,
+          accuracy_score(y_test, pred),
+          roc_auc_score(y_test, prob))
+\end{lstlisting}
+\end{column}
+\begin{column}{0.35\textwidth}
+\begin{keybox}
+\textbf{No evaluar solo accuracy}
+\begin{itemize}
+  \item ROC-AUC: ordenamiento probabilístico.
+  \item Matriz de confusión: tipos de error.
+  \item Calibración: calidad de probabilidades.
+  \item Métrica de negocio: costo real.
+\end{itemize}
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Resultado reproducible del ejemplo}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.58\textwidth}
+\vspace{2.20cm}
+\renewcommand{\arraystretch}{1.32}
+\footnotesize
+\begin{tabular}{lccc}
+\toprule
+\rowcolor{ccdenavy}
+\textcolor{white}{\textbf{Modelo}} &
+\textcolor{white}{\textbf{Accuracy}} &
+\textcolor{white}{\textbf{ROC-AUC}} &
+\textcolor{white}{\textbf{OOB}}\\
+\midrule
+Árbol & 0.951 & 0.962 & --\\
+\rowcolor{ccdeice!50}
+Bagging & 0.951 & 0.993 & 0.960\\
+Random forest & \textbf{0.958} & \textbf{0.994} & 0.955\\
+\rowcolor{ccdeice!50}
+Gradient boosting & 0.951 & 0.993 & --\\
+\bottomrule
+\end{tabular}
+\end{column}
+\begin{column}{0.38\textwidth}
+\begin{keybox}
+\textbf{Lectura}
+\begin{itemize}
+  \item Los ensambles elevan claramente ROC-AUC.
+  \item OOB es cercano al desempeño de prueba.
+  \item Diferencias pequeñas requieren repetición o validación cruzada.
+\end{itemize}
+\end{keybox}
+\vspace{0cm}
+\begin{ccdebox}
+\footnotesize
+Una sola partición ilustra el flujo, pero no basta para afirmar superioridad general.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\vspace{0cm}
+\source{Ejecución local de \texttt{codigo\_demo\_arboles\_ensambles.py}, scikit-learn 1.8.0, semilla 42.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Interpretar y validar antes de desplegar}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.32\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Desempeño}\\[0.16cm]
+\small
+Validación cruzada o temporal, métricas por subgrupo, calibración y curvas de aprendizaje.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.32\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Interpretación}\\[0.16cm]
+\small
+Reglas del árbol, importancia por permutación, dependencia parcial y explicaciones locales.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.32\textwidth}
+\begin{ccdebox}
+\centering
+\textbf{Operación}\\[0.16cm]
+\small
+Latencia, monitoreo de deriva, umbrales, trazabilidad y proceso de revisión humana.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\vspace{0.30cm}
+\begin{keybox}
+\centering
+\textbf{Evitar fuga de información:} toda transformación, selección y ajuste debe aprenderse solo con los datos de entrenamiento.
+\end{keybox}
+\end{frame}
+
+% ================================================================
+\section{Cierre y fuentes}
+
+\begin{frame}{Ideas que deben quedar}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.58\textwidth}
+\begin{enumerate}
+  \item Un árbol convierte datos en reglas y regiones fáciles de explicar.
+  \item CART crece de manera voraz; regularización y poda controlan el sobreajuste.
+  \item El bootstrap permite simular nuevas muestras desde los datos observados.
+  \item Bagging reduce varianza; random forests además decorrelaciona árboles.
+  \item Boosting construye un modelo secuencial que corrige errores.
+  \item La elección final depende de validación, costo de errores y contexto de uso.
+\end{enumerate}
+\end{column}
+\begin{column}{0.37\textwidth}
+\begin{keybox}
+\centering
+\large
+\textbf{Un árbol explica.}\\[0.18cm]
+\textbf{Un bosque estabiliza.}\\[0.18cm]
+\textbf{Boosting refina.}
+\end{keybox}
+\vspace{0.24cm}
+\centering
+\tagpill{interpretabilidad}\\[0.12cm]
+\tagpill{varianza}\\[0.12cm]
+\tagpill{generalización}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Bibliografía y alcance de capítulos}
+\small
+\begin{ccdebox}
+\textbf{Géron, A.} (2022). \emph{Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow}, 3.ª ed., O'Reilly.\\
+\textbf{Capítulo 6:} entrenamiento y visualización; predicción; probabilidades; CART; complejidad; Gini/entropía; regularización; regresión; sensibilidad a ejes; alta varianza.
+\end{ccdebox}
+\vspace{0.12cm}
+\begin{ccdebox}
+\textbf{James, G.; Witten, D.; Hastie, T.; Tibshirani, R.} (2013). \emph{An Introduction to Statistical Learning with Applications in R}. Springer.\\
+\textbf{Capítulo 8:} árboles de regresión y clasificación; árboles vs. modelos lineales; ventajas/desventajas; bagging; OOB; importancia; random forests; boosting; laboratorio.
+\end{ccdebox}
+\vspace{0.12cm}
+\begin{keybox}
+Los ejercicios del final de capítulo no se reproducen; el laboratorio de ISLR se traduce conceptualmente de R a Python para cumplir el objetivo práctico.
+\end{keybox}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Referencias complementarias}
+\small
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{ccdebox}
+\textbf{Breiman, L.} (1996). ``Bagging Predictors''. \emph{Machine Learning}, 24, 123--140.
+\end{ccdebox}
+\vspace{0.18cm}
+\begin{ccdebox}
+\textbf{Breiman, L.} (2001). ``Random Forests''. \emph{Machine Learning}, 45, 5--32.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{ccdebox}
+\textbf{scikit-learn developers.} Documentación de \texttt{tree} y \texttt{ensemble}: \texttt{scikit-learn.org}.
+\end{ccdebox}
+\vspace{0.18cm}
+\begin{ccdebox}
+\textbf{Código asociado:}\\
+\texttt{codigo\_demo\_arboles\_ensambles.py}
+\end{ccdebox}
+\end{column}
+\end{columns}
+\vfill
+\begin{keybox}
+\centering
+Presentación elaborada a partir de los dos capítulos indicados y con el sistema visual CCDE de la carpeta de referencia.
+\end{keybox}
+\end{frame}
+
+\end{document}
