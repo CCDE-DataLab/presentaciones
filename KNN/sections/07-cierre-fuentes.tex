@@ -1,0 +1,57 @@
+\section{Cierre y Fuentes}
+
+% ================================================================
+\begin{frame}{Ideas Clave que Deben Quedar}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.62\textwidth}
+\begin{enumerate}\setlength{\itemsep}{0.22em}
+  \item \textbf{Aprendizaje no paramétrico}: KNN no asume una función global $\hat{f}(X)$; aproxima la densidad condicional evaluando vecindades locales $\mathcal{N}_k(x_0)$.
+  \item \textbf{La métrica define la vecindad}: cambiar la distancia (Euclidiana, Manhattan, Chebyshev) altera la geometría de las regiones de decisión.
+  \item \textbf{Escalamiento obligatorio}: diferencias de escala dominan la distancia; usar siempre un \texttt{Pipeline} con \texttt{StandardScaler}.
+  \item \textbf{Hiperparámetro $k$}: controla el trade-off sesgo--varianza ($k=1$ sobreajusta; $k$ grande suaviza en exceso).
+  \item \textbf{Maldición de la dimensionalidad}: en alta dimensión los puntos se vuelven equidistantes y el soporte local deja de ser representativo.
+  \item \textbf{Lazy learner}: entrenamiento trivial $O(1)$, pero costo computacional desplazado a la inferencia $O(N \cdot p)$.
+\end{enumerate}
+\end{column}
+
+\begin{column}{0.35\textwidth}
+\begin{keybox}
+\centering
+\textbf{Vecindad}\\[0.08cm]
+$+$\\[0.08cm]
+\textbf{Métrica}\\[0.08cm]
+$+$\\[0.08cm]
+\textbf{Escala}\\[0.10cm]
+$\Downarrow$\\[0.10cm]
+\scriptsize
+\textbf{Fronteras flexibles sin supuestos paramétricos}
+\end{keybox}
+
+\vspace{0.10cm}
+\centering
+\tagpill{Distancia} \quad \tagpill{Escala} \\[0.10cm]
+\tagpill{Sesgo-Varianza} \quad \tagpill{Pipeline}
+\end{column}
+\end{columns}
+\source{James et al. (2013); Hastie et al. (2009); Géron (2022).}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Bibliografía Base Recomendada}
+\footnotesize
+\begin{ccdebox}
+\textbf{James, G.; Witten, D.; Hastie, T.; Tibshirani, R.} (2013). \emph{An Introduction to Statistical Learning with Applications in R}. Springer.\\
+\textbf{Capítulos 2 y 4:} fundamentos de aprendizaje supervisado, clasificador de Bayes, formulación de KNN y trade-off sesgo--varianza.
+\end{ccdebox}
+\vspace{0.06cm}
+\begin{ccdebox}
+\textbf{Hastie, T.; Tibshirani, R.; Friedman, J.} (2009). \emph{The Elements of Statistical Learning}, 2.ª ed., Springer.\\
+\textbf{Capítulos 2 y 13:} teoría de estimadores locales por densidad de kernel, prototipos, tasas de error y maldición de la dimensionalidad.
+\end{ccdebox}
+\vspace{0.06cm}
+\begin{ccdebox}
+\textbf{Géron, A.} (2022). \emph{Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow}, 3.ª ed., O'Reilly.\\
+\textbf{Capítulo 3:} implementación práctica de \texttt{KNeighborsClassifier}, escalamiento y validación con \texttt{Pipeline} y \texttt{GridSearchCV}.
+\end{ccdebox}
+\end{frame}

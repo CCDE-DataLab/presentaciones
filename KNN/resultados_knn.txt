@@ -1,0 +1,20 @@
+MEJOR CONFIGURACION KNN
+{'knn__metric': 'minkowski', 'knn__n_neighbors': 15, 'knn__p': 2, 'knn__weights': 'distance'}
+
+Best CV ROC-AUC: 0.9875
+Test Accuracy: 0.9650
+Test ROC-AUC: 0.9948
+
+Confusion matrix:
+[[48  5]
+ [ 0 90]]
+
+Classification report:
+              precision    recall  f1-score   support
+
+           0       1.00      0.91      0.95        53
+           1       0.95      1.00      0.97        90
+
+    accuracy                           0.97       143
+   macro avg       0.97      0.95      0.96       143
+weighted avg       0.97      0.97      0.96       143

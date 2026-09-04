@@ -1,0 +1,92 @@
+\section{Fundamentos e Intuición de KNN}
+
+% ================================================================
+\begin{frame}{¿Qué es K-Nearest Neighbors (KNN)?}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.54\textwidth}
+\begin{ccdebox}
+\footnotesize
+\textbf{K-Nearest Neighbors (KNN)} es un algoritmo supervisado \textbf{no paramétrico} y \textbf{basado en instancias}.
+\end{ccdebox}
+
+\vspace{0.05cm}
+\begin{itemize}\setlength{\itemsep}{0.10em}
+  \footnotesize
+  \item \textbf{Sin parámetros globales}: no calcula un vector $\beta$.
+  \item \textbf{Lazy learning}: memoriza el conjunto de entrenamiento.
+  \item \textbf{Fronteras locales}: aproxima relaciones no lineales.
+\end{itemize}
+
+\vspace{0.06cm}
+\begin{keybox}
+\footnotesize \textbf{Regla de decisión}: la predicción para $x_0$ se obtiene consultando el vecindario local $\mathcal{N}_k(x_0)$.
+\end{keybox}
+\end{column}
+
+\begin{column}{0.43\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.68]
+  \draw[step=1cm,ccdeice!70,very thin] (-2,-2) grid (2,2);
+  
+  \fill[ccdeaccent] (-1.2,0.8) circle (2.6pt) node[above left=1pt,font=\tiny\bfseries,text=ccdemid]{Clase A};
+  \fill[ccdeaccent] (-0.7,1.3) circle (2.6pt);
+  \fill[ccdeaccent] (-1.4,-0.4) circle (2.6pt);
+  \fill[ccdeaccent] (-0.4,0.6) circle (2.6pt);
+  \fill[ccdeaccent] (-0.8,-0.2) circle (2.6pt);
+
+  \fill[warn] (1.1,-0.7) circle (2.6pt) node[below right=1pt,font=\tiny\bfseries,text=warn]{Clase B};
+  \fill[warn] (0.6,-1.2) circle (2.6pt);
+  \fill[warn] (1.4,0.3) circle (2.6pt);
+  \fill[warn] (0.4,-0.5) circle (2.6pt);
+  \fill[warn] (1.0,-1.4) circle (2.6pt);
+
+  \node[draw=ccdenavy,fill=white,circle,inner sep=2.5pt,line width=1.2pt] (x0) at (0,0) {};
+  \fill[ccdenavy] (0,0) circle (1.2pt);
+  \node[above=2.5pt of x0,font=\scriptsize\bfseries,text=ccdenavy] {$x_0$};
+
+  \draw[ccdemid,thick,dashed] (x0) circle (0.95cm);
+  \node[below=0.97cm of x0,font=\tiny\bfseries,text=ccdemid]{$\mathcal{N}_3(x_0)$};
+
+  \draw[ccdesky,dotted,line width=0.9pt] (x0) circle (1.55cm);
+  \node[above=1.57cm of x0,font=\tiny\bfseries,text=ccdesky]{$\mathcal{N}_5(x_0)$};
+\end{tikzpicture}
+\end{column}
+\end{columns}
+
+\vspace{0.10cm}
+\source{James et al. (2013), cap. 2; Hastie et al. (2009), cap. 13.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Paradigma: Modelos Paramétricos vs. Basados en Instancias}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdemid}{Enfoque Paramétrico}
+\footnotesize
+\textbf{Ejemplos:} Regresión lineal, Logit, LDA.
+\begin{itemize}\setlength{\itemsep}{0.12em}
+  \item Asume forma funcional global explícita:
+  \[ f(X) = \beta_0 + \sum_{j=1}^p \beta_j X_j \]
+  \item \textbf{Entrenamiento:} intensivo (optimización).
+  \item \textbf{Inferencia:} instantánea con $\hat{\beta}$.
+  \item \textbf{Riesgo:} sesgo por mala especificación.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdeaccent}{Enfoque No Paramétrico (KNN)}
+\footnotesize
+\textbf{Ejemplos:} KNN, Splines, Kernel regression.
+\begin{itemize}\setlength{\itemsep}{0.12em}
+  \item Sin estructura funcional previa:
+  \[ \hat{f}(x_0) = \mathrm{Agreg}(\{y_i : x_i \in \mathcal{N}_k(x_0)\}) \]
+  \item \textbf{Entrenamiento:} pasivo (memorización).
+  \item \textbf{Inferencia:} costo $O(N \cdot p)$ por consulta.
+  \item \textbf{Riesgo:} alta varianza en alta dimensión.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{Géron (2022), cap. 3; James et al. (2013), cap. 2.}
+\end{frame}

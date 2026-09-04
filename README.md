@@ -1,4 +1,4 @@
-﻿# CCDE — Materiales y Presentaciones Académicas
+# CCDE — Materiales y Presentaciones Académicas
 ### Círculo de Ciencia de Datos y Econometría
 
 Repositorio oficial con las presentaciones, artículos, código fuente en LaTeX (Beamer) y scripts interactivos en Python desarrollados para las sesiones del **Círculo de Ciencia de Datos y Econometría (CCDE)**.
@@ -28,6 +28,13 @@ CCDE/
 │   ├── sections/                                  # Secciones modulares para edición
 │   ├── codigo_demo_svm.py                         # Demo reproducible + figuras
 │   └── README.md                                  # Guía de compilación y fuentes
+│
+├── KNN/
+│   ├── presentacion-knn.pdf                       # Diapositivas finales compiladas (18 láminas)
+│   ├── presentacion-knn.tex                       # Archivo maestro Beamer (16:9)
+│   ├── sections/                                  # 7 secciones modulares en LaTeX
+│   ├── codigo_demo_knn.py                         # Demo reproducible con scikit-learn + figuras
+│   └── README.md                                  # Guía y ficha técnica del módulo
 │
 ├── .gitignore
 └── README.md
@@ -97,6 +104,26 @@ CCDE/
 
 ---
 
+### 4. K-Nearest Neighbors (KNN)
+* **Ubicación:** `KNN/`
+* **Temas abordados:**
+  * Fundamentos del aprendizaje perezoso (*lazy learning*) y modelos basados en instancias.
+  * Regla de decisión de mayoría, votación ponderada y KNN para regresión (media local y Nadaraya-Watson).
+  * Métricas de distancia (Euclidiana, Manhattan, Minkowski, Mahalanobis y Cosine).
+  * Sensibilidad crítica a la escala y estandarización con `StandardScaler` en `Pipeline`.
+  * Trade-off sesgo-varianza según $k$ y tasa de error asintótica frente al clasificador Bayesiano ($R^* \le R \le 2R^*$).
+  * Maldición de la dimensionalidad: concentración de medidas, hipercubos y degradación de la distancia.
+  * Implementación reproducible en Python con `KNeighborsClassifier` y optimización con `GridSearchCV`.
+  * **Demostración práctica:** `codigo_demo_knn.py` (Breast Cancer Wisconsin, $k=15$, distancia ponderada).
+
+#### 📚 Referencias Bibliográficas Base:
+* **James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013).** *An Introduction to Statistical Learning with Applications in R*. Springer. (Capítulos 2 y 4).
+* **Hastie, T., Tibshirani, R., & Friedman, J. (2009).** *The Elements of Statistical Learning* (2.ª ed.). Springer. (Capítulos 2, 6 y 13).
+* **Géron, A. (2022).** *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow* (3.ª ed.). O'Reilly Media. (Capítulo 3).
+* **Cover, T., & Hart, P. (1967).** *Nearest neighbor pattern classification*. IEEE Transactions on Information Theory, 13(1), 21–27.
+
+---
+
 ## 💻 Requisitos y Entorno
 
 ### Ejecución de código Python
@@ -105,6 +132,7 @@ Para correr los scripts de demostración:
 pip install numpy pandas scikit-learn matplotlib
 python "Arboles de Decisión/codigo_demo_arboles_ensambles.py"
 python "Support Vector Machines/codigo_demo_svm.py"
+python "KNN/codigo_demo_knn.py"
 ```
 
 ### Compilación de Diapositivas LaTeX (Beamer)
@@ -117,6 +145,9 @@ pdflatex presentacion-ciencia-datos-econometria.tex
 cd "Support Vector Machines"
 pdflatex presentacion-svm.tex
 pdflatex presentacion-svm.tex
+cd "../KNN"
+pdflatex presentacion-knn.tex
+pdflatex presentacion-knn.tex
 ```
 
 ---

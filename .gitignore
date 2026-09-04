@@ -1,4 +1,4 @@
-﻿# Libros pesados de referencia (conservados en local / Google Drive)
+# Libros pesados de referencia (conservados en local / Google Drive)
 *Statistical Learning*.pdf
 *Hands-On Machine Learning*.pdf
 
@@ -12,6 +12,7 @@
 *.synctex.gz
 *.fls
 *.fdb_latexmk
+*.vrb
 scratch.*
 
 # Python

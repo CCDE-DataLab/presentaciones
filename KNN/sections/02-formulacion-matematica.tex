@@ -1,0 +1,81 @@
+\section{Formulación Matemática de KNN}
+
+% ================================================================
+\begin{frame}{KNN en Clasificación: Voto Mayoritario y Probabilidad}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{ccdebox}
+\textbf{Definición de Vecindad Local}\\[0.06cm]
+Sea $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^N$ y $x_0$ un punto de consulta. $\mathcal{N}_k(x_0)$ contiene los $k$ puntos más cercanos a $x_0$ según $d(\cdot, \cdot)$.
+\end{ccdebox}
+
+\vspace{0.08cm}
+\begin{contrastbox}{ccdemid}{Probabilidad a Posteriori}
+\footnotesize
+Frecuencia empírica en el vecindario para la clase $c \in \mathcal{C}$:
+\[
+\widehat{P}(Y = c \mid X = x_0) = \frac{1}{k} \sum_{i \in \mathcal{N}_k(x_0)} \mathbb{I}(y_i = c)
+\]
+\end{contrastbox}
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdeaccent}{Regla de Voto Mayoritario}
+\footnotesize
+Asigna la clase con mayor soporte en $\mathcal{N}_k(x_0)$:
+\[
+\hat{y}(x_0) = \arg\max_{c \in \mathcal{C}} \sum_{i \in \mathcal{N}_k(x_0)} \mathbb{I}(y_i = c)
+\]
+\end{contrastbox}
+
+\vspace{0.08cm}
+\begin{keybox}
+\scriptsize
+\textbf{Teorema de Cover y Hart (1967)}:\\
+Cuando $N \to \infty$, la tasa de error del 1-NN satisface:
+\[ R^* \leq R_{1\text{-NN}} \leq 2R^*(1 - R^*) \]
+donde $R^*$ es el error del clasificador óptimo de Bayes.
+\end{keybox}
+\end{column}
+\end{columns}
+\source{Cover \& Hart (1967); James et al. (2013), cap. 2.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{KNN en Regresión y Ponderación por Distancia}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdemid}{KNN Regresión Estándar}
+\footnotesize
+Para $y_i \in \mathbb{R}$, media local de vecinos:
+\[
+\hat{f}(x_0) = \frac{1}{k} \sum_{i \in \mathcal{N}_k(x_0)} y_i
+\]
+\begin{itemize}\setlength{\itemsep}{0.06em}
+  \item Función escalonada por tramos.
+  \item Ponderación uniforme ($1/k$) en $\mathcal{N}_k(x_0)$.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdeaccent}{Ponderación por Distancia}
+\footnotesize
+Mayor influencia a observaciones próximas:
+\[
+w_i = \frac{1}{d(x_0, x_i)^p}, \quad \hat{f}(x_0) = \frac{\sum w_i y_i}{\sum w_i}
+\]
+\begin{itemize}\setlength{\itemsep}{0.06em}
+  \item Genera fronteras y ajustes suaves.
+  \item Atenúa el impacto de puntos lejanos.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+
+\vspace{0.06cm}
+\begin{ccdebox}
+\scriptsize \textbf{Interpretación}: KNN ponderado equivale a un \textbf{estimador de Nadaraya-Watson} con ancho de banda adaptativo a la distancia del $k$-ésimo vecino.
+\end{ccdebox}
+\source{Hastie, Tibshirani \& Friedman (2009), cap. 6 y 13.}
+\end{frame}

@@ -1,0 +1,76 @@
+\section{Maldición de la Dimensionalidad y Complejidad}
+
+% ================================================================
+\begin{frame}{La Maldición de la Dimensionalidad (\textit{Curse of Dimensionality})}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.50\textwidth}
+\begin{contrastbox}{warn}{El Hipervolumen Vacío}
+\scriptsize
+En $[0, 1]^p$, capturar una fracción $r \in (0, 1)$ del volumen total exige una arista local:
+\[
+e_p(r) = r^{\frac{1}{p}}
+\]
+\begin{itemize}\setlength{\itemsep}{0.05em}
+  \item $p = 1$: $e_1(0.10) = 0.10$ ($10\%$ del rango).
+  \item $p = 10$: $e_{10}(0.10) \approx 0.80$ ($80\%$ del rango).
+  \item $p = 100$: $e_{100}(0.10) \approx 0.98$ ($98\%$ del rango).
+\end{itemize}
+\end{contrastbox}
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{ccdebox}
+\scriptsize
+\textbf{Consecuencia Teórica para KNN:}\\[0.05cm]
+En alta dimensión, una vecindad de $k$ puntos \textbf{deja de ser local}: abarca casi todo el espacio muestral.
+\end{ccdebox}
+
+\vspace{0.06cm}
+\begin{keybox}
+\scriptsize
+\textbf{Equidistancia Asintótica}:
+\[
+\lim_{p \to \infty} \frac{d_{\max} - d_{\min}}{d_{\min}} = 0
+\]
+Todos los puntos quedan aproximadamente a la misma distancia, diluyendo el concepto de cercanía.
+\end{keybox}
+\end{column}
+\end{columns}
+\source{Hastie, Tibshirani \& Friedman (2009), cap. 2; Donoho (2000).}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Estructuras de Indexación y Complejidad}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{ccdebox}
+\scriptsize
+\textbf{Algoritmos de Búsqueda}
+\begin{itemize}\setlength{\itemsep}{0.08em}
+  \item \textbf{Fuerza Bruta (\texttt{brute})}: $O(N \cdot p)$ por consulta; evalúa todas las distancias.
+  \item \textbf{KD-Tree (\texttt{kd\_tree})}: Partición ortogonal; eficiente con $p \le 20$ ($O(p \log N)$).
+  \item \textbf{Ball-Tree (\texttt{ball\_tree})}: Hiperesferas anidadas; óptimo para métricas no euclidianas.
+\end{itemize}
+\end{ccdebox}
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdemid}{Balance Metodológico}
+\scriptsize
+\textbf{Fortalezas}:
+\begin{itemize}\setlength{\itemsep}{0.05em}
+  \item Intuitivo y no paramétrico.
+  \item Excelente \textit{baseline} no lineal.
+  \item Extensión natural a multiclase.
+\end{itemize}
+\textbf{Limitaciones}:
+\begin{itemize}\setlength{\itemsep}{0.05em}
+  \item Latencia en inferencia ($O(N \cdot p)$).
+  \item Sensible a variables irrelevantes.
+  \item Almacenamiento continuo de datos.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{Bentley (1975); Omohundro (1989); scikit-learn documentation.}
+\end{frame}

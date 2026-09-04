@@ -1,0 +1,144 @@
+\section{Implementación Reproducible en Python}
+
+% ================================================================
+\begin{frame}[fragile]{Pipeline con Scikit-Learn: Prevención de Data Leakage}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.58\textwidth}
+\begin{lstlisting}[style=ccdepython]
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+
+X, y = load_breast_cancer(return_X_y=True)
+X_tr, X_te, y_tr, y_te = train_test_split(
+    X, y, test_size=0.25, stratify=y, random_state=42
+)
+
+# Pipeline estricto: escalamiento + estimador
+pipe = Pipeline([
+    ("scaler", StandardScaler()),
+    ("knn", KNeighborsClassifier())
+])
+\end{lstlisting}
+\end{column}
+
+\begin{column}{0.40\textwidth}
+\begin{keybox}
+\textbf{Arquitectura Pipeline}:
+\begin{itemize}\setlength{\itemsep}{0.15em}
+  \footnotesize
+  \item Aplica $\mu$ y $\sigma$ aprendidos \textbf{solo en el pliegue de entrenamiento}.
+  \item Evita fuga de información (\textit{data leakage}) al test/validación.
+  \item Facilita la reproducibilidad integral del flujo.
+\end{itemize}
+\end{keybox}
+
+\vspace{0.10cm}
+\begin{ccdebox}
+\scriptsize
+\textbf{Dataset}: Breast Cancer Wisconsin (569 obs., 30 features numéricas).
+\end{ccdebox}
+\end{column}
+\end{columns}
+\source{Script reproducible \texttt{codigo\_demo\_knn.py} (CCDE).}
+\end{frame}
+
+% ================================================================
+\begin{frame}[fragile]{Búsqueda de Hiperparámetros con GridSearchCV}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.58\textwidth}
+\begin{lstlisting}[style=ccdepython]
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {
+    "knn__n_neighbors": [3, 5, 7, 9, 11, 15],
+    "knn__weights": ["uniform", "distance"],
+    "knn__metric": ["minkowski"],
+    "knn__p": [1, 2] # 1: Manhattan, 2: Euclidiana
+}
+
+grid = GridSearchCV(
+    pipe,
+    param_grid=param_grid,
+    cv=5,
+    scoring="roc_auc",
+    n_jobs=-1
+)
+grid.fit(X_tr, y_tr)
+best_knn = grid.best_estimator_
+\end{lstlisting}
+\end{column}
+
+\begin{column}{0.40\textwidth}
+\begin{contrastbox}{ccdemid}{Espacio de Búsqueda}
+\footnotesize
+\begin{itemize}\setlength{\itemsep}{0.15em}
+  \item \textbf{Vecindades ($k$)}: de $3$ a $15$ impares para evitar empates.
+  \item \textbf{Ponderación}: uniforme vs inversa a la distancia.
+  \item \textbf{Métricas}: norma $L_1$ vs $L_2$.
+  \item \textbf{Criterio}: ROC-AUC con 5 pliegues estratificados.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+\source{Pedregosa et al. (2011); scikit-learn documentation.}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Resultados Empíricos y Matriz de Confusión}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.51\textwidth}
+\begin{ccdebox}
+\footnotesize
+\textbf{Mejor Configuración Encontrada}
+\vspace{0.06cm}
+
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}l r@{}}
+\toprule
+\textbf{\textcolor{ccdenavy}{Parámetro / Métrica}} & \textbf{\textcolor{ccdenavy}{Valor}} \\
+\midrule
+$k$ óptimo (\texttt{n\_neighbors}) & \textbf{15} \\
+Ponderación (\texttt{weights}) & \textbf{\texttt{distance}} \\
+Métrica & \textbf{Euclidiana ($L_2$)} \\
+ROC-AUC CV (5-fold) & \textbf{0.9875} \\
+Accuracy en Test & \textbf{96.50\%} \\
+ROC-AUC en Test & \textbf{0.9948} \\
+\bottomrule
+\end{tabular*}
+\end{ccdebox}
+\end{column}
+
+\begin{column}{0.47\textwidth}
+\begin{contrastbox}{okgreen}{Matriz de Confusión en Test}
+\footnotesize
+\vspace{0.04cm}
+
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}r c c@{}}
+\toprule
+& \textbf{Pred. Mal.} & \textbf{Pred. Ben.} \\
+\midrule
+\textbf{Real Maligno} & \textbf{48} & 5 \\
+\textbf{Real Benigno} & 0 & \textbf{90} \\
+\bottomrule
+\end{tabular*}
+
+\vspace{0.06cm}
+\begin{itemize}\setlength{\itemsep}{0.08em}
+  \scriptsize
+  \item Sensibilidad (Recall benigno): \textbf{100\%}.
+  \item Especificidad (clase maligna): \textbf{90.57\%}.
+\end{itemize}
+\end{contrastbox}
+
+\vspace{0.06cm}
+\begin{keybox}
+\scriptsize \textbf{Conclusión}: La ponderación por distancia combinada con $k=15$ maximizó la generalización en test.
+\end{keybox}
+\end{column}
+\end{columns}
+\source{Resultados reproducibles obtenidos con \texttt{codigo\_demo\_knn.py} (semilla 42).}
+\end{frame}
