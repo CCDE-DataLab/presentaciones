@@ -63,7 +63,7 @@ Para $y_i \in \mathbb{R}$, media local de vecinos:
 \footnotesize
 Mayor influencia a observaciones próximas:
 \[
-w_i = \frac{1}{d(x_0, x_i)^p}, \quad \hat{f}(x_0) = \frac{\sum w_i y_i}{\sum w_i}
+w_i = \frac{1}{d(x_0, x_i)^p}, \quad \hat{f}(x_0) = \frac{\sum_{i \in \mathcal{N}_k} w_i y_i}{\sum_{i \in \mathcal{N}_k} w_i}
 \]
 \begin{itemize}\setlength{\itemsep}{0.06em}
   \item Genera fronteras y ajustes suaves.
