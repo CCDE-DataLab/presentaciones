@@ -9,33 +9,46 @@ Repositorio oficial con las presentaciones, artículos, código fuente en LaTeX 
 
 ```
 CCDE/
-├── Arboles de Decisión/
-│   ├── presentacion-arboles-decision.pdf      # Presentación final (Diapositivas Beamer)
-│   ├── presentacion-arboles-decision.tex      # Código fuente LaTeX
-│   ├── codigo_demo_arboles_ensambles.py       # Script interactivo con Scikit-Learn
-│   └── CCDE-logo-whatsapp-cropped.png         # Logo institucional
+├── assets/
+│   ├── ccde-beamer.sty                  # Plantilla canónica (única fuente de diseño Beamer)
+│   └── CCDE-logo-whatsapp-cropped.png   # Logo institucional (copia única)
 │
-├── Ciencia de Datos vs Econometría/
+├── arboles-decision/
+│   ├── presentacion-arboles-decision.pdf # Presentación final (Diapositivas Beamer)
+│   ├── presentacion-arboles-decision.tex # Código fuente (usa ../assets/ccde-beamer)
+│   └── codigo_demo_arboles_ensambles.py  # Script interactivo con Scikit-Learn
+│
+├── ciencia-datos-econometria/
 │   ├── presentacion-ciencia-datos-econometria.pdf # Diapositivas de la ponencia
 │   ├── presentacion-ciencia-datos-econometria.tex # Código fuente Beamer
 │   ├── Ciencia de datos y econometría.pdf         # Artículo / Paper base
-│   ├── main (2).tex                               # Código fuente del artículo
+│   ├── articulo-ciencia-datos-econometria.tex     # Código fuente del artículo
 │   ├── deep-research-report.md                    # Reporte de investigación y marco teórico
-│   └── CCDE logotipo.*                            # Recursos gráficos (SVG / PNG)
+│   └── foto-sesion-julio-2026.jpeg                # Foto de la sesión
 │
-├── Support Vector Machines/
-│   ├── presentacion-svm.tex                       # Archivo maestro Beamer
-│   ├── sections/                                  # Secciones modulares para edición
-│   ├── codigo_demo_svm.py                         # Demo reproducible + figuras
-│   └── README.md                                  # Guía de compilación y fuentes
+├── svm/
+│   ├── presentacion-svm.tex              # Archivo maestro Beamer
+│   ├── sections/                         # Secciones modulares para edición
+│   ├── codigo_demo_svm.py                # Demo reproducible + figuras
+│   ├── fig_svm_*.png                     # Figuras generadas por el script
+│   └── README.md                         # Guía de compilación y fuentes
 │
-├── KNN/
-│   ├── presentacion-knn.pdf                       # Diapositivas finales compiladas (18 láminas)
-│   ├── presentacion-knn.tex                       # Archivo maestro Beamer (16:9)
-│   ├── sections/                                  # 7 secciones modulares en LaTeX
-│   ├── codigo_demo_knn.py                         # Demo reproducible con scikit-learn + figuras
-│   └── README.md                                  # Guía y ficha técnica del módulo
+├── knn/
+│   ├── presentacion-knn.pdf              # Diapositivas finales compiladas (18 láminas)
+│   ├── presentacion-knn.tex              # Archivo maestro Beamer (16:9)
+│   ├── sections/                         # 7 secciones modulares en LaTeX
+│   ├── codigo_demo_knn.py                # Demo reproducible con scikit-learn + figuras
+│   ├── fig_knn_regions.png / fig_distancias_knn.png # Figuras generadas por el script
+│   ├── resultados_knn.txt                # Métricas reproducibles
+│   └── README.md                         # Guía y ficha técnica del módulo
 │
+├── plantilla-ccde/
+│   ├── presentacion-plantilla.tex        # Ejemplo mínimo de uso de la plantilla
+│   ├── presentacion-plantilla.pdf        # Ejemplo compilado
+│   └── README.md                         # Norma anti-hardcodeo y guía de uso
+│
+├── .github/workflows/build-pdfs.yml      # CI: regenera figuras y PDFs en cada push
+├── .gitattributes                        # Normalización LF y binarios
 ├── .gitignore
 └── README.md
 ```
@@ -45,7 +58,7 @@ CCDE/
 ## 🎯 Módulos y Sesiones
 
 ### 1. Árboles de Decisión y Métodos de Ensamble
-* **Ubicación:** `Arboles de Decisión/`
+* **Ubicación:** `arboles-decision/`
 * **Temas abordados:**
   * Algoritmo CART (Clasificación y Regresión), función de costo y complejidad computacional.
   * Criterios de división: Impureza de Gini vs. Entropía.
@@ -64,7 +77,7 @@ CCDE/
 ---
 
 ### 2. Ciencia de Datos vs. Econometría: Convergencias, Divergencias y Causalidad
-* **Ubicación:** `Ciencia de Datos vs Econometría/`
+* **Ubicación:** `ciencia-datos-econometria/`
 * **Temas abordados:**
   * **Econometría:** Identificación causal, inferencia estadística creíble, diseño de investigación y validez interna.
   * **Ciencia de Datos:** Predicción flexible out-of-sample, minimización del error empírico, escalabilidad y CRISP-DM.
@@ -85,7 +98,7 @@ CCDE/
 ---
 
 ### 3. Support Vector Machines (SVM)
-* **Ubicación:** `Support Vector Machines/`
+* **Ubicación:** `svm/`
 * **Temas abordados:**
   * Geometría del hiperplano y principio de margen máximo.
   * Hard margin y soft margin con variables de holgura.
@@ -105,7 +118,7 @@ CCDE/
 ---
 
 ### 4. K-Nearest Neighbors (KNN)
-* **Ubicación:** `KNN/`
+* **Ubicación:** `knn/`
 * **Temas abordados:**
   * Fundamentos del aprendizaje perezoso (*lazy learning*) y modelos basados en instancias.
   * Regla de decisión de mayoría, votación ponderada y KNN para regresión (media local y Nadaraya-Watson).
@@ -130,9 +143,9 @@ CCDE/
 Para correr los scripts de demostración:
 ```bash
 pip install numpy pandas scikit-learn matplotlib
-python "Arboles de Decisión/codigo_demo_arboles_ensambles.py"
-python "Support Vector Machines/codigo_demo_svm.py"
-python "KNN/codigo_demo_knn.py"
+python "arboles-decision/codigo_demo_arboles_ensambles.py"
+python "svm/codigo_demo_svm.py"
+python "knn/codigo_demo_knn.py"
 ```
 
 ### Compilación de Diapositivas LaTeX (Beamer)
@@ -140,15 +153,26 @@ Se requiere una distribución LaTeX como **TeX Live** o **MiKTeX** con los paque
 `beamer`, `tikz`, `tcolorbox`, `booktabs`, `ragged2e`.
 Compilar usando:
 ```bash
+cd arboles-decision
 pdflatex presentacion-arboles-decision.tex
+pdflatex presentacion-arboles-decision.tex
+cd ../ciencia-datos-econometria
 pdflatex presentacion-ciencia-datos-econometria.tex
-cd "Support Vector Machines"
+pdflatex presentacion-ciencia-datos-econometria.tex
+cd ../svm
+python codigo_demo_svm.py   # genera fig_svm_*.png (obligatorio antes de compilar)
 pdflatex presentacion-svm.tex
 pdflatex presentacion-svm.tex
-cd "../KNN"
+cd ../knn
+python codigo_demo_knn.py   # genera fig_knn_*.png y resultados_knn.txt
 pdflatex presentacion-knn.tex
 pdflatex presentacion-knn.tex
+cd ../plantilla-ccde
+pdflatex presentacion-plantilla.tex
+pdflatex presentacion-plantilla.tex
 ```
+
+> **Nota:** Todas las presentaciones usan la plantilla canónica `assets/ccde-beamer.sty` (sin fecha, logo centralizado en `assets/`). Para crear una presentación nueva, partir de `plantilla-ccde/` (ver su `README.md`). La CI (`.github/workflows/build-pdfs.yml`) regenera figuras y PDFs automáticamente en cada push a `main`.
 
 ---
 

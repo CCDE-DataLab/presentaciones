@@ -4,7 +4,7 @@ Material de la sesión del **Círculo de Ciencia de Datos y Econometría (CCDE)*
 
 ## Archivos
 
-- `presentacion-svm.tex`: presentación Beamer 16:9 con la identidad visual CCDE.
+- `presentacion-svm.tex`: presentación Beamer 16:9 con la plantilla canónica (`assets/ccde-beamer.sty`, portada sin fecha).
 - `sections/`: secciones modulares de la presentación para facilitar correcciones.
 - `codigo_demo_svm.py`: demo reproducible en Python; genera métricas y las figuras usadas por las diapositivas.
 - `fig_svm_hard_soft.png`: se genera al ejecutar el script.
@@ -27,7 +27,7 @@ pdflatex presentacion-svm.tex
 pdflatex presentacion-svm.tex
 ```
 
-El script debe ejecutarse antes de compilar si se quieren insertar las tres figuras generadas. El logo se reutiliza desde `../Arboles de Decisión/CCDE-logo-whatsapp-cropped.png`; si no está disponible, la presentación igualmente compila sin el logo.
+El script debe ejecutarse antes de compilar si se quieren insertar las tres figuras generadas (`fig_svm_hard_soft.png`, `fig_svm_kernel_moons.png`, `fig_svm_gamma.png`). El logo y el diseño están centralizados en `../assets/` (ver `plantilla-ccde/README.md`).
 
 ## Bibliografía base
 

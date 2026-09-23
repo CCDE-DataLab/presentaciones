@@ -1,191 +1,20 @@
 \documentclass[aspectratio=169,11pt,table]{beamer}
+\usepackage{../assets/ccde-beamer}
 
-%------------------------------------------------
-% PAQUETES
-%------------------------------------------------
-\usepackage[spanish]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage{microtype}
-\usepackage{graphicx}
-\usepackage[table]{xcolor}
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{ragged2e}
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,calc,babel,shapes.geometric,shadows}
-\usepackage[most]{tcolorbox}
-
-%------------------------------------------------
-% COLORES CCDE
-%------------------------------------------------
-\definecolor{ccdenavy}{RGB}{10,30,64}
-\definecolor{ccdeblue}{RGB}{34,53,94}
-\definecolor{ccdemid}{RGB}{43,91,155}
-\definecolor{ccdeaccent}{RGB}{0,119,182}
-\definecolor{ccdesky}{RGB}{61,150,210}
-\definecolor{ccdelight}{RGB}{115,196,223}
-\definecolor{ccdeice}{RGB}{235,247,252}
-\definecolor{codebg}{RGB}{245,247,250}
-\definecolor{warn}{RGB}{202,93,54}
-\definecolor{okgreen}{RGB}{22,128,95}
-
-%------------------------------------------------
-% TEMA BEAMER CCDE
-%------------------------------------------------
-\usetheme{default}
-\usefonttheme{professionalfonts}
-\setbeamertemplate{navigation symbols}{}
-\setbeamertemplate{section in toc}[sections numbered]
-\setbeamertemplate{itemize item}{\color{ccdeaccent}\small$\blacktriangleright$}
-\setbeamertemplate{itemize subitem}{\color{ccdesky}\scriptsize$\bullet$}
-\setbeamertemplate{enumerate item}{\color{ccdeaccent}\insertenumlabel.}
-
-\setbeamercolor{normal text}{fg=ccdenavy,bg=ccdeice!18}
-\setbeamercolor{frametitle}{fg=white,bg=ccdenavy}
-\setbeamercolor{title}{fg=white,bg=ccdenavy}
-\setbeamercolor{subtitle}{fg=ccdeice}
-\setbeamercolor{structure}{fg=ccdeaccent}
-\setbeamercolor{block title}{fg=white,bg=ccdeblue}
-\setbeamercolor{block body}{fg=ccdenavy,bg=white}
-
-\setbeamertemplate{frametitle}{%
-  \nointerlineskip
-  \begin{beamercolorbox}[wd=\paperwidth,ht=0.72cm,dp=0.24cm,leftskip=0.38cm,rightskip=0.38cm]{frametitle}
-    \usebeamerfont{frametitle}\insertframetitle
-  \end{beamercolorbox}
-}
-
-\newcommand{\ccdelogofile}{CCDE-logo-whatsapp-cropped.png}
-
-\setbeamertemplate{footline}{%
-  \leavevmode%
-  \hbox{%
-    \begin{beamercolorbox}[wd=.70\paperwidth,ht=0.38cm,dp=0.12cm,leftskip=0.35cm]{author in head/foot}%
-      \scriptsize\textcolor{ccdemid}{CCDE -- Ciencia de Datos vs Econometría}
-    \end{beamercolorbox}%
-    \begin{beamercolorbox}[wd=.20\paperwidth,ht=0.38cm,dp=0.12cm,center]{date in head/foot}%
-      \IfFileExists{\ccdelogofile}{\includegraphics[height=0.25cm]{\ccdelogofile}}{}
-    \end{beamercolorbox}%
-    \begin{beamercolorbox}[wd=.10\paperwidth,ht=0.38cm,dp=0.12cm,rightskip=0.35cm]{page number in head/foot}%
-      \hfill\scriptsize\textcolor{ccdeblue}{\insertframenumber/\inserttotalframenumber}
-    \end{beamercolorbox}%
-  }%
-}
-
-%------------------------------------------------
-% COMPONENTES
-%------------------------------------------------
-\newcommand{\source}[1]{%
-  \par\vspace{0.12cm}
-  {\scriptsize\textcolor{ccdemid}{Fuente: #1}}%
-}
-
-\newcommand{\refentry}[3]{%
-  \par\noindent\textbf{#1} \textcolor{ccdemid}{(#2)}. #3\par
-  \vspace{0.5em}
-}
-
-\newcommand{\tagpill}[1]{%
-  \tikz[baseline=(x.base)]\node[fill=ccdeice,draw=ccdelight,rounded corners=2pt,inner xsep=4pt,inner ysep=2pt] (x) {\scriptsize\bfseries\textcolor{ccdeblue}{#1}};%
-}
-
-\newtcolorbox{ccdebox}[1][]{
-  enhanced,
-  colback=white,
-  colframe=ccdeblue,
-  arc=1.5mm,
-  boxrule=0.7pt,
-  left=2.2mm,
-  right=2.2mm,
-  top=1.5mm,
-  bottom=1.5mm,
-  #1
-}
-
-\newtcolorbox{keybox}[1][]{
-  enhanced,
-  colback=ccdelight!13,
-  colframe=ccdeaccent,
-  arc=1.5mm,
-  boxrule=0.8pt,
-  left=2.4mm,
-  right=2.4mm,
-  top=1.6mm,
-  bottom=1.6mm,
-  fontupper=\small,
-  #1
-}
-
-\newtcolorbox{contrastbox}[2]{
-  enhanced,
-  colback=#1!8,
-  colframe=#1!80!ccdenavy,
-  title=#2,
-  fonttitle=\bfseries,
-  coltitle=white,
-  boxed title style={colback=#1!80!ccdenavy,arc=1mm,boxrule=0pt},
-  attach boxed title to top left={yshift=-2mm,xshift=2mm},
-  arc=1.5mm,
-  boxrule=0.7pt,
-  left=2.2mm,
-  right=2.2mm,
-  top=2.8mm,
-  bottom=1.6mm
-}
-
+%% ---------- Metadatos (plantilla canónica: \date{} siempre vacío) ----------
+\renewcommand{\ccdefootlabel}{CCDE -- Ciencia de Datos vs Econometría}
 \title{Ciencia de Datos vs Econometría}
 \subtitle{Dos formas de aprender de los datos: predecir, explicar y decidir mejor}
 \author{Círculo de Ciencia de Datos y Econometría}
-\date{7 de julio de 2026}
+\date{}
 
 \begin{document}
 
-%------------------------------------------------
-\begin{frame}[plain]
-\begin{tikzpicture}[remember picture,overlay]
-  \fill[ccdeice!35] (current page.south west) rectangle (current page.north east);
-  \fill[ccdenavy] (current page.north west) rectangle ([yshift=-1.25cm]current page.north east);
-  \fill[ccdeblue] ([yshift=-1.25cm]current page.north west) rectangle ([yshift=-1.52cm]current page.north east);
-  \fill[ccdelight!45,opacity=0.85] ([xshift=13.6cm,yshift=-1.05cm]current page.north west) circle (1.25cm);
-  \fill[ccdeaccent!18,opacity=0.7] ([xshift=0.6cm,yshift=0.5cm]current page.south west) circle (2.4cm);
-  \draw[ccdelight,line width=1.4pt] ([xshift=0.75cm,yshift=-7.05cm]current page.north west) -- ([xshift=-0.75cm,yshift=-7.05cm]current page.north east);
-\end{tikzpicture}
 
-\vspace*{0.72cm}
-\begin{center}
-\begin{tcolorbox}[
-  enhanced,
-  width=0.88\textwidth,
-  colback=white,
-  colframe=ccdelight,
-  arc=2mm,
-  boxrule=0.9pt,
-  left=6mm,
-  right=6mm,
-  top=5mm,
-  bottom=5mm,
-  drop shadow={ccdenavy!22!white},
-  borderline west={4pt}{0pt}{ccdeaccent}
-]
-\begin{columns}[c,onlytextwidth]
-\begin{column}{0.22\textwidth}
-\centering
-\IfFileExists{\ccdelogofile}{\includegraphics[width=0.88\linewidth]{\ccdelogofile}}{}
-\end{column}
-\begin{column}{0.74\textwidth}
-{\Huge\bfseries\textcolor{ccdenavy}{Ciencia de Datos vs Econometría}\par}
-\vspace{0.22cm}
-{\large\textcolor{ccdeblue}{Dos formas de aprender de los datos: predecir, explicar y decidir mejor}\par}
-\vspace{0.45cm}
-{\normalsize\bfseries\textcolor{ccdeaccent}{Círculo de Ciencia de Datos y Econometría}}\\[0.25em]
-{\small 7 de julio de 2026}
-\end{column}
-\end{columns}
-\end{tcolorbox}
-\end{center}
-\end{frame}
+%------------------------------------------------
+% Portada canónica (diseño en assets/ccde-beamer.sty, sin fecha)
+\ccdeportada{Ciencia de Datos vs Econometría}{Dos formas de aprender de los datos: predecir, explicar y decidir mejor}{CDE}
+
 
 %------------------------------------------------
 \begin{frame}{Mapa de la presentación}

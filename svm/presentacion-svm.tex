@@ -1,0 +1,54 @@
+\documentclass[aspectratio=169,11pt,table]{beamer}
+\usepackage{../assets/ccde-beamer}
+
+%% ---------- Metadatos (plantilla canónica: \date{} siempre vacío) ----------
+\renewcommand{\ccdefootlabel}{CCDE -- Support Vector Machines (SVM)}
+\title{Support Vector Machines (SVM)}
+\subtitle{Margen máximo, regularización y el método de kernels}
+\author{Círculo de Ciencia de Datos y Econometría}
+\date{}
+
+\begin{document}
+
+
+% ================================================================
+% Portada canónica (diseño en assets/ccde-beamer.sty, sin fecha)
+\ccdeportada{Support Vector Machines (SVM)}{Margen máximo, regularización y el método de kernels}{SVM}
+
+
+% ================================================================
+\begin{frame}{Mapa de la presentación}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.57\textwidth}
+\tableofcontents
+\end{column}
+\begin{column}{0.39\textwidth}
+\begin{keybox}
+\textbf{Pregunta guía}\\[0.14cm]
+¿Cómo construye una SVM una frontera con buena capacidad de generalización y cómo puede volverla no lineal sin trabajar explícitamente en un espacio enorme?
+\end{keybox}
+\vspace{0.16cm}
+\begin{ccdebox}
+\small
+\textbf{Fuentes troncales}\\
+Géron, cap. 5; James et al., cap. 9; Hastie et al., cap. 12.\\[0.12cm]
+\textbf{Aplicación}\\
+Python + scikit-learn, código reproducible.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+
+% ================================================================
+% SECCIONES MODULARES
+% ================================================================
+\input{sections/01-geometria-margen.tex}
+\input{sections/02-soft-margin-regularizacion.tex}
+\input{sections/03-dualidad-kernels.tex}
+\input{sections/04-hiperparametros-uso.tex}
+\input{sections/05-aplicacion-python.tex}
+\input{sections/06-cierre-fuentes.tex}
+
+\end{document}

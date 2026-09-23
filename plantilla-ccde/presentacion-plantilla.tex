@@ -1,0 +1,52 @@
+\documentclass[aspectratio=169,11pt,table]{beamer}
+\usepackage{../assets/ccde-beamer}
+
+% ---------- Metadatos (SIN fecha por norma CCDE) ----------
+\renewcommand{\ccdefootlabel}{CCDE -- Título del Módulo}
+
+\title{Título del Módulo}
+\subtitle{Subtítulo descriptivo de la sesión}
+\author{Círculo de Ciencia de Datos y Econometría}
+\date{} % no quitar: la plantilla prohíbe fechas
+
+\begin{document}
+
+% Portada canónica: \ccdeportada{Título}{Subtítulo}{Sigla-fallback}
+\ccdeportada{Título del Módulo}{Subtítulo descriptivo de la sesión}{CCDE}
+
+\begin{frame}{Mapa de la presentación}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.57\textwidth}
+{\small\tableofcontents}
+\end{column}
+\begin{column}{0.39\textwidth}
+\begin{keybox}
+\textbf{Pregunta guía}\\[0.14cm]
+¿Pregunta central que articula la sesión?
+\end{keybox}
+\vspace{0.16cm}
+\begin{ccdebox}
+\small
+\textbf{Fuentes principales}\\
+Autor et al. (año, cap. X).\\[0.12cm]
+\textbf{Aplicación práctica}\\
+Python + scikit-learn con Pipeline reproducible.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\end{frame}
+
+\section{Ejemplo}
+
+\begin{frame}{Frame de ejemplo}
+\begin{ccdebox}
+Este es un bloque estándar CCDE. Usa \texttt{keybox} para la idea clave y
+\texttt{contrastbox} para comparaciones.
+\end{ccdebox}
+\begin{keybox}
+Idea clave de la lámina en una o dos líneas.
+\end{keybox}
+\source{Autor et al.}
+\end{frame}
+
+\end{document}

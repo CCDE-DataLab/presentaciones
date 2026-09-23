@@ -1,0 +1,17 @@
+# Normaliza finales de línea y evita diffs fantasma (LF/CRLF)
+* text=auto
+
+# Fuentes LaTeX y texto siempre como texto
+*.tex text eol=lF
+*.sty text eol=lF
+*.md text eol=lF
+*.py text eol=lF
+*.yml text eol=lF
+*.txt text eol=lF
+
+# Binarios
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.svg text

@@ -1,0 +1,57 @@
+\documentclass[aspectratio=169,11pt,table]{beamer}
+\usepackage{../assets/ccde-beamer}
+
+%% ---------- Metadatos (plantilla canónica: \date{} siempre vacío) ----------
+\renewcommand{\ccdefootlabel}{CCDE -- K-Nearest Neighbors (KNN)}
+\title{K-Nearest Neighbors (KNN)}
+\subtitle{Aprendizaje basado en instancias, métricas y regiones locales}
+\author{Círculo de Ciencia de Datos y Econometría}
+\date{}
+
+\begin{document}
+
+
+% ================================================================
+% PORTADA OFICIAL CCDE (IDÉNTICA A SVM Y ÁRBOLES)
+% ================================================================
+% Portada canónica (diseño en assets/ccde-beamer.sty, sin fecha)
+\ccdeportada{K-Nearest Neighbors (KNN)}{Aprendizaje basado en instancias, métricas y regiones locales}{KNN}
+
+
+% ================================================================
+% AGENDA / MAPA DE LA PRESENTACIÓN
+% ================================================================
+\begin{frame}{Mapa de la presentación}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.57\textwidth}
+{\small\tableofcontents}
+\end{column}
+\begin{column}{0.39\textwidth}
+\begin{keybox}
+\textbf{Pregunta guía}\\[0.14cm]
+¿Cómo puede un algoritmo clasificar o predecir sin asumir una función paramétrica global, aprendiendo directamente de la geometría local de los datos?
+\end{keybox}
+\vspace{0.16cm}
+\begin{ccdebox}
+\small
+\textbf{Fuentes principales}\\
+James et al. (ISLR, cap. 2 y 4); Hastie et al. (ESL, cap. 13); Géron (2022, cap. 3).\\[0.12cm]
+\textbf{Aplicación práctica}\\
+Python + scikit-learn con Pipeline reproducible.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+% SECCIONES MODULARES
+% ================================================================
+\input{sections/01-fundamentos-intuicion.tex}
+\input{sections/02-formulacion-matematica.tex}
+\input{sections/03-metricas-geometria.tex}
+\input{sections/04-escalamiento-hiperparametros.tex}
+\input{sections/05-maldicion-dimensionalidad.tex}
+\input{sections/06-aplicacion-python.tex}
+\input{sections/07-cierre-fuentes.tex}
+
+\end{document}

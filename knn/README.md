@@ -4,7 +4,7 @@ Material oficial de la sesión del **Círculo de Ciencia de Datos y Econometría
 
 ## Archivos
 
-- `presentacion-knn.tex`: presentación Beamer 16:9 con la identidad visual institucional CCDE (portada idéntica a SVM y Árboles de Decisión).
+- `presentacion-knn.tex`: presentación Beamer 16:9 con la plantilla canónica (`assets/ccde-beamer.sty`, portada sin fecha).
 - `sections/`: secciones modulares de la presentación para facilitar mantenimiento y edición por bloques temáticos.
   - `01-fundamentos-intuicion.tex`: aprendizaje basado en instancias, lazy learning y contraste paramétrico vs. no paramétrico.
   - `02-formulacion-matematica.tex`: reglas de decisión en clasificación y regresión, probabilidad a posteriori y cota de Cover-Hart.
@@ -17,12 +17,12 @@ Material oficial de la sesión del **Círculo de Ciencia de Datos y Econometría
 - `fig_knn_regions.png`: regiones de decisión de KNN ($k=1, 5, 15$) generadas por el script.
 - `fig_distancias_knn.png`: bolas unitarias de distancias Manhattan, Euclidiana y Chebyshev generadas por el script.
 - `resultados_knn.txt`: reporte numérico de la validación cruzada y evaluación en test.
-- `CCDE-logo-whatsapp-cropped.png`: logotipo oficial institucional del CCDE.
 - `presentacion-knn.pdf`: presentación Beamer final compilada y validada visualmente.
+- Logo y diseño centralizados en `../assets/` (ver `plantilla-ccde/README.md`).
 
 ## Reproducir localmente
 
-Desde esta carpeta (`KNN`):
+Desde esta carpeta (`knn`):
 
 ```bash
 pip install numpy matplotlib scikit-learn
@@ -31,7 +31,7 @@ pdflatex presentacion-knn.tex
 pdflatex presentacion-knn.tex
 ```
 
-> **Nota:** El script debe ejecutarse antes de compilar para generar las figuras PNG y el archivo de resultados. El logo institucional se incluye localmente y dispone de fallbacks a carpetas hermanas del repositorio.
+> **Nota:** El script debe ejecutarse antes de compilar para generar las figuras PNG y el archivo de resultados.
 
 ## Bibliografía base
 

@@ -1,0 +1,83 @@
+name: Build PDFs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**.tex"
+      - "**.sty"
+      - "**/*.py"
+      - "assets/**"
+      - ".github/workflows/build-pdfs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            texlive-latex-base \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-lang-spanish
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip numpy matplotlib scikit-learn
+
+      - name: Build all presentations
+        run: |
+          set -e
+          build_one() {
+            dir="$1"; main="$2"; demo="$3"
+            echo "=== Building $dir/$main ==="
+            cd "$GITHUB_WORKSPACE/$dir"
+            if [ -n "$demo" ]; then
+              python "$demo"
+            fi
+            pdflatex -interaction=nonstopmode -halt-on-error "$main"
+            pdflatex -interaction=nonstopmode -halt-on-error "$main"
+            cd "$GITHUB_WORKSPACE"
+          }
+          build_one "arboles-decision" "presentacion-arboles-decision.tex" "codigo_demo_arboles_ensambles.py"
+          build_one "ciencia-datos-econometria" "presentacion-ciencia-datos-econometria.tex" ""
+          build_one "svm" "presentacion-svm.tex" "codigo_demo_svm.py"
+          build_one "knn" "presentacion-knn.tex" "codigo_demo_knn.py"
+          build_one "plantilla-ccde" "presentacion-plantilla.tex" ""
+
+      - name: Commit generated PDFs and figures
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            "arboles-decision/presentacion-arboles-decision.pdf" \
+            "ciencia-datos-econometria/presentacion-ciencia-datos-econometria.pdf" \
+            "svm/presentacion-svm.pdf" \
+            "svm/fig_svm_*.png" \
+            "knn/presentacion-knn.pdf" \
+            "knn/fig_knn_*.png" \
+            "knn/fig_distancias_knn.png" \
+            "plantilla-ccde/presentacion-plantilla.pdf"
+          if git diff --cached --quiet; then
+            echo "PDFs already up to date."
+          else
+            git commit -m "build: render presentation PDFs"
+            git push origin HEAD:main
+          fi
