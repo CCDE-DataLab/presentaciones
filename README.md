@@ -47,7 +47,6 @@ CCDE/
 │   ├── presentacion-plantilla.pdf        # Ejemplo compilado
 │   └── README.md                         # Norma anti-hardcodeo y guía de uso
 │
-├── .github/workflows/build-pdfs.yml      # CI: regenera figuras y PDFs en cada push
 ├── .gitattributes                        # Normalización LF y binarios
 ├── .gitignore
 └── README.md
@@ -172,7 +171,7 @@ pdflatex presentacion-plantilla.tex
 pdflatex presentacion-plantilla.tex
 ```
 
-> **Nota:** Todas las presentaciones usan la plantilla canónica `assets/ccde-beamer.sty` (sin fecha, logo centralizado en `assets/`). Para crear una presentación nueva, partir de `plantilla-ccde/` (ver su `README.md`). La CI (`.github/workflows/build-pdfs.yml`) regenera figuras y PDFs automáticamente en cada push a `main`.
+> **Nota:** Todas las presentaciones usan la plantilla canónica `assets/ccde-beamer.sty` (sin fecha, logo centralizado en `assets/`). Para crear una presentación nueva, partir de `plantilla-ccde/` (ver su `README.md`). Los PDFs se compilan y guardan en local (este repo no usa CI).
 
 ---
 
