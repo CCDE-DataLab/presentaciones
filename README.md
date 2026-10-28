@@ -11,7 +11,11 @@ Repositorio oficial con las presentaciones, artículos, código fuente en LaTeX 
 CCDE/
 ├── assets/
 │   ├── ccde-beamer.sty                  # Plantilla canónica (única fuente de diseño Beamer)
-│   └── CCDE-logo-whatsapp-cropped.png   # Logo institucional (copia única)
+│   ├── ccde-logo-positivo.png           # Logo institucional positivo recortado
+│   ├── ccde-logo-negativo.png           # Logo institucional negativo recortado
+│   ├── ccde-logo-negativo-fondo.png     # Logo negativo recortado (con fondo azul)
+│   ├── Logo positivo CCDE.jpg           # Logo institucional positivo (original)
+│   └── Logo final negativo.png          # Logo institucional negativo (original)
 │
 ├── arboles-decision/
 │   ├── presentacion-arboles-decision.pdf # Presentación final (Diapositivas Beamer)
