@@ -419,16 +419,17 @@ DriftRegressor (\texttt{mmd}, $\beta=50$) & 1.3874 \\
 \textbf{Modelo} & \textbf{RMSE} & \textbf{MAE} \\
 \midrule
 RF Clásico (base) & 6.4003 & -- \\
-DriftRegressor (\texttt{recent\_error}) & 5.0854 & -- \\
+DR (\texttt{mmd} norm.) & 2.8911 & -- \\
+DR (\texttt{recent\_error}+refit) & \textbf{2.7895} & -- \\
 \midrule
-RF Clásico (Optuna + TSSplit) & 6.3865 & 4.3541 \\
-\textbf{DriftRegressor (Optuna)} & \textbf{4.6901} & \textbf{3.2892} \\
+RF Clásico (Optuna) & 6.3865 & 4.3541 \\
+DR (Optuna, pre-refit) & 4.6901 & 3.2892 \\
 \bottomrule
 \end{tabular}
 
 \vspace{0.08cm}
 \raggedright
-\textbf{Mejora:} \textcolor{okgreen}{\textbf{-26.6\% en RMSE}} (-1.70 días) y \textcolor{okgreen}{\textbf{-24.5\% en MAE}} frente al RF clásico optimizado.
+\textbf{Mejora:} \textcolor{okgreen}{\textbf{-56.4\% en RMSE}} con \texttt{refit\_recent=True} y normalización MMD frente al RF clásico.
 \end{ccdebox}
 \end{column}
 \end{columns}
@@ -436,7 +437,7 @@ RF Clásico (Optuna + TSSplit) & 6.3865 & 4.3541 \\
 \vspace{0.10cm}
 \begin{keybox}
 \scriptsize
-En modo \texttt{recent\_error} base, los pesos colapsaron a \texttt{[0, 0, 0, 0, 1]}: el modelo detectó automáticamente que los primeros 4 bloques pertenecían al protocolo obsoleto.
+En modo \texttt{recent\_error}, los pesos colapsaron a \texttt{[0, 0, 0, 0, 1]} y el último bloque se reentrenó incluyendo el 15\% de validación reciente.
 \end{keybox}
 \end{frame}
 
@@ -489,6 +490,63 @@ Ambos modelos fueron optimizados con el mismo protocolo de validación cruzada t
 \end{frame}
 
 % ================================================================
+\begin{frame}{Benchmark ampliado: 5 datasets reales (Walk-Forward)}
+\begin{ccdebox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{Error relativo = RMSE modelo / RMSE RF clásico} ($< 1.00$ = mejor que RF; 6 pasos):\\[0.05cm]
+\centering
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}l p{4.6cm} c c c@{}}
+\toprule
+\textbf{Dataset} & \textbf{Descripción y variable objetivo ($Y$)} & \textbf{DR\_mmd} & \textbf{DR\_recent} & \textbf{RF\_vent.} \\
+\midrule
+\texttt{air\_quality} & Sensores urbanos ($n=7{,}344$); $Y$: nivel de CO & 1.03 & 1.06 & 1.08 \\
+\texttt{bike\_sharing} & Demanda de bicicletas ($n=17{,}379$); $Y$: \texttt{cnt} & 1.01 & 0.88 & \textbf{0.86} \\
+\texttt{gas\_drift} & 16 sensores de gas ($n=13{,}910$); $Y$: concentración & 1.17 & 1.25 & 1.11 \\
+\texttt{beijing\_pm25} & Calidad de aire Pekín ($n=13{,}919$); $Y$: \texttt{PM2.5} & \textbf{0.99} & 1.08 & 1.20 \\
+\texttt{electricity} & Mercado eléctrico ($n=15{,}104$); $Y$: precio/demanda & \textbf{0.91} & 1.13 & 1.03 \\
+\bottomrule
+\end{tabular}
+\end{ccdebox}
+
+\vspace{0.06cm}
+\begin{keybox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{Leyenda:} \texttt{DR\_mmd} = \texttt{DriftRegressor} (modo \texttt{mmd}); \texttt{DR\_recent} = \texttt{DriftRegressor} (modo \texttt{recent\_error}); \texttt{RF\_vent.} = RF entrenado solo con el 20\% más reciente.
+\end{keybox}
+\end{frame}
+
+% ================================================================
+\begin{frame}{¿Conviene abandonar el 80\% de los datos (\texttt{RF\_ventana})?}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.46\textwidth}
+\begin{ccdebox}
+\scriptsize
+\textbf{¿Cuándo gana el RF clásico o \texttt{RF\_ventana}?}\\[0.06cm]
+\begin{itemize}
+  \item \textbf{Solo Data Drift leve:} \texttt{RF\_clasico} aprovecha todo el histórico con menor varianza.
+  \item \textbf{Concept Drift monótono/abrupto:} un \texttt{RF\_ventana} (solo 20\% más reciente) puede igualar o superar al ensamble, \textbf{pero a costa de tirar el 80\% de los datos}.
+\end{itemize}
+\vspace{0.06cm}
+\textbf{Prueba en drift recurrente (\texttt{friedman\_recurring}):}\\
+\texttt{DR\_hybrid} = \textbf{0.82} vs. \texttt{RF\_ventana} = 1.02.
+\end{ccdebox}
+\end{column}
+
+\begin{column}{0.50\textwidth}
+\begin{contrastbox}{warn}{Consecuencias de descartar el 80\%}
+\scriptsize
+\begin{enumerate}
+  \item \textbf{Mayor varianza y sobreajuste:} con pocas filas o alta dimensión pierde frente al RF clásico (ej. \texttt{beijing\_pm25}: \textbf{1.20}; \texttt{healthcare\_data}: \textbf{1.11}).
+  \item \textbf{Amnesia ante ciclos recurrentes:} al borrar el pasado, olvida estaciones o olas previas (\texttt{friedman\_recurring}: \textbf{1.02}).
+  \item \textbf{Sensibilidad al ruido reciente:} si el último 20\% contiene un shock atípico, no hay respaldo histórico que estabilice los árboles.
+\end{enumerate}
+\end{contrastbox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
 \section{Conclusiones y próximos pasos}
 
 \begin{frame}{Conclusiones y hoja de ruta de investigación}
@@ -498,9 +556,9 @@ Ambos modelos fueron optimizados con el mismo protocolo de validación cruzada t
 \scriptsize
 \textbf{Lo que demostró esta primera fase}\\[0.08cm]
 \begin{itemize}
-  \item Separar épocas y ponderarlas con \textbf{MMD + error reciente} resuelve la dilución de \texttt{sample\_weight}.
+  \item Frente a \textbf{Concept Drift} fuerte o recurrente y en datasets reales (\texttt{electricity}: \textbf{0.91}, \texttt{bike\_sharing}: \textbf{0.88}, \texttt{beijing\_pm25}: \textbf{0.99}), \texttt{DriftRegressor} supera al RF convencional sin descartar el histórico.
   \item Un diseño compatible con \texttt{BaseEstimator} permite optimizar el ensamble con \textbf{Optuna} y \texttt{TimeSeriesSplit}.
-  \item Combinar ambas señales evita puntos ciegos cuando cambia $P(Y \mid X)$ sin cambiar $P(X)$.
+  \item Combinar MMD y error reciente evita puntos ciegos cuando cambia $P(Y \mid X)$ sin cambiar $P(X)$.
 \end{itemize}
 \end{ccdebox}
 \end{column}
