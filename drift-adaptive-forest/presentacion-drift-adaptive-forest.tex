@@ -1,0 +1,527 @@
+\documentclass[aspectratio=169,11pt,table]{beamer}
+\usepackage{../assets/ccde-beamer}
+
+% ---------- Metadatos (SIN fecha por norma CCDE) ----------
+\renewcommand{\ccdefootlabel}{CCDE -- DriftAdaptiveForest}
+
+\title{DriftAdaptiveForest}
+\subtitle{Ensamble temporal por bloques con MMD y error reciente frente a Data y Concept Drift}
+\author{Círculo de Ciencia de Datos y Econometría}
+\date{} % no quitar: la plantilla prohíbe fechas
+
+\begin{document}
+
+% Portada canónica
+\ccdeportada{DriftAdaptiveForest}{Ensamble temporal por bloques con MMD y error reciente frente a Data y Concept Drift}{DAF}
+
+% ================================================================
+\begin{frame}{Mapa de la presentación}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.54\textwidth}
+{\small\tableofcontents}
+\end{column}
+\begin{column}{0.43\textwidth}
+\begin{keybox}
+\textbf{Pregunta guía}\\[0.10cm]
+¿Por qué un Random Forest clásico falla cuando el entorno cambia con el tiempo, y cómo adaptarlo sin perder interpretabilidad?
+\end{keybox}
+\vspace{0.12cm}
+\begin{ccdebox}
+\scriptsize
+\textbf{Stack técnico}\\
+Python, Scikit-Learn (\texttt{BaseEstimator}), SciPy, Optuna y \texttt{TimeSeriesSplit}.\\[0.10cm]
+\textbf{Repositorio}\\
+\texttt{CCDE-DataLab/DriftAdaptiveForest}
+\end{ccdebox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\section{El problema: Drift temporal en árboles}
+
+\begin{frame}{Data Drift ($P(X)$ cambia): cuando cambian los datos de entrada}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.50\textwidth}
+\begin{contrastbox}{ccdeaccent}{¿Qué ocurre en el modelo?}
+\footnotesize
+\begin{itemize}
+  \item Cambia la distribución de las covariables $X$ con el tiempo (tendencias, olas estacionales).
+  \item La relación real $f(X)$ no cambia, pero los árboles de decisión \textbf{no extrapolan} fuera del rango visto al entrenar.
+  \item \textbf{Efecto:} el bosque predice valores constantes planos en las regiones nuevas.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\begin{column}{0.46\textwidth}
+\begin{keybox}
+\footnotesize
+\textbf{Ejemplo clínico}\\[0.10cm]
+El modelo entrenó en 2023 con pacientes de \textbf{45 años} en promedio y ocupación al \textbf{50\%}.\\[0.12cm]
+En una ola invernal llegan pacientes de \textbf{72 años} y ocupación al \textbf{92\%}: como el árbol nunca vio esa zona, repite la última hoja conocida y subestima la estancia.
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Concept Drift ($P(Y \mid X)$ cambia): cuando cambia la regla}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.50\textwidth}
+\begin{contrastbox}{warn}{¿Qué ocurre en el modelo?}
+\footnotesize
+\begin{itemize}
+  \item Cambia la relación estructural entre $X$ e $Y$ (quiebre de régimen o nuevo protocolo).
+  \item El bootstrap clásico mezcla épocas pasadas y presentes dentro del mismo árbol.
+  \item \textbf{Efecto:} \texttt{sample\_weight} se diluye y el árbol promedia verdades obsoletas.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\begin{column}{0.46\textwidth}
+\begin{keybox}
+\footnotesize
+\textbf{Ejemplo clínico}\\[0.10cm]
+Se aprueba un \textbf{nuevo tratamiento médico}.\\[0.10cm]
+Un paciente con \textbf{exactamente los mismos síntomas $X$} que antes tardaba \textbf{12 días} en recuperarse ahora tarda \textbf{6 días}. Un RF clásico mezcla ambos periodos y predice $\sim 9$ días.
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}{¿Por qué no simplemente descartar los datos antiguos?}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{warn}{Opción ingenua: ventana fija reciente}
+\scriptsize
+Recortar el train a los últimos meses parece simple, pero tiene consecuencias negativas:
+\begin{itemize}
+  \item \textbf{Menor tamaño muestral:} menos datos elevan la varianza y favorecen el sobreajuste al ruido reciente.
+  \item \textbf{Pérdida de memoria estacional:} si vuelve una ola o régimen pasado, el modelo ya lo olvidó.
+  \item \textbf{Corte arbitrario:} elegir 3, 6 o 12 meses sin medir el drift real puede dejar contaminación o perder datos útiles.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{okgreen}{Alternativa: \texttt{DriftAdaptiveForest}}
+\scriptsize
+Conserva todo el histórico sin borrar observaciones a ciegas:
+\begin{itemize}
+  \item \textbf{Preserva la información:} organiza toda la historia en sub-bosques expertos por época.
+  \item \textbf{Olvido selectivo y reversible:} si un bloque sufre drift, su peso cae a $0$; si un patrón pasado reaparece, el MMD lo vuelve a activar.
+  \item \textbf{Decaimiento continuo:} $\beta$ y Optuna ajustan qué tanto confiar en el pasado según los datos.
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\section{Maximum Mean Discrepancy (MMD)}
+
+\begin{frame}{¿Qué es el MMD y cómo se calcula?}
+\setlength{\abovedisplayskip}{2pt}
+\setlength{\belowdisplayskip}{2pt}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.46\textwidth}
+\begin{ccdebox}[top=1.2mm,bottom=1.2mm]
+\scriptsize
+\textbf{¿Qué es y para qué sirve?}\\[0.08cm]
+Es una métrica de distancia no paramétrica entre \textbf{dos distribuciones completas} $P$ y $Q$ (ej. un bloque histórico vs. el presente), sin asumir normalidad.\\[0.08cm]
+\begin{itemize}
+  \item Detecta \textbf{Data Drift multivariado} en todas las columnas a la vez (no solo cambios en la media).
+  \item \textbf{No requiere etiquetas $Y$:} puede medir drift sobre $X_{\text{test}}$ antes de observar el resultado.
+  \item Vale $\approx 0$ cuando $P \approx Q$ y crece conforme se separan.
+\end{itemize}
+\end{ccdebox}
+\end{column}
+
+\begin{column}{0.50\textwidth}
+\begin{keybox}[top=1.2mm,bottom=1.2mm]
+\scriptsize
+\textbf{¿Cómo se calcula? (Kernel RBF)}\\[0.06cm]
+Mide la similitud entre dos puntos con el kernel Gaussiano (calibrando $\gamma$ con la \textbf{heurística de la mediana}):
+\[k(x, z) = \exp\big(-\gamma \|x - z\|^2\big)\]
+Luego compara la similitud \textbf{interna} contra la \textbf{cruzada} (sin la diagonal para evitar sesgo):
+\[\resizebox{0.95\linewidth}{!}{$\displaystyle \widehat{\text{MMD}}^2(P, Q) = \text{Sim}(P, P) + \text{Sim}(Q, Q) - 2\,\text{Sim}(P, Q)$}\]
+Si los puntos de $P$ se parecen mucho entre sí pero poco a los de $Q$, $\widehat{\text{MMD}}^2$ aumenta.
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\section{Arquitectura y formulación de DriftRegressor}
+
+\begin{frame}{Arquitectura de \texttt{DriftRegressor}}
+\centering
+\begin{tikzpicture}[
+  node distance=0.35cm and 0.50cm,
+  box/.style={rectangle,rounded corners=3pt,draw=ccdeblue,fill=white,
+    thick,minimum height=0.70cm,align=center,font=\scriptsize,inner sep=4pt},
+  accent/.style={rectangle,rounded corners=3pt,draw=ccdeaccent,fill=ccdeice,
+    thick,minimum height=0.70cm,align=center,font=\scriptsize\bfseries,inner sep=4pt},
+  outbox/.style={rectangle,rounded corners=3pt,draw=okgreen,fill=okgreen!10,
+    thick,minimum height=0.72cm,align=center,font=\scriptsize\bfseries,inner sep=4.5pt},
+  arr/.style={-{Stealth[length=2.1mm]},thick,ccdeblue}
+]
+  \node[box] (train) {\textbf{Train ordenado}\\$(X_{\text{train}}, y_{\text{train}})$};
+  \node[box,right=of train] (split) {\textbf{$K$ Bloques contiguos}\\$W_1, \dots, W_K$ {\tiny (+ $W_{\text{val}}$)}};
+  \node[accent,right=of split] (rfs) {\textbf{$K$ Sub-bosques}\\$f_1(x), \dots, f_K(x)$};
+  \node[box,below=0.42cm of rfs] (pen) {\textbf{Penalización $p_k$}\\MMD$(W_k, X_{\text{test}})$ / MSE$(y_{\text{val}}, f_k(X_{\text{val}}))$};
+  \node[accent,left=of pen] (soft) {\textbf{Softmax negativo}\\$\lambda_k \propto \exp(-\beta \cdot p_k)$};
+  \node[outbox,left=of soft] (pred) {\textbf{Predicción final}\\$\hat{y} = \sum_{k=1}^{K} \lambda_k f_k(X_{\text{test}})$};
+
+  \draw[arr] (train) -- (split);
+  \draw[arr] (split) -- (rfs);
+  \draw[arr] (rfs) -- (pen);
+  \draw[arr] (pen) -- (soft);
+  \draw[arr] (soft) -- (pred);
+\end{tikzpicture}
+
+\vspace{0.10cm}
+\begin{keybox}
+\scriptsize
+\textbf{Leyenda de símbolos (para las fórmulas siguientes):}\\[0.04cm]
+\begin{tabular}{@{}l p{5.0cm} l p{5.0cm}@{}}
+$p_k$ & Penalización por drift o error del bloque $k$ &
+$\beta > 0$ & Sensibilidad del decaimiento de pesos \\
+$\lambda_k$ & Peso de confianza del bosque $k$ ($\sum \lambda_k = 1$) &
+$\alpha_{\text{hyb}}$ & Balance $\in [0,1]$ entre MMD y error reciente \\
+$W_{\text{val}}$ & Segmento de validación reciente de train (15\%) &
+$\epsilon$ & Constante ($10^{-8}$) que evita división por cero
+\end{tabular}
+\end{keybox}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Los tres modos de ponderación en \texttt{DriftRegressor}}
+\centering
+\begin{tikzpicture}[
+  node distance=0.28cm and 0.65cm,
+  src/.style={rectangle,rounded corners=3pt,draw=ccdeblue,fill=white,
+    thick,minimum height=0.68cm,align=center,font=\scriptsize\bfseries,inner sep=4pt},
+  mode/.style={rectangle,rounded corners=3pt,draw=ccdeaccent,fill=ccdeice,
+    thick,minimum width=3.1cm,minimum height=0.65cm,align=center,font=\scriptsize\bfseries,inner sep=4pt},
+  res/.style={rectangle,rounded corners=3pt,draw=okgreen,fill=okgreen!10,
+    thick,minimum height=0.68cm,align=center,font=\scriptsize\bfseries,inner sep=4.5pt},
+  arr/.style={-{Stealth[length=2mm]},thick,ccdeblue}
+]
+  \node[mode] (m2) {\texttt{recent\_error} (MSE en $W_{\text{val}}$)};
+  \node[mode,above=of m2] (m1) {\texttt{mmd} (Distancia en $X$)};
+  \node[mode,below=of m2] (m3) {\texttt{hybrid} ($\alpha_{\text{hyb}}$ MMD + MSE)};
+  \node[src,left=0.85cm of m2] (in) {Bloques $W_k$\\+ $X_{\text{test}}$ / $W_{\text{val}}$};
+  \node[res,right=0.85cm of m2] (out) {Penalización $p_k$\\$\downarrow$ Softmax $\lambda_k$};
+
+  \draw[arr] (in) |- (m1);
+  \draw[arr] (in) -- (m2);
+  \draw[arr] (in) |- (m3);
+  \draw[arr] (m1) -| (out);
+  \draw[arr] (m2) -- (out);
+  \draw[arr] (m3) -| (out);
+\end{tikzpicture}
+
+\vspace{0.14cm}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.32\textwidth}
+\begin{ccdebox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{1. Modo \texttt{mmd}}\\
+Compara la distribución de $X$ de cada bloque con $X_{\text{test}}$. Ideal para \textbf{Data Drift} sin necesitar etiquetas recientes.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.32\textwidth}
+\begin{ccdebox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{2. Modo \texttt{recent\_error}}\\
+Evalúa cada bosque sobre el segmento de validación $W_{\text{val}}$. Detecta \textbf{Concept Drift} cuando cambia $P(Y \mid X)$.
+\end{ccdebox}
+\end{column}
+\begin{column}{0.32\textwidth}
+\begin{ccdebox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{3. Modo \texttt{hybrid}}\\
+Combina ambas señales normalizadas con $\alpha_{\text{hyb}}$ para protegerse ante cambios simultáneos en $X$ y en $Y \mid X$.
+\end{ccdebox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Modo 1 (\texttt{mmd}): Paso a paso y ejemplo numérico}
+\setlength{\abovedisplayskip}{2pt}
+\setlength{\belowdisplayskip}{2pt}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.53\textwidth}
+\begin{ccdebox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{1. Distancia MMD$^2$ en espacio escalado:}\\
+Se estandarizan $W_k$ y $X_{\text{test}}$ con el scaler de train y se mide $\widehat{\text{MMD}}^2(W_k^{\text{scaled}}, X_{\text{test}}^{\text{scaled}})$.\\[0.08cm]
+\textbf{2. Truncamiento $p_k = \max(0, \widehat{\text{MMD}}^2_k)$:}\\
+\textit{¿Por qué?} El estimador insesgado puede dar negativos leves (ej. $-0.002$) por azar cuando dos bloques son casi iguales; truncar en $0$ evita premiar ruido.\\[0.08cm]
+\textbf{3. Pesos y predicción:}\\
+\[\lambda_k = \frac{\exp(-\beta p_k)}{\sum_j \exp(-\beta p_j)}, \qquad \hat{y} = \sum_{k=1}^K \lambda_k f_k(X_{\text{test}})\]
+\end{ccdebox}
+\end{column}
+
+\begin{column}{0.44\textwidth}
+\begin{keybox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{Ejemplo numérico (2 bloques, $\beta = 10$)}\\[0.06cm]
+\begin{itemize}
+  \item $\widehat{\text{MMD}}^2 = [-0.002,\; 0.20]$
+  \item $\max(0, \cdot) \implies p = [0.00,\; 0.20]$
+  \item $\exp(-10 \cdot p) = [1.000,\; 0.135]$
+  \item Pesos: $\lambda = [0.88,\; 0.12]$
+\end{itemize}
+\vspace{0.06cm}
+Si $f_1(x) = 5.0$ días y $f_2(x) = 9.0$ días:
+\[\hat{y} = 0.88(5.0) + 0.12(9.0) = \mathbf{5.48\text{ días}}\]
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Modo 2 (\texttt{recent\_error}): Paso a paso y ejemplo numérico}
+\setlength{\abovedisplayskip}{2pt}
+\setlength{\belowdisplayskip}{2pt}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.53\textwidth}
+\begin{ccdebox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{1. Segmento de validación $(X_{\text{val}}, y_{\text{val}})$:}\\
+Se separa el último 15\% de train como validación (con $y_{\text{val}}$ conocido) y los $K$ bosques entrenan en el 85\% previo.\\[0.08cm]
+\textbf{2. Error reciente y normalización:}\\
+Se compara $y_{\text{val}}$ contra la predicción $f_k(X_{\text{val}})$ de cada sub-bosque $k$, y se divide por el promedio $\bar{e}$:
+\[e_k = \text{MSE}\big(y_{\text{val}},\, f_k(X_{\text{val}})\big) = \frac{1}{n_{\text{val}}}\sum_{i=1}^{n_{\text{val}}}\big(y_i - f_k(x_i)\big)^2\]
+\[p_k = \frac{e_k}{\bar{e} + \epsilon}\]
+\textbf{3. Pesos y predicción:}\\
+\[\lambda_k = \frac{\exp(-\beta p_k)}{\sum_j \exp(-\beta p_j)}, \qquad \hat{y} = \sum_{k=1}^K \lambda_k f_k(X_{\text{test}})\]
+\end{ccdebox}
+\end{column}
+
+\begin{column}{0.44\textwidth}
+\begin{keybox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{Ejemplo numérico (2 bloques, $\beta = 5$)}\\[0.06cm]
+\begin{itemize}
+  \item MSE en $W_{\text{val}}$: $e = [16.0,\; 4.0]$ ($\bar{e} = 10.0$)
+  \item Normalizar: $p = [16/10,\; 4/10] = [1.6,\; 0.4]$
+  \item $\exp(-5 \cdot p) = [0.0003,\; 0.135]$
+  \item Pesos: $\lambda \approx [0.002,\; 0.998]$
+\end{itemize}
+\vspace{0.06cm}
+Si $f_1(x) = 12.0$ días y $f_2(x) = 6.0$ días:
+\[\hat{y} = 0.002(12.0) + 0.998(6.0) \approx \mathbf{6.01\text{ días}}\]
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Modo 3 (\texttt{hybrid}): Paso a paso y ejemplo numérico}
+\setlength{\abovedisplayskip}{2pt}
+\setlength{\belowdisplayskip}{2pt}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.53\textwidth}
+\begin{ccdebox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{1. Obtener ambas señales por bloque:}\\
+$d_k = \max(0, \widehat{\text{MMD}}^2_k)$ (Data Drift) y $e_k = \text{MSE}\big(y_{\text{val}}, f_k(X_{\text{val}})\big)$ (Concept Drift, donde $f_k(X_{\text{val}})$ es la predicción del sub-bosque $k$).\\[0.06cm]
+\textbf{2. ¿Qué es $\alpha_{\text{hyb}}$ y cómo se obtiene?}\\
+Es un hiperparámetro $\in [0, 1]$ (no una fórmula fija) que regula cuánto pesa el MMD frente al error reciente ($\alpha_{\text{hyb}}=1$: solo MMD; $\alpha_{\text{hyb}}=0$: solo MSE). Se fija por defecto en $0.5$ o se optimiza vía \textbf{Optuna} con \texttt{TimeSeriesSplit}:
+\[p_k = \alpha_{\text{hyb}}\frac{d_k}{\bar{d} + \epsilon} + (1 - \alpha_{\text{hyb}})\frac{e_k}{\bar{e} + \epsilon}\]
+\textbf{3. Pesos y predicción:}\\
+\[\lambda_k = \frac{\exp(-\beta p_k)}{\sum_j \exp(-\beta p_j)}, \qquad \hat{y} = \sum_{k=1}^K \lambda_k f_k(X_{\text{test}})\]
+\end{ccdebox}
+\end{column}
+
+\begin{column}{0.44\textwidth}
+\begin{keybox}[top=1mm,bottom=1mm]
+\scriptsize
+\textbf{Ejemplo ($\alpha_{\text{hyb}} = 0.5$, $\beta = 5$)}\\[0.06cm]
+\begin{itemize}
+  \item MMD norm. ($d/\bar{d}$): $[1.5,\; 0.5]$
+  \item MSE norm. ($e/\bar{e}$): $[1.7,\; 0.3]$
+  \item Mezcla: $p = 0.5[1.5, 0.5] + 0.5[1.7, 0.3] = [1.6,\; 0.4]$
+  \item Pesos: $\lambda \approx [0.002,\; 0.998]$
+\end{itemize}
+\vspace{0.06cm}
+Si $f_1(x) = 10.0$ días y $f_2(x) = 6.5$ días:
+\[\hat{y} = 0.002(10.0) + 0.998(6.5) \approx \mathbf{6.51\text{ días}}\]
+\end{keybox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\section{Laboratorio sintético y resultados}
+
+\begin{frame}{Escenario de prueba: Datos clínicos con Drift dual}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.52\textwidth}
+\begin{ccdebox}
+\scriptsize
+\textbf{Variables del simulador clínico (\texttt{5,000} ingresos)}\\[0.08cm]
+\begin{itemize}
+  \item \texttt{edad}: edad del paciente en años ($18$--$95$).
+  \item \texttt{comorbilidad}: conteo de patologías crónicas (Poisson).
+  \item \texttt{severidad\_ingreso}: puntaje de gravedad al ingreso ($1$--$10$).
+  \item \texttt{ocupacion\_hospitalaria}: tasa de saturación del hospital ($0.3$--$1.0$).
+  \item \texttt{dias\_estancia} \textbf{(Target $Y$)}: días de hospitalización con interacciones no lineales y umbral de saturación.
+\end{itemize}
+\end{ccdebox}
+\end{column}
+\begin{column}{0.44\textwidth}
+\begin{contrastbox}{purplex}{Drift dual (\texttt{both})}
+\scriptsize
+\textbf{Split estricto:} primeras \texttt{4,000} filas para train/CV; últimas \texttt{1,000} filas futuras para test.\\[0.10cm]
+\textbf{Data Drift:} tendencia creciente y ondas estacionales en las 4 covariables.\\[0.10cm]
+\textbf{Concept Drift:} nuevo protocolo médico en $t_{\text{norm}} = 0.6$ vía sigmoide:
+\[\alpha_t = \frac{1}{1 + \exp\big(-15(t_{\text{norm}} - 0.6)\big)}\]
+\[y_t = (1 - \alpha_t) f_{\text{vieja}}(X_t) + \alpha_t f_{\text{nueva}}(X_t) + \epsilon_t\]
+\end{contrastbox}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Resultados experimentales: RF Clásico vs. \texttt{DriftRegressor}}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.46\textwidth}
+\begin{ccdebox}
+\scriptsize
+\textbf{1. Solo Data Drift moderado}\\[0.06cm]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Modelo} & \textbf{RMSE Test} \\
+\midrule
+RF Clásico (base) & \textbf{1.3073} \\
+DriftRegressor (\texttt{mmd}, $\beta=10$) & 1.4761 \\
+DriftRegressor (\texttt{mmd}, $\beta=50$) & 1.3874 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.08cm}
+\raggedright
+\textbf{Hallazgo:} si $P(Y \mid X)$ es fija, el RF clásico aprovecha las 4,000 filas válidas con menor varianza.
+\end{ccdebox}
+\end{column}
+
+\begin{column}{0.50\textwidth}
+\begin{ccdebox}
+\scriptsize
+\textbf{2. Data + Concept Drift (\texttt{both})}\\[0.06cm]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Modelo} & \textbf{RMSE} & \textbf{MAE} \\
+\midrule
+RF Clásico (base) & 6.4003 & -- \\
+DriftRegressor (\texttt{recent\_error}) & 5.0854 & -- \\
+\midrule
+RF Clásico (Optuna + TSSplit) & 6.3865 & 4.3541 \\
+\textbf{DriftRegressor (Optuna)} & \textbf{4.6901} & \textbf{3.2892} \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.08cm}
+\raggedright
+\textbf{Mejora:} \textcolor{okgreen}{\textbf{-26.6\% en RMSE}} (-1.70 días) y \textcolor{okgreen}{\textbf{-24.5\% en MAE}} frente al RF clásico optimizado.
+\end{ccdebox}
+\end{column}
+\end{columns}
+
+\vspace{0.10cm}
+\begin{keybox}
+\scriptsize
+En modo \texttt{recent\_error} base, los pesos colapsaron a \texttt{[0, 0, 0, 0, 1]}: el modelo detectó automáticamente que los primeros 4 bloques pertenecían al protocolo obsoleto.
+\end{keybox}
+\end{frame}
+
+% ================================================================
+\begin{frame}{Hiperparámetros evaluados: Base vs. Optuna}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{ccdebox}
+\scriptsize
+\textbf{Versión base (sin Optuna)}\\[0.08cm]
+\textbf{RF Clásico:}
+\begin{itemize}
+  \item \texttt{n\_estimators = 100}
+  \item \texttt{max\_depth = None}, \texttt{min\_samples\_leaf = 1}
+\end{itemize}
+\vspace{0.06cm}
+\textbf{DriftRegressor:}
+\begin{itemize}
+  \item \texttt{n\_blocks = 5}, \texttt{n\_estimators\_per\_block = 100}
+  \item \texttt{beta = 15.0} (en \texttt{both}) / \texttt{50.0} (en \texttt{data})
+  \item \texttt{recent\_val\_frac = 0.15}
+\end{itemize}
+\end{ccdebox}
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{okgreen}{Versión Optuna + TSSplit}
+\scriptsize
+\textbf{RF Clásico (20 trials):}
+\begin{itemize}
+  \item \texttt{n\_estimators = 50}, \texttt{max\_depth = 16}
+  \item \texttt{min\_samples\_leaf = 1}, \texttt{max\_features = 0.97}
+\end{itemize}
+\vspace{0.06cm}
+\textbf{DriftRegressor (25 trials):}
+\begin{itemize}
+  \item \texttt{n\_blocks = 5}, \texttt{n\_estimators\_per\_block = 125}
+  \item \texttt{beta = 37.51}, \texttt{weighting\_mode = mmd}
+  \item \texttt{max\_depth = 17}, \texttt{min\_samples\_leaf = 1}
+\end{itemize}
+\end{contrastbox}
+\end{column}
+\end{columns}
+
+\vspace{0.12cm}
+\begin{keybox}
+\scriptsize
+Ambos modelos fueron optimizados con el mismo protocolo de validación cruzada temporal (\texttt{TimeSeriesSplit}, 4 folds sobre las primeras 4,000 observaciones).
+\end{keybox}
+\end{frame}
+
+% ================================================================
+\section{Conclusiones y próximos pasos}
+
+\begin{frame}{Conclusiones y hoja de ruta de investigación}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{ccdebox}
+\scriptsize
+\textbf{Lo que demostró esta primera fase}\\[0.08cm]
+\begin{itemize}
+  \item Separar épocas y ponderarlas con \textbf{MMD + error reciente} resuelve la dilución de \texttt{sample\_weight}.
+  \item Un diseño compatible con \texttt{BaseEstimator} permite optimizar el ensamble con \textbf{Optuna} y \texttt{TimeSeriesSplit}.
+  \item Combinar ambas señales evita puntos ciegos cuando cambia $P(Y \mid X)$ sin cambiar $P(X)$.
+\end{itemize}
+\end{ccdebox}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{contrastbox}{ccdeaccent}{Próximos pasos}
+\scriptsize
+\begin{enumerate}
+  \item \textbf{Bootstrap Temporal:} muestreo probabilístico $w_i = e^{-\alpha \Delta t_i}$ con control de $\text{ESS}$.
+  \item \textbf{Evaluación multi-ventana:} Rolling RMSE, P95 del error y entropía de pesos.
+  \item \textbf{Hipótesis MMD-Split:} criterio híbrido en los primeros niveles usando \textit{Random Fourier Features}.
+\end{enumerate}
+\end{contrastbox}
+\end{column}
+\end{columns}
+
+\vspace{0.14cm}
+\begin{keybox}
+\centering
+\footnotesize
+Código abierto y reproducible en: \textbf{\texttt{https://github.com/CCDE-DataLab/DriftAdaptiveForest}}
+\end{keybox}
+\end{frame}
+
+\end{document}
